@@ -1,4 +1,4 @@
-CORE_VERSION = 'v5.0.1'
+CORE_VERSION = 'v5.0.2'
 
 # the dependencies from the gemspec from a git repo are ignored
 # see also https://github.com/bundler/bundler/issues/1041

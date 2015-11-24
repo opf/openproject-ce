@@ -41,132 +41,132 @@ GIT
 
 GIT
   remote: https://github.com/finnlabs/openproject-announcements.git
-  revision: bbfcbc49f7871250f4bcf9ed3f04d43874d90aa6
-  tag: v5.0.1
+  revision: dfcb0b88acdbc2969ea939786db0ec3c7b70d128
+  tag: v5.0.2
   specs:
-    openproject-announcements (5.0.1)
+    openproject-announcements (5.0.2)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-backlogs.git
-  revision: 42eb9ee6a74a6d82ddd7d4f66ed46dc28c4bab79
-  tag: v5.0.1
+  revision: 9bde7956fbe4b8c75ced4358245ffa6bd254b57f
+  tag: v5.0.2
   specs:
-    openproject-backlogs (5.0.1)
+    openproject-backlogs (5.0.2)
       acts_as_silent_list (~> 2.0.0)
       openproject-pdf_export
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-costs.git
-  revision: 33b8eddcafffcd01d8ce31a690cceb7978ee08d5
-  tag: v5.0.1
+  revision: 0328768c252aaa0efe95b2c8a08511696df229a6
+  tag: v5.0.2
   specs:
-    openproject-costs (5.0.1)
+    openproject-costs (5.0.2)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-github_integration
-  revision: a6cd0b74e1e6744ae714010056284ebd9afa8570
-  tag: v5.0.1
+  revision: e823005413349c6b5f057eefb11b09700fed9b3e
+  tag: v5.0.2
   specs:
-    openproject-github_integration (5.0.1)
-      openproject-webhooks (~> 5.0.0.pre.alpha)
+    openproject-github_integration (5.0.2)
+      openproject-webhooks (~> 5.0.1)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-global_roles.git
-  revision: c8d46fe4a228566e9dccd70f5a81a2f33482989e
-  tag: v5.0.1
+  revision: e248a767aeb40ade8343cad35d8eb934e3dd0228
+  tag: v5.0.2
   specs:
-    openproject-global_roles (5.0.1)
+    openproject-global_roles (5.0.2)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-help_link.git
-  revision: ad2a68ae861ab79537a145c61326c9d8fb43e4f9
-  tag: v5.0.1
+  revision: b20ac0cd02ead5c1550c6fa8873ea2f7a183cb13
+  tag: v5.0.2
   specs:
-    openproject-help_link (5.0.1)
+    openproject-help_link (5.0.2)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-local_avatars
-  revision: 0225dbedf597335c9332887259bd898d509f4214
-  tag: v5.0.1
+  revision: 976c93398c9a0f0403e251ef92ab530e257fe8d9
+  tag: v5.0.2
   specs:
-    openproject-local_avatars (5.0.1)
+    openproject-local_avatars (5.0.2)
       rails (~> 4.2.4)
       rmagick (~> 2.15.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-meeting.git
-  revision: 7d463eabac29c4024b4b513d9c0d8313e4a6c1a8
-  tag: v5.0.1
+  revision: dac76b566e20ec8a4c305d998643a99fb90f3749
+  tag: v5.0.2
   specs:
-    openproject-meeting (5.0.1)
+    openproject-meeting (5.0.2)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-my_project_page.git
-  revision: 3780fcdf843058d298f8e2812036de3b297f1868
-  tag: v5.0.1
+  revision: 041425b20d3f1993e67594007b69e48492a98144
+  tag: v5.0.2
   specs:
-    openproject-my_project_page (5.0.1)
+    openproject-my_project_page (5.0.2)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-openid_connect.git
-  revision: 419839c1e94047747e4d7795fbfd4b39995c7f57
-  tag: v5.0.1
+  revision: 406ca7474a223ab3c35af5b8d34f0ad83442409e
+  tag: v5.0.2
   specs:
-    openproject-openid_connect (5.0.1)
+    openproject-openid_connect (5.0.2)
       lobby_boy (~> 0.1)
       omniauth-openid_connect-providers (~> 0.1)
-      openproject-auth_plugins (~> 5.0.0.pre.alpha)
+      openproject-auth_plugins (~> 5.0.1)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-pdf_export.git
-  revision: a3d3bede5035820ea29aa5e849a280fccdef5d1a
-  tag: v5.0.1
+  revision: 16f62d8caa2c8f7b839d5a6174783df2354471fd
+  tag: v5.0.2
   specs:
-    openproject-pdf_export (5.0.1)
+    openproject-pdf_export (5.0.2)
       prawn (~> 0.14.0)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-reporting.git
-  revision: 7c179092f7f12d91b83926159e40c3ea9a1c2588
-  tag: v5.0.1
+  revision: d3c222debce944e053f09f082aa721bfd666c945
+  tag: v5.0.2
   specs:
-    openproject-reporting (5.0.1)
-      openproject-costs (>= 4.0.0)
+    openproject-reporting (5.0.2)
+      openproject-costs (>= 5.0.1)
       rails (~> 4.2.4)
       reporting_engine (>= 1.1.0)
 
 GIT
   remote: https://github.com/finnlabs/openproject-themes-dark.git
-  revision: 8f7c36bda738d8546f331b6a77a2eb009084e924
-  tag: v5.0.1
+  revision: fd64af2c91d9cd02f787f9b02ff3a9e8894d604d
+  tag: v5.0.2
   specs:
-    openproject-themes-dark (5.0.1)
+    openproject-themes-dark (5.0.2)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-webhooks
-  revision: 3e354f3da1cbe75f0e72740ce80ece32d2cacdd5
-  tag: v5.0.1
+  revision: c6b8f4b42bf222dd87bdb6c44aa4458d40dc849d
+  tag: v5.0.2
   specs:
-    openproject-webhooks (5.0.1)
+    openproject-webhooks (5.0.2)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/finnlabs/openproject-xls_export.git
-  revision: 2cc0488cb91dc4f4c9baef0115542bda1b5fbc7a
-  tag: v5.0.1
+  revision: 9dcdc78d19e60ba88c00fbdef4c9e72d38fd0057
+  tag: v5.0.2
   specs:
-    openproject-xls_export (5.0.1)
+    openproject-xls_export (5.0.2)
       rails (~> 4.2.4)
       spreadsheet (~> 0.8.9)
 
@@ -203,19 +203,19 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-auth_plugins.git
-  revision: cc485a7946e19db44beebc4686a316c09fa30579
-  tag: v5.0.1
+  revision: 9ceb40e088f92f9d0f681f2ba7cc4b1d00cb4e25
+  tag: v5.0.2
   specs:
-    openproject-auth_plugins (5.0.1)
+    openproject-auth_plugins (5.0.2)
       omniauth (~> 1.0)
       rails (~> 4.2.4)
 
 GIT
   remote: https://github.com/opf/openproject-documents.git
-  revision: fe164cf9a1b6a2b00eeb5907e865d7806f3a2eeb
-  tag: v5.0.1
+  revision: 3271435a62accbf76d43c8a6c401518d94f6d7f4
+  tag: v5.0.2
   specs:
-    openproject-documents (5.0.1)
+    openproject-documents (5.0.2)
       rails (~> 4.2.4)
 
 GIT
@@ -228,10 +228,10 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 2be19365a32c0769cf3c4c86b8e1afe891844883
+  revision: 5bdea3f0cc4764efe344de7f477d38d7e032070b
   branch: release/5.0
   specs:
-    openproject-translations (5.0.0.pre.alpha)
+    openproject-translations (5.0.2)
       crowdin-api (~> 0.4.0)
       mixlib-shellout (~> 2.1.0)
       rails (~> 4.2.3)
@@ -519,7 +519,7 @@ GEM
       net-ssh (>= 2.6.5)
     net-ssh (2.9.2)
     netrc (0.11.0)
-    nokogiri (1.6.6.2)
+    nokogiri (1.6.6.4)
       mini_portile (~> 0.6.0)
     non-stupid-digest-assets (1.0.4)
     oj (2.11.5)
