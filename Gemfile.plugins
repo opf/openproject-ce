@@ -1,4 +1,4 @@
-CORE_VERSION = 'v5.0.3'
+CORE_VERSION = 'v5.0.4'
 
 # the dependencies from the gemspec from a git repo are ignored
 # see also https://github.com/bundler/bundler/issues/1041
@@ -36,5 +36,4 @@ group :opf_plugins do
   gem 'openproject-local_avatars',          git: "https://github.com/finnlabs/openproject-local_avatars",             tag: CORE_VERSION
   gem 'openproject-webhooks',               git: "https://github.com/finnlabs/openproject-webhooks",                  tag: CORE_VERSION
   gem 'openproject-github_integration',     git: "https://github.com/finnlabs/openproject-github_integration",        tag: CORE_VERSION
-  gem 'openproject-emoji',                  git: 'https://github.com/opf/openproject-emoji.git',                      branch: 'dev'
 end
