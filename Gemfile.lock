@@ -92,12 +92,12 @@ GIT
 
 GIT
   remote: https://github.com/finnlabs/openproject-local_avatars
-  revision: a07ed6de95cf121512d22c53c396e9ea96a43be6
+  revision: 7d091d58bbe99b115464311e23bf069b7d024c2f
   branch: release/5.0
   specs:
-    openproject-local_avatars (5.0.0.pre.alpha)
+    openproject-local_avatars (5.0.6)
       rails (~> 4.2.4)
-      rmagick (~> 2.15.4)
+      rmagick (~> 2.12.2)
 
 GIT
   remote: https://github.com/finnlabs/openproject-meeting.git
@@ -651,7 +651,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
-    rmagick (2.15.4)
+    rmagick (2.12.2)
     roar (1.0.1)
       representable (>= 2.0.1, <= 3.0.0)
     rspec (3.3.0)
@@ -923,6 +923,3 @@ DEPENDENCIES
   warden-basic_auth (~> 0.2.1)
   webmock (~> 1.21.0)
   will_paginate (~> 3.0)
-
-BUNDLED WITH
-   1.10.6
