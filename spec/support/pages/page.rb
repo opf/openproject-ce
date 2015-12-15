@@ -74,6 +74,14 @@ module Pages
       Setting.per_page_options = "#{n}, 50, 100"
     end
 
+    def expect_current_path
+      uri = URI.parse(current_url)
+      expected_path = uri.path
+      expected_path += '?' + uri.query if uri.query
+
+      expect(expected_path).to eql path
+    end
+
     def path
       nil
     end

@@ -38,9 +38,10 @@ function WorkPackageNewController($scope,
                                   WorkPackagesOverviewService,
                                   WorkPackageFieldService,
                                   WorkPackageService,
-                                  EditableFieldsState,
                                   WorkPackagesDisplayHelper,
-                                  NotificationsService) {
+                                  NotificationsService,
+                                  inplaceEditAll,
+                                  loadingIndicator) {
 
   var vm = this;
 
@@ -62,6 +63,17 @@ function WorkPackageNewController($scope,
   vm.notifyCreation = function() {
     NotificationsService.addSuccess(I18n.t('js.notice_successful_create'));
   };
+  vm.getHeading = function() {
+    if (vm.parentWorkPackage !== undefined) {
+      return I18n.t('js.work_packages.create.header_with_parent',
+                    { type: vm.parentWorkPackage.embedded.type.props.name,
+                      id: vm.parentWorkPackage.props.id });
+    }
+    else {
+       return I18n.t('js.work_packages.create.header');
+    }
+  };
+
   vm.goBack = function() {
     var args = ['^'],
         prevState = $rootScope.previousState;
@@ -78,57 +90,75 @@ function WorkPackageNewController($scope,
 
   $scope.I18n = I18n;
 
-  activate();
+  function activate(wp) {
+    vm.workPackage = wp;
+    WorkPackagesDisplayHelper.setFocus();
 
-  function activate() {
-    EditableFieldsState.forcedEditState = true;
-    EditableFieldsState.editAll.state = true;
-    var data = {};
+    $scope.$watchCollection('vm.workPackage.form', function() {
+      vm.groupedFields = WorkPackagesOverviewService.getGroupedWorkPackageOverviewAttributes();
+      var schema = WorkPackageFieldService.getSchema(vm.workPackage);
+      var otherGroup = _.find(vm.groupedFields, { groupName: 'other' });
+      otherGroup.attributes = [];
 
-    if (angular.isDefined($stateParams.type)) {
-      data = {
-        _links: {
-          type: {
-            href: PathHelper.apiV3TypePath($stateParams.type)
-          }
+      _.forEach(schema.props, function(prop, propName) {
+        if (propName.match(/^customField/)) {
+          otherGroup.attributes.push(propName);
         }
-      };
-    }
+      });
 
-    vm.loaderPromise = WorkPackageService.initializeWorkPackage($stateParams.projectPath, data)
-    .then(function(wp) {
-      vm.workPackage = wp;
-      WorkPackagesDisplayHelper.setFocus();
-
-      $scope.$watchCollection('vm.workPackage.form', function() {
-        vm.groupedFields = WorkPackagesOverviewService.getGroupedWorkPackageOverviewAttributes();
-        var schema = WorkPackageFieldService.getSchema(vm.workPackage);
-        var otherGroup = _.find(vm.groupedFields, { groupName: 'other' });
-        otherGroup.attributes = [];
-
-        _.forEach(schema.props, function(prop, propName) {
-          if (propName.match(/^customField/)) {
-            otherGroup.attributes.push(propName);
-          }
-        });
-
-        otherGroup.attributes.sort(function(a, b) {
-          var getLabel = function(field) {
-            return vm.getLabel(vm.workPackage, field);
-          };
-          var left = getLabel(a).toLowerCase(),
-              right = getLabel(b).toLowerCase();
-          return left.localeCompare(right);
-        });
+      otherGroup.attributes.sort(function(a, b) {
+        var getLabel = function(field) {
+          return vm.getLabel(vm.workPackage, field);
+        };
+        var left = getLabel(a).toLowerCase(),
+            right = getLabel(b).toLowerCase();
+        return left.localeCompare(right);
       });
     });
+  }
+
+  prepareInitialData().then(activate);
+
+  function prepareInitialData() {
+    inplaceEditAll.start();
+
+    if ($stateParams.parent_id) {
+      vm.loaderPromise = WorkPackageService.getWorkPackage($stateParams.parent_id)
+        .then(function(workPackage) {
+          vm.parentWorkPackage = workPackage;
+          return WorkPackageService.initializeWorkPackageWithParent(workPackage);
+        });
+    }
+    else if ($stateParams.copiedFromWorkPackageId) {
+      vm.loaderPromise = WorkPackageService.getWorkPackage($stateParams.copiedFromWorkPackageId)
+        .then(function(workPackage) {
+          return WorkPackageService.initializeWorkPackageFromCopy(workPackage);
+        });
+    }
+    else {
+      if (angular.isDefined($stateParams.type)) {
+        vm.initialData = {
+          _links: {
+            type: {
+              href: PathHelper.apiV3TypePath($stateParams.type)
+            }
+          }
+        };
+      }
+      vm.loaderPromise =  WorkPackageService.initializeWorkPackage($stateParams.projectPath,
+                                                                   vm.initialData);
+    }
+
+    loadingIndicator.on(vm.loaderPromise);
 
     $scope.$on('workPackageUpdatedInEditor', function(e, workPackage) {
       $state.go(vm.successState, { workPackageId: workPackage.props.id });
     });
-    
+
     $scope.$on('$stateChangeStart', function () {
-      EditableFieldsState.editAll.stop();
+      inplaceEditAll.stop();
     });
+
+    return vm.loaderPromise;
   }
 }

@@ -83,10 +83,12 @@ en:
     label_author: "Author: %{user}"
     label_board_locked: "Locked"
     label_board_sticky: "Sticky"
+    label_create_work_package: "Create new work package"
     label_date: "Date"
     label_deactivate: "Deactivate"
     label_descending: "Descending"
     label_description: "Description"
+    label_cancel_comment: "Cancel comment"
     label_closed_work_packages: "closed"
     label_collapse: "Collapse"
     label_collapsed: "collapsed"
@@ -110,7 +112,7 @@ en:
     label_format_pdf_with_descriptions: "PDF with descriptions"
     label_greater_or_equal: ">="
     label_group_by: "Group by"
-    label_hide_attributes: "Hide empty"
+    label_hide_attributes: "Hide empty attributes"
     label_hide_column: "Hide column"
     label_in: "in"
     label_in_less_than: "in less than"
@@ -142,7 +144,7 @@ en:
     label_select_watcher: "Select a watcher..."
     label_selected_filter_list: "Selected filters"
     label_share: "Share"
-    label_show_attributes: "Show all"
+    label_show_attributes: "Show all attributes"
     label_show_in_menu: "Show page in menu"
     label_sort_by: "Sort by"
     label_sorted_by: "sorted by"
@@ -157,6 +159,7 @@ en:
     label_visible_for_others: "Page visible for others"
     label_updated_on: "updated on"
     label_work_package: "Work package"
+    label_work_package_plural: "Work packages"
     label_watch: "Watch"
     label_watch_work_package: "Watch work package"
     label_watcher_added_successfully: "Watcher successfully added!"
@@ -362,6 +365,7 @@ en:
       message_successful_bulk_delete: Successfully deleted work packages.
       create:
         header: 'New Work Package'
+        header_with_parent: 'New work package (Child of %{type} #%{id})'
       no_results:
         title: No work packages to display
         description_html: |
@@ -434,7 +438,7 @@ en:
         page_settings: "Rename query ..."
         delete: "Delete"
       filter: "Filter"
-      unselected_title: "Work packages"
+      unselected_title: "Work package"
     modals:
       label_settings: "Rename query"
       label_name: "Name"

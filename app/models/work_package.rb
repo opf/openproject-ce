@@ -373,7 +373,9 @@ class WorkPackage < ActiveRecord::Base
 
   def soonest_start
     @soonest_start ||= (
-      self_and_ancestors.map(&:relations_to)
+      self_and_ancestors.includes(relations_to: :from)
+                        .where(relations: { relation_type: Relation::TYPE_PRECEDES })
+                        .map(&:relations_to)
                         .flatten
                         .map(&:successor_soonest_start)
     ).compact.max
@@ -399,7 +401,10 @@ class WorkPackage < ActiveRecord::Base
   #   * the version it was already assigned to
   #     (to make sure, that you can still update closed tickets)
   def assignable_versions
-    @assignable_versions ||= (project.shared_versions.open + [Version.find_by(id: fixed_version_id_was)]).compact.uniq.sort
+    @assignable_versions ||= begin
+      current_version = fixed_version_id_changed? ? Version.find_by(id: fixed_version_id_was) : fixed_version
+      (project.assignable_versions + [current_version]).compact.uniq.sort
+    end
   end
 
   def kind
@@ -444,6 +449,15 @@ class WorkPackage < ActiveRecord::Base
 
   def is_milestone?
     type && type.is_milestone?
+  end
+
+  # Overwriting awesome nested set here as it considers unpersisted work
+  # packages to not be leaves.
+  # https://github.com/collectiveidea/awesome_nested_set/blob/master/lib/awesome_nested_set/model.rb#L135
+  # The OP workflow however requires to first create a WP before children can
+  # be assigned to it. Unpersisted WPs are hence always leaves.
+  def leaf?
+    new_record? || super
   end
 
   # Returns an array of status that user is able to apply
@@ -938,9 +952,14 @@ class WorkPackage < ActiveRecord::Base
   end
 
   def compute_spent_hours(usr = User.current)
+    # The joins(:project) part witin
+    # self_and_descendants.joins(:project).visible(usr) is important! Without
+    # it, the visibility condition references the projects table joined by
+    # TimeEntry.visible. That is both semantically wrong and bad performance
+    # wise.
     spent_time = TimeEntry.visible(usr)
-                 .on_work_packages(self_and_descendants.visible(usr))
-                 .sum(:hours)
+                  .on_work_packages(self_and_descendants.joins(:project).visible(usr))
+                  .sum(:hours)
 
     spent_time || 0.0
   end

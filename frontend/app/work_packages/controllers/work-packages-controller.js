@@ -27,11 +27,11 @@
 //++
 
 module.exports = function($scope, $state, $stateParams, QueryService, PathHelper, $rootScope,
-    EditableFieldsState) {
+    inplaceEditAll) {
 
   // Setup
   $scope.$state = $state;
-  $scope.selectedTitle = I18n.t('js.toolbar.unselected_title');
+  $scope.selectedTitle = I18n.t('js.label_work_package_plural');
 
   $scope.query_id = $stateParams.query_id;
 
@@ -43,15 +43,11 @@ module.exports = function($scope, $state, $stateParams, QueryService, PathHelper
   });
 
   $scope.isDetailsViewActive = function() {
-    return $state.includes('work-packages.list.details') || EditableFieldsState.editAll.state;
+    return $state.includes('work-packages.list.details') || inplaceEditAll.state;
   };
 
   $scope.isListViewActive = function() {
     return $state.is('work-packages.list');
-  };
-
-  $scope.isShowViewActive = function() {
-    return $state.includes('work-packages.show');
   };
 
   $scope.getToggleActionLabel = function(active) {
@@ -59,7 +55,7 @@ module.exports = function($scope, $state, $stateParams, QueryService, PathHelper
   };
 
   $scope.getActivationActionLabel = function(activate) {
-    return (activate) ? I18n.t('js.label_activate') : '';
+    return (activate) ? I18n.t('js.label_activate') + ' ' : '';
   };
   $rootScope.$broadcast('openproject.layout.activateMenuItem');
 };

@@ -100,13 +100,41 @@ function WorkPackageService($http, PathHelper, WorkPackagesHelper, HALAPIResourc
 
       return wp.links.update.fetch(options)
         .then(function(form) {
-          form.pendingChanges = changes;
           wp.form = form;
           EditableFieldsState.workPackage = wp;
           inplaceEditErrors.errors = null;
+
+          wp.props = _.clone(form.embedded.payload.props);
+          wp.links = _.extend(wp.links, _.clone(form.embedded.payload.links));
+
           return wp;
         });
     },
+
+    initializeWorkPackageFromCopy: function(workPackage) {
+      var projectIdentifier = workPackage.embedded.project.props.identifier;
+      var initialData = _.clone(workPackage.form.embedded.payload.props);
+
+      initialData._links = _.clone(workPackage.form.embedded.payload.links);
+      delete initialData.lockVersion;
+
+      return WorkPackageService.initializeWorkPackage(projectIdentifier, initialData);
+    },
+
+    initializeWorkPackageWithParent: function(parentWorkPackage) {
+      var projectIdentifier = parentWorkPackage.embedded.project.props.identifier;
+
+      var initialData = {
+        _links: {
+          parent: {
+            href: PathHelper.apiV3WorkPackagePath(parentWorkPackage.props.id)
+          }
+        }
+      };
+
+      return WorkPackageService.initializeWorkPackage(projectIdentifier, initialData);
+    },
+
 
     getWorkPackage: function(id) {
       var path = PathHelper.apiV3WorkPackagePath(id),

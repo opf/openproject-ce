@@ -129,7 +129,7 @@ $se2-arrow-button-width: 17px;
 $se2-results-max-height: 200px;
 
 $se-multiple-input-line-height: 19px;
-$se-multiple-tags-line-height: 19px;
+$se-multiple-tags-line-height: 12px;
 
 $se2-width: 100%;
 
@@ -207,7 +207,7 @@ $se2-width: 100%;
 .select2-drop {
   .select2-search {
     &:before {
-      content: "\e0a1";
+      @extend .icon-search:before;
       font-family: "openproject-icon-font";
       color: #E0E0E0;
       position: absolute;

@@ -29,41 +29,33 @@
 require 'support/pages/page'
 
 module Pages
-  class SplitWorkPackage < Page
-
-    attr_reader :work_package,
-                :project
+  class SplitWorkPackage < Pages::AbstractWorkPackage
+    attr_reader :project
 
     def initialize(work_package, project = nil)
-      @work_package = work_package
+      super work_package
       @project = project
-    end
-
-    def expect_subject
-      within(details_container) do
-        expect(page).to have_content(work_package.subject)
-      end
-    end
-
-    def expect_current_path
-      current_path = URI.parse(current_url).path
-      expect(current_path).to eql path
     end
 
     private
 
-    def details_container
+    def container
       find('.work-packages--details')
     end
 
-    def path
-      state = "#{work_package.id}/overview"
+    def path(tab = 'overview')
+      state = "#{work_package.id}/#{tab}"
 
       if project
         project_work_packages_path(project, "details/#{state}")
       else
         details_work_packages_path(state)
       end
+    end
+
+    def create_page(args)
+      args.merge!(project: project || work_package.project)
+      SplitWorkPackageCreate.new(args)
     end
   end
 end

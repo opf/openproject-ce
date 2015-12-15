@@ -182,7 +182,7 @@ module API
         link :addChild do
           {
             href: new_project_work_packages_path(represented.project,
-                                                work_package: { parent_id: represented }),
+                                                 parent_id: represented),
             type: 'text/html',
             title: "Add child of #{represented.subject}"
           } if current_user_allowed_to(:add_work_packages, context: represented.project)
@@ -287,11 +287,6 @@ module API
                  exec_context: :decorator,
                  getter: -> (*) { datetime_formatter.format_datetime(represented.updated_at) }
 
-        property :activities,
-                 embedded: true,
-                 exec_context: :decorator,
-                 if: -> (*) { embed_links }
-
         property :watchers,
                  embedded: true,
                  exec_context: :decorator,
@@ -313,14 +308,6 @@ module API
 
         def _type
           'WorkPackage'
-        end
-
-        def activities
-          activities = ::Journal::AggregatedJournal.aggregated_journals(journable: represented)
-          self_link = api_v3_paths.work_package_activities represented.id
-          Activities::ActivityCollectionRepresenter.new(activities,
-                                                        self_link,
-                                                        current_user: current_user)
         end
 
         def watchers

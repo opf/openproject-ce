@@ -193,7 +193,7 @@ group :development, :test do
   gem 'pry-rescue'
   gem 'pry-byebug', platforms: [:mri]
   gem 'pry-doc'
-  gem 'parallel_tests'
+  gem 'parallel_tests', '~> 2.1.2'
   gem 'rubocop', '~> 0.32'
 end
 
@@ -231,6 +231,19 @@ end
 
 group :opf_plugins do
   gem 'openproject-translations', git:'https://github.com/opf/openproject-translations.git', branch: 'release/5.0'
+end
+
+# TODO: Make this group :optional when bundler v10.x
+# is matured enough that we can use this everywhere
+# http://bundler.io/blog/2015/06/24/version-1-10-released.html
+group :docker do
+  gem 'passenger'
+
+  # Used to easily precompile assets
+  gem 'sqlite3', require: false
+  gem 'rails_12factor', require: !!ENV['HEROKU']
+  gem 'health_check', require: !!ENV['HEROKU']
+  gem 'newrelic_rpm', require: !!ENV['HEROKU']
 end
 
 # Load Gemfile.local, Gemfile.plugins and plugins' Gemfiles

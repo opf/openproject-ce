@@ -28,12 +28,13 @@
 #++
 
 require 'rexml/document'
+require 'open3'
 
 module OpenProject
   module VERSION #:nodoc:
     MAJOR = 5
     MINOR = 0
-    PATCH = 1
+    PATCH = 8
     TINY  = PATCH # Redmine compat
 
     # Used by semver to define the special version (if any).
@@ -52,7 +53,7 @@ module OpenProject
     end
 
     def self.revision
-      revision = `git rev-parse HEAD`
+      revision, = Open3.capture3('git', 'rev-parse', 'HEAD')
       if revision.present?
         revision.strip[0..8]
       end

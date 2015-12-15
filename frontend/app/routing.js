@@ -33,15 +33,8 @@ angular.module('openproject')
   '$urlRouterProvider',
   '$urlMatcherFactoryProvider',
   function($stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider) {
-  // TODO: Preserve #note-4 part of the URL.
-  $urlRouterProvider.when('/work_packages/{id:[0-9]+}', function ($match) {
-    if($match.id.length) {
-      return '/work_packages/' + $match.id + '/activity';
-    }
 
-    return '/work_packages';
-  });
-
+  $urlRouterProvider.when('/work_packages/', '/work_packages');
   $urlMatcherFactoryProvider.strictMode(false);
 
   var panels = {
@@ -50,6 +43,20 @@ angular.module('openproject')
         url: '/watchers',
         template: '<watchers-panel work-package="workPackage"></watchers-panel>'
       }
+    },
+
+    get activity() {
+      return {
+        url: '/activity',
+        template: '<activity-panel work-package="workPackage"></activity-panel>'
+      }
+    },
+
+    get activityDetails() {
+      var activity = this.activity;
+      activity.url = '#{activity_no:\d+}';
+
+      return activity;
     }
   };
 
@@ -76,10 +83,15 @@ angular.module('openproject')
     })
 
     .state('work-packages.new', {
-      url: '/{projects}/{projectPath}/work_packages/new?type',
+      url: '/{projects}/{projectPath}/work_packages/new?type&parent_id',
       templateUrl: '/components/routes/partials/work-packages.new.html',
       controllerAs: 'vm',
       reloadOnSearch: false
+    })
+
+    .state('work-packages.copy', {
+      url: '/work_packages/{copiedFromWorkPackageId:[0-9]+}/copy',
+      templateUrl: '/components/routes/partials/work-packages.new.html'
     })
 
     .state('work-packages.edit', {
@@ -89,8 +101,8 @@ angular.module('openproject')
         projects: { value: null, squash: true }
       },
 
-      onEnter: function ($state, $stateParams, EditableFieldsState) {
-        EditableFieldsState.editAll.start();
+      onEnter: function ($state, $stateParams, inplaceEditAll) {
+        inplaceEditAll.start();
         $state.go('work-packages.list.details.overview', $stateParams);
       }
     })
@@ -100,12 +112,9 @@ angular.module('openproject')
       templateUrl: '/components/routes/partials/work-packages.show.html',
       controller: 'WorkPackageShowController',
       controllerAs: 'vm',
-      abstract: true,
       resolve: {
         workPackage: function(WorkPackageService, $stateParams) {
-          var wsPromise = WorkPackageService.getWorkPackage($stateParams.workPackageId);
-
-          return wsPromise;
+          return WorkPackageService.getWorkPackage($stateParams.workPackageId);
         },
         // TODO hack, get rid of latestTab in ShowController
         latestTab: function($state) {
@@ -128,21 +137,22 @@ angular.module('openproject')
       // and this should not be applied to the other states, we need to remove
       // the trigger used in the CSS. The correct fix would be to alter the
       // CSS.
-      onEnter: function(){
+      onEnter: function($state, $timeout){
         angular.element('body').addClass('action-show');
+
+        $timeout(function () {
+          if ($state.is('work-packages.show')) {
+            $state.go('work-packages.show.activity');
+          }
+        });
       },
+
       onExit: function(){
         angular.element('body').removeClass('action-show');
       }
     })
-    .state('work-packages.show.activity', {
-      url: '/activity',
-      templateUrl: '/templates/work_packages/tabs/activity.html'
-    })
-    .state('work-packages.show.activity.details', {
-      url: '#{activity_no:[0-9]+}',
-      templateUrl: '/templates/work_packages/tabs/activity.html'
-    })
+    .state('work-packages.show.activity', panels.activity)
+    .state('work-packages.show.activity.details', panels.activityDetails)
     .state('work-packages.show.relations', {
       url: '/relations',
       templateUrl: '/templates/work_packages/tabs/relations.html'
@@ -175,7 +185,12 @@ angular.module('openproject')
       }
     })
     .state('work-packages.list.new', {
-      url: '/create_new?type',
+      url: '/create_new?type&parent_id',
+      templateUrl: '/components/routes/partials/work-packages.list.new.html',
+      reloadOnSearch: false
+    })
+    .state('work-packages.list.copy', {
+      url: '/details/{copiedFromWorkPackageId:[0-9]+}/copy',
       templateUrl: '/components/routes/partials/work-packages.list.new.html',
       reloadOnSearch: false
     })
@@ -196,14 +211,8 @@ angular.module('openproject')
       templateUrl: '/templates/work_packages/tabs/overview.html',
       controllerAs: 'vm',
     })
-    .state('work-packages.list.details.activity', {
-      url: '/activity',
-      templateUrl: '/templates/work_packages/tabs/activity.html',
-    })
-    .state('work-packages.list.details.activity.details', {
-      url: '#{activity_no:[0-9]+}',
-      templateUrl: '/templates/work_packages/tabs/activity.html'
-    })
+    .state('work-packages.list.details.activity', panels.activity)
+    .state('work-packages.list.details.activity.details', panels.activityDetails)
     .state('work-packages.list.details.relations', {
       url: '/relations',
       templateUrl: '/templates/work_packages/tabs/relations.html',

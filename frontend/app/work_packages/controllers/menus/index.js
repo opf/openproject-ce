@@ -28,27 +28,6 @@
 
 
 angular.module('openproject.workPackages')
-  .factory('ColumnContextMenu', [
-    'ngContextMenu',
-    function(ngContextMenu) {
-      return ngContextMenu({
-        controller: 'ColumnContextMenuController',
-        controllerAs: 'contextMenu',
-        templateUrl: '/templates/work_packages/menus/column_context_menu.html',
-        container: '.work-packages--list-table-area'
-      });
-    }
-  ])
-  .controller('ColumnContextMenuController', [
-    '$scope',
-    'ColumnContextMenu',
-    'I18n',
-    'QueryService',
-    'WorkPackagesTableHelper',
-    'WorkPackagesTableService',
-    'columnsModal',
-    require('./column-context-menu-controller')
-  ])
   .factory('ShowMoreDropdownMenu', [
     'ngContextMenu',
     function(ngContextMenu) {
@@ -86,15 +65,6 @@ angular.module('openproject.workPackages')
     'NotificationsService',
     require('./settings-dropdown-menu-controller')
   ])
-  .factory('TasksDropdownMenu', [
-    'ngContextMenu',
-    function(ngContextMenu) {
-      return ngContextMenu({
-        templateUrl: '/templates/work_packages/menus/tasks_dropdown_menu.html',
-        container: '.wp-create-button'
-      });
-    }
-  ])
   .constant('PERMITTED_CONTEXT_MENU_ACTIONS', [
     'edit', 'watch', 'log_time',
     'move', 'copy', 'delete'
@@ -116,7 +86,7 @@ angular.module('openproject.workPackages')
     'WorkPackageContextMenuHelper',
     'WorkPackageService',
     'WorkPackagesTableService',
-    'EditableFieldsState',
+    'inplaceEditAll',
     'I18n',
     '$window',
     'PERMITTED_CONTEXT_MENU_ACTIONS',
