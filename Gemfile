@@ -130,7 +130,7 @@ gem 'cocaine'
 # also, better than thin since we can control worker concurrency.
 gem 'unicorn'
 
-gem 'nokogiri', '~> 1.6.6'
+gem 'nokogiri', '~> 1.6.7'
 
 gem 'carrierwave', '~> 0.10.0'
 gem 'fog', '~> 1.23.0', require: 'fog/aws/storage'
@@ -230,7 +230,20 @@ platforms :jruby do
 end
 
 group :opf_plugins do
-  gem 'openproject-translations', git:'https://github.com/opf/openproject-translations.git', tag: 'v5.0.7'
+  gem 'openproject-translations', git:'https://github.com/opf/openproject-translations.git', tag: 'v5.0.8'
+end
+
+# TODO: Make this group :optional when bundler v10.x
+# is matured enough that we can use this everywhere
+# http://bundler.io/blog/2015/06/24/version-1-10-released.html
+group :docker do
+  gem 'passenger'
+
+  # Used to easily precompile assets
+  gem 'sqlite3', require: false
+  gem 'rails_12factor', require: !!ENV['HEROKU']
+  gem 'health_check', require: !!ENV['HEROKU']
+  gem 'newrelic_rpm', require: !!ENV['HEROKU']
 end
 
 # Load Gemfile.local, Gemfile.plugins and plugins' Gemfiles
