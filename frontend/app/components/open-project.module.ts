@@ -1,4 +1,4 @@
-//-- copyright
+// -- copyright
 // OpenProject is a project management system.
 // Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
@@ -24,13 +24,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-//++
+// ++
 
-// TODO move to UI components
-module.exports = function() {
-    return {
-      restrict: 'EA',
-      link: function(scope, element, attributes) {
-      }
-    };
-};
+export function opDirective(directive:ng.IDirective = {}, config:ng.IDirective = {}):ng.IDirective {
+  // TODO: Replace '_.merge' with AngularJS v1.4 'angular.merge' method
+  return _.merge(directive, config);
+}

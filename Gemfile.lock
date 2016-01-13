@@ -228,10 +228,10 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 6c016d700eae59adcf9f03a2b98c5713306186f9
+  revision: 1a81d5128b2ac52d9d9adb87a6e1775824c8776b
   branch: release/5.0
   specs:
-    openproject-translations (5.0.8)
+    openproject-translations (5.0.9)
       crowdin-api (~> 0.4.0)
       mixlib-shellout (~> 2.1.0)
       rails (~> 4.2.3)
@@ -505,7 +505,7 @@ GEM
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
     mime-types (1.25.1)
-    mini_portile (0.6.2)
+    mini_portile2 (2.0.0)
     minitest (5.8.0)
     mixlib-shellout (2.1.0)
     multi_json (1.11.2)
@@ -518,8 +518,8 @@ GEM
     net-ssh (2.9.2)
     netrc (0.11.0)
     newrelic_rpm (3.14.1.311)
-    nokogiri (1.6.6.4)
-      mini_portile (~> 0.6.0)
+    nokogiri (1.6.7.1)
+      mini_portile2 (~> 2.0.0.rc2)
     non-stupid-digest-assets (1.0.4)
     oj (2.11.5)
     omniauth (1.2.2)
@@ -852,7 +852,7 @@ DEPENDENCIES
   mysql2 (~> 0.3.20)
   net-ldap (~> 0.8.0)
   newrelic_rpm
-  nokogiri (~> 1.6.6)
+  nokogiri (~> 1.6.7)
   non-stupid-digest-assets
   oj (~> 2.11.4)
   omniauth

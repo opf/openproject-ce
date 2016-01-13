@@ -1,4 +1,4 @@
-// -- copyright
+//-- copyright
 // OpenProject is a project management system.
 // Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
@@ -24,39 +24,52 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-// ++
+//++
 
-describe('Routing', function () {
-  var $rootScope, $state, mockState = { go: function () {} };
+@include breakpoint(680px down)
+  body.controller-account
+    #login-form,
+    #content .login-auth-providers,
+    .login_notice_div
+      width: 100%
 
-  beforeEach(module('openproject', function ($provide) {
-    $provide.value('$state', mockState);
-  }));
+    #content .login-auth-providers
+      margin-top: 114px
 
-  beforeEach(inject(function (_$rootScope_) {
-    $rootScope = _$rootScope_;
-  }));
+      h3:before
+        top: -14px
 
-  describe('when the project id is set', function () {
-    var toState, toParams,
-        spy = sinon.spy(mockState, 'go'),
-        broadcast = function () {
-          $rootScope.$broadcast('$stateChangeStart', toState, toParams);
-        };
+    #login-form
+      .form--field-container
+        @include grid-content(12)
+        padding: 0
 
-    beforeEach(function () {
-      toState = { name: 'work-packages.list' };
-      toParams = { projectPath: 'my_project', projects: null };
-    });
+      .login-options-container
+        position: relative
 
-    it('sets the projects path segment to "projects" ', function () {
-      broadcast();
-      expect(toParams.projects).to.equal('projects');
-    });
+        .login-links
+          float: none
+          position: absolute
+          text-align: center
+          top: 70px
+          width: 100%
 
-    it('routes to the given state', function () {
-      broadcast();
-      expect(spy.withArgs(toState, toParams).called).to.be.true;
-    });
-  });
-});
+          a
+            display: block
+
+      .button
+        width: 100%
+
+    #new_user
+      .login-auth-providers
+        margin: 60px 0
+
+        h3 span
+          background: transparent
+
+    .form--label,
+    .form--field-container,
+    .form--field-instructions
+      @include grid-content(12)
+      margin-left: 0
+      padding: 0

@@ -88,12 +88,12 @@ module.exports = function(config) {
     preprocessors: {
       '/templates/**/*.html': ['ng-html2js'],
       '../app/assets/javascripts/*.js': ['coverage'],
-      'app/**/*.js': ['webpack'] // coverage disabled
+      'app/**/*.js': ['webpack'],
+      'tests/unit/tests/typescript/**/*.js': ['webpack']
     },
     ngHtml2JsPreprocessor: {
       module: 'openproject.templates'
     },
-
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
@@ -120,12 +120,12 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    browsers: ['PhantomJS', 'Firefox'],
 
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun: true,
 
 
 
