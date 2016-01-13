@@ -36,5 +36,4 @@ group :opf_plugins do
   gem 'openproject-local_avatars',          git: "https://github.com/finnlabs/openproject-local_avatars",             branch: CORE_VERSION
   gem 'openproject-webhooks',               git: "https://github.com/finnlabs/openproject-webhooks",                  branch: CORE_VERSION
   gem 'openproject-github_integration',     git: "https://github.com/finnlabs/openproject-github_integration",        branch: CORE_VERSION
-  gem 'openproject-emoji',                  git: 'https://github.com/opf/openproject-emoji.git',                      branch: 'dev'
 end
