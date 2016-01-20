@@ -59,7 +59,7 @@ GIT
 
 GIT
   remote: https://github.com/finnlabs/openproject-costs.git
-  revision: 081633d0080ab530b1aca14a0c5a1d1de990bb94
+  revision: 2d2d822bbeaa8baff783f837fd3bbc94cd472fa1
   branch: release/5.0
   specs:
     openproject-costs (5.0.10)
@@ -220,7 +220,7 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: e5ecc7e6bd7b0c0c65ae382ae752cf747bb1d0b0
+  revision: b072c4a88a4ee6a6911423652ec6fbfdd3e60dbf
   branch: release/5.0
   specs:
     openproject-translations (5.0.10)
@@ -929,4 +929,4 @@ DEPENDENCIES
   will_paginate (~> 3.0)
 
 BUNDLED WITH
-   1.10.6
+   1.11.2
