@@ -59,7 +59,7 @@ GIT
 
 GIT
   remote: https://github.com/finnlabs/openproject-costs.git
-  revision: 2d2d822bbeaa8baff783f837fd3bbc94cd472fa1
+  revision: 0f65810c94a392e756fd5ffe196dd31ca703c81c
   branch: release/5.0
   specs:
     openproject-costs (5.0.10)
