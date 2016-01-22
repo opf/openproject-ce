@@ -2,8 +2,6 @@ user: openproject
 group: openproject
 targets:
   debian-7: &debian
-    dependencies:
-      - imagemagick
     build_dependencies:
       - libmagickwand-dev
       - libsqlite3-dev
@@ -12,8 +10,6 @@ targets:
   ubuntu-14.04:
     <<: *debian
   fedora-20: &redhat
-    dependencies:
-      - ImageMagick
     build_dependencies:
       - ImageMagick-devel
   centos-6:
@@ -22,13 +18,10 @@ targets:
     <<: *redhat
     dependencies:
       - epel-release
-      - ImageMagick
   sles-11:
     env:
       - EMBED_IMAGEMAGICK=true
   sles-12:
-    dependencies:
-      - ImageMagick
     build_dependencies:
       - ImageMagick-devel
 before_precompile: "packaging/setup"
