@@ -180,7 +180,7 @@ GIT
 
 GIT
   remote: https://github.com/finnlabs/reporting_engine.git
-  revision: f4ba5beb1f1413b9c66bf5a3e458b547202dc4ee
+  revision: 93d035d29f3e3fc6d24c70c1375221a6b0999c2e
   branch: dev
   specs:
     reporting_engine (1.2.0)
