@@ -63,10 +63,10 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: af582697e5732ce0c6e96d00e8d845ff95c8063b
+  revision: 46bfcac8b31a745586c35e3feca3dccec4838842
   branch: stable/5
   specs:
-    openproject-translations (5.0.11)
+    openproject-translations (5.0.13)
       crowdin-api (~> 0.4.0)
       mixlib-shellout (~> 2.1.0)
       rails (~> 4.2.3)
@@ -98,20 +98,20 @@ GIT
 PATH
   remote: vendored-plugins/openproject-announcements
   specs:
-    openproject-announcements (5.0.11)
+    openproject-announcements (5.0.13)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-auth_plugins
   specs:
-    openproject-auth_plugins (5.0.11)
+    openproject-auth_plugins (5.0.13)
       omniauth (~> 1.0)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-backlogs
   specs:
-    openproject-backlogs (5.0.11)
+    openproject-backlogs (5.0.13)
       acts_as_silent_list (~> 2.0.0)
       openproject-pdf_export
       rails (~> 4.2.4)
@@ -119,57 +119,57 @@ PATH
 PATH
   remote: vendored-plugins/openproject-costs
   specs:
-    openproject-costs (5.0.11)
+    openproject-costs (5.0.13)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-documents
   specs:
-    openproject-documents (5.0.11)
+    openproject-documents (5.0.13)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-github_integration
   specs:
-    openproject-github_integration (5.0.11)
+    openproject-github_integration (5.0.13)
       openproject-webhooks (~> 5.0.1)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-global_roles
   specs:
-    openproject-global_roles (5.0.11)
+    openproject-global_roles (5.0.13)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-help_link
   specs:
-    openproject-help_link (5.0.11)
+    openproject-help_link (5.0.13)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-local_avatars
   specs:
-    openproject-local_avatars (5.0.11)
+    openproject-local_avatars (5.0.13)
       rails (~> 4.2.4)
       rmagick (~> 2.15.4)
 
 PATH
   remote: vendored-plugins/openproject-meeting
   specs:
-    openproject-meeting (5.0.11)
+    openproject-meeting (5.0.13)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-my_project_page
   specs:
-    openproject-my_project_page (5.0.11)
+    openproject-my_project_page (5.0.13)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-openid_connect
   specs:
-    openproject-openid_connect (5.0.11)
+    openproject-openid_connect (5.0.13)
       lobby_boy (~> 0.1)
       omniauth-openid_connect-providers (~> 0.1)
       openproject-auth_plugins (~> 5.0.1)
@@ -178,14 +178,14 @@ PATH
 PATH
   remote: vendored-plugins/openproject-pdf_export
   specs:
-    openproject-pdf_export (5.0.11)
+    openproject-pdf_export (5.0.13)
       prawn (~> 0.14.0)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-reporting
   specs:
-    openproject-reporting (5.0.11)
+    openproject-reporting (5.0.13)
       openproject-costs (>= 5.0.1)
       rails (~> 4.2.4)
       reporting_engine (>= 1.1.0)
@@ -193,26 +193,26 @@ PATH
 PATH
   remote: vendored-plugins/openproject-themes-dark
   specs:
-    openproject-themes-dark (5.0.11)
+    openproject-themes-dark (5.0.13)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-webhooks
   specs:
-    openproject-webhooks (5.0.11)
+    openproject-webhooks (5.0.13)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-xls_export
   specs:
-    openproject-xls_export (5.0.11)
+    openproject-xls_export (5.0.13)
       rails (~> 4.2.4)
       spreadsheet (~> 0.8.9)
 
 PATH
   remote: vendored-plugins/reporting_engine
   specs:
-    reporting_engine (5.0.11)
+    reporting_engine (5.0.13)
       json
       rails (~> 4.2.4)
 
@@ -356,7 +356,7 @@ GEM
     disposable (0.0.9)
       representable (~> 2.0)
       uber
-    domain_name (0.5.25)
+    domain_name (0.5.20160128)
       unf (>= 0.0.5, < 1.0.0)
     equalizer (0.0.11)
     equivalent-xml (0.5.1)

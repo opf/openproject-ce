@@ -34,7 +34,7 @@ module OpenProject
   module VERSION #:nodoc:
     MAJOR = 5
     MINOR = 0
-    PATCH = 11
+    PATCH = 13
     TINY  = PATCH # Redmine compat
 
     # Used by semver to define the special version (if any).
@@ -57,6 +57,8 @@ module OpenProject
       if revision.present?
         revision.strip[0..8]
       end
+    rescue
+      nil
     end
 
     REVISION = self.revision
