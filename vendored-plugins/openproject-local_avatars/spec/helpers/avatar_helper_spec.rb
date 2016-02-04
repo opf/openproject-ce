@@ -53,7 +53,7 @@ describe AvatarHelper, :type => :helper do
 
     it "should return blank if image attached to the user but gravatars disabled" do
       with_settings gravatar_enabled: '0' do
-        expect(helper.avatar(user)).to be_blank
+        expect(helper.avatar(user)).to be_html_eql(expected_image_tag(user))
       end
     end
   end
@@ -73,9 +73,9 @@ describe AvatarHelper, :type => :helper do
       end
     end
 
-    it "should return blank if image attached to the user but gravatars disabled" do
+    it "should return the url if image attached to the user but gravatars disabled" do
       with_settings gravatar_enabled: '0' do
-        expect(helper.avatar_url(user)).to be_blank
+        expect(helper.avatar_url(user)).to eq(expected_url(user))
       end
     end
   end

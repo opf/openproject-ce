@@ -25,7 +25,7 @@ describe User, :type => :model do
     context "WHEN the uploaded file is not an image" do
       subject { lambda{ user.local_avatar_attachment = bogus_avatar_file } }
       let(:rescue_block) { lambda{ begin; subject; rescue; false end } }
-      it { is_expected.to raise_error }
+      it { is_expected.to raise_error(SystemCallError) }
       specify { expect(rescue_block).not_to change(user, :local_avatar_attachment) }
     end
 

@@ -36,31 +36,24 @@ module OpenProject::LocalAvatars
           private
 
           def local_avatar_url(user)
-            with_default_local_avatar_options(user, {}) do |_, _|
-              users_dump_avatar_url(user)
-            end
+            users_dump_avatar_url(user) if local_avatar_set?(user)
           end
 
           def local_avatar(user, options = {})
-            with_default_local_avatar_options(user, options) do |_, opts|
-              tag_options = merge_image_options(user, opts)
+            return unless local_avatar_set?(user)
 
-              image_url = users_dump_avatar_url(user)
+            tag_options = merge_image_options(user, options)
 
-              tag_options[:src] = image_url
-              tag_options[:alt] = 'Avatar'
+            image_url = users_dump_avatar_url(user)
 
-              tag 'img', tag_options, false, false
-            end
+            tag_options[:src] = image_url
+            tag_options[:alt] = 'Avatar'
+
+            tag 'img', tag_options, false, false
           end
 
-          def with_default_local_avatar_options(user, options, &block)
-            return unless user.respond_to?(:local_avatar_attachment) &&
-                          user.local_avatar_attachment
-
-            with_default_avatar_options(user, options) do |email, opts|
-              block.call(email, opts)
-            end
+          def local_avatar_set?(user)
+            user.respond_to?(:local_avatar_attachment) && user.local_avatar_attachment
           end
         end
       end
