@@ -23,6 +23,14 @@ GIT
       rack (>= 1.0, < 3)
 
 GIT
+  remote: git://github.com/omniauth/omniauth-saml.git
+  revision: c0f02d2ca4f7f8ed16a8a5d1299d35781626060e
+  specs:
+    omniauth-saml (1.5.0)
+      omniauth (~> 1.3)
+      ruby-saml (~> 1.1, >= 1.1.1)
+
+GIT
   remote: git://github.com/why-el/svg-graph.git
   revision: e79abffa66639ab203d099250c5d2656a4ebf917
   branch: silence-class-access-warning
@@ -46,6 +54,14 @@ GIT
   specs:
     omniauth-openid_connect-providers (0.1.0)
       omniauth-openid-connect (>= 0.2.0)
+
+GIT
+  remote: https://github.com/finnlabs/openproject-auth_saml
+  revision: 97212abb83781aa7891d09b9fc7ab9209382d500
+  branch: dev
+  specs:
+    openproject-auth_saml (0.1.0)
+      omniauth-saml (~> 1.4)
 
 GIT
   remote: https://github.com/finnlabs/rack-protection.git
@@ -467,6 +483,8 @@ GEM
       rails (>= 3.2.21)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
+    macaddr (1.7.1)
+      systemu (~> 2.6.2)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
@@ -662,6 +680,9 @@ GEM
     ruby-prof (0.15.8)
     ruby-progressbar (1.7.5)
     ruby-rc4 (0.1.5)
+    ruby-saml (1.1.2)
+      nokogiri (>= 1.5.10)
+      uuid (~> 2.3)
     rubytree (0.8.3)
       json (>= 1.7.5)
       structured_warnings (>= 0.1.3)
@@ -710,6 +731,7 @@ GEM
     syck (1.0.5)
     sys-filesystem (1.1.4)
       ffi
+    systemu (2.6.5)
     thin (1.6.3)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0)
@@ -733,6 +755,8 @@ GEM
       raindrops (~> 0.7)
     url (0.3.2)
     url_safe_base64 (0.2.2)
+    uuid (2.3.8)
+      macaddr (~> 1.0)
     validate_email (0.1.6)
       activemodel (>= 3.0)
       mail (>= 2.2.5)
@@ -822,8 +846,10 @@ DEPENDENCIES
   omniauth!
   omniauth-openid-connect!
   omniauth-openid_connect-providers!
+  omniauth-saml!
   openproject-announcements!
   openproject-auth_plugins!
+  openproject-auth_saml!
   openproject-backlogs!
   openproject-costs!
   openproject-documents!
