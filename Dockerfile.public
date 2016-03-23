@@ -1,0 +1,41 @@
+FROM openproject/core
+MAINTAINER operations@openproject.com
+
+ENV DATABASE_URL=postgres://openproject:openproject@127.0.0.1/openproject
+ENV RAILS_ENV=production
+ENV MIGRATE=true
+ENV HEROKU=true
+ENV SECRET_KEY_BASE=OVERWRITE_ME
+
+USER root
+RUN apt-get update -qq && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y \
+		memcached \
+		postfix \
+		postgresql \
+		apache2 \
+		supervisor && \
+	apt-get clean
+
+RUN a2enmod proxy proxy_http && rm -f /etc/apache2/sites-enabled/000-default.conf
+
+USER postgres
+RUN /etc/init.d/postgresql start && \
+    psql --command "CREATE USER openproject WITH SUPERUSER PASSWORD 'openproject';" && \
+    createdb -O openproject openproject
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "listen_addresses='*'" >> /etc/postgresql/9.4/main/postgresql.conf
+
+USER root
+COPY docker /usr/src/app/docker
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+RUN /etc/init.d/postgresql start && bundle exec rake db:schema:load
+
+# ports
+EXPOSE 80 5432
+
+# volumes to export
+VOLUME ["/var/lib/postgresql/9.4/main"]
+
+CMD ["/usr/bin/supervisord"]
