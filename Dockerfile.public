@@ -1,4 +1,4 @@
-FROM openproject/core:5.0
+FROM openproject/community:5.0-base
 MAINTAINER operations@openproject.com
 
 ENV DATABASE_URL=postgres://openproject:openproject@127.0.0.1/openproject
