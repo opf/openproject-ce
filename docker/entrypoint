@@ -8,6 +8,11 @@ PGUSER=${PGUSER:=postgres}
 PGPASSWORD=${PGPASSWORD:=postgres}
 PGBIN="/usr/lib/postgresql/9.4/bin"
 
+if [ ! -z "$ATTACHMENTS_STORAGE_PATH" ]; then
+	mkdir -p "$ATTACHMENTS_STORAGE_PATH"
+	chown -R app:app "$ATTACHMENTS_STORAGE_PATH"
+fi
+
 dbhost=$(ruby -ruri -e 'puts URI(ENV.fetch("DATABASE_URL")).host')
 pwfile=$(mktemp)
 chown postgres $pwfile
