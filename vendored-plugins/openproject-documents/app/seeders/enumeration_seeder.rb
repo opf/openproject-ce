@@ -25,12 +25,26 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 # See doc/COPYRIGHT.rdoc for more details.
-class DemoDataSeeder < CompositeSeeder
-  def data_seeder_classes
-    [DemoData::ProjectSeeder]
-  end
+#++
 
-  def namespace
-    'DemoData'
+module BasicData
+  module Documents
+    class EnumerationsSeeder < Seeder
+      def seed_data!
+        category_names.each do |name|
+          DocumentCategory.create name: name
+        end
+      end
+
+      def category_names
+        category_i18n_keys.map { |key| I18n.t key }
+      end
+
+      def category_i18n_keys
+        ['documentation', 'specification', 'other'].map do |name|
+          ['enumeration', 'document_category', name].join('.')
+        end
+      end
+    end
   end
 end
