@@ -1,9 +1,6 @@
 #-- copyright
-# OpenProject Documents Plugin
-#
-# Former OpenProject Core functionality extracted into a plugin.
-#
-# Copyright (C) 2009-2014 the OpenProject Foundation (OPF)
+# OpenProject is a project management system.
+# Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
@@ -29,8 +26,20 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject
-  module Documents
-    VERSION = "5.0.18"
+require 'support/pages/page'
+
+module Pages
+  class EditBudget < Page
+    include BudgetForm
+
+    attr_reader :cost_object_id # cost_object == budget
+
+    def initialize(cost_object_id)
+      @cost_object_id = cost_object_id
+    end
+
+    def path
+      "/cost_objects/#{cost_object_id}"
+    end
   end
 end
