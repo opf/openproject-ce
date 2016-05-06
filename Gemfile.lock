@@ -203,7 +203,7 @@ PATH
   remote: vendored-plugins/openproject-pdf_export
   specs:
     openproject-pdf_export (5.0.18)
-      prawn (~> 0.14.0)
+      prawn (~> 2.1.0)
       rails (~> 4.2.4)
 
 PATH
@@ -447,7 +447,7 @@ GEM
       rack-mount
       virtus (>= 1.0.0)
     gravatar_image_tag (1.2.0)
-    hashery (2.1.1)
+    hashery (2.1.2)
     hashie (3.4.3)
     health_check (1.5.1)
       rails (>= 2.3.0)
@@ -525,11 +525,12 @@ GEM
     passenger (5.0.22)
       rack
       rake (>= 0.8.1)
+    pdf-core (0.6.1)
     pdf-inspector (1.0.2)
       pdf-reader (>= 0.9.0)
-    pdf-reader (1.3.3)
+    pdf-reader (1.4.0)
       Ascii85 (~> 1.0.0)
-      afm (~> 0.2.0)
+      afm (~> 0.2.1)
       hashery (~> 2.0)
       ruby-rc4
       ttfunk
@@ -540,10 +541,11 @@ GEM
       multi_json (~> 1.0)
       websocket-driver (>= 0.2.0)
     powerpack (0.1.1)
-    prawn (0.14.0)
-      pdf-reader (~> 1.2)
-      ruby-rc4
-      ttfunk (~> 1.0.3)
+    prawn (2.1.0)
+      pdf-core (~> 0.6.1)
+      ttfunk (~> 1.4.0)
+    prawn-table (0.2.2)
+      prawn (>= 1.3.0, < 3.0.0)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -740,7 +742,7 @@ GEM
     thread_safe (0.3.5)
     tilt (1.4.1)
     timecop (0.7.3)
-    ttfunk (1.0.3)
+    ttfunk (1.4.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     tzinfo-data (1.2015.6)
@@ -871,6 +873,8 @@ DEPENDENCIES
   pdf-inspector (~> 1.0.0)
   pg (~> 0.18.3)
   poltergeist
+  prawn (~> 2.1)
+  prawn-table (~> 0.2.2)
   prototype-rails!
   prototype_legacy_helper (= 0.0.0)!
   pry-byebug
