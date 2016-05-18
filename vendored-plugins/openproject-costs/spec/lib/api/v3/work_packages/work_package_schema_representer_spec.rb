@@ -119,7 +119,7 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
       end
 
       context 'with no time entry permissions' do
-        it_behaves_like 'spentTime not visible'
+        it_behaves_like 'spentTime visible'
       end
 
       context 'with :view_time_entries permission' do
@@ -144,7 +144,7 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
 
       context 'with :view_time_entries permission' do
         let(:can_view_time_entries) { true }
-        it_behaves_like 'spentTime visible'
+        it_behaves_like 'spentTime not visible'
       end
 
       context 'with :view_own_time_entries permission' do
@@ -213,7 +213,7 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
 
     context 'costs enabled' do
       context 'no permissions' do
-        it_behaves_like 'costsByType not visible'
+        it_behaves_like 'costsByType visible'
       end
 
       context 'can only view own cost entries' do
@@ -251,6 +251,31 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
       it 'has no schema for budget' do
         is_expected.not_to have_json_path('costObject')
       end
+    end
+  end
+
+  describe '#cache_key' do
+    def joined_cache_key
+      representer.cache_key.join('/')
+    end
+
+    before do
+      allow(work_package.project)
+        .to receive(:module_enabled?)
+        .and_return false
+
+      original_cache_key
+    end
+
+    let(:original_cache_key) { joined_cache_key }
+
+    it 'changes depending on whether costs is enabled or not' do
+      allow(work_package.project)
+        .to receive(:module_enabled?)
+        .with('costs_module')
+        .and_return true
+
+      expect(joined_cache_key).to_not eql(original_cache_key)
     end
   end
 end

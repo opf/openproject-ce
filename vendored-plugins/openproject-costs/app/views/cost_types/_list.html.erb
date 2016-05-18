@@ -21,17 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <% cost_types = @cost_types.reject(&:deleted_at) -%>
 
 <% if cost_types.empty? %>
-  <div class="generic-table--container">
-    <div class="generic-table--no-results-container">
-      <h2 class="generic-table--no-results-title">
-        <i class="icon-info1"></i>
-        <%= t(:label_nothing_display) %>
-      </h2>
-      <div class="generic-table--no-results-description">
-        <p class="nodata"><%= t(:label_no_data) %></p>
-      </div>
-    </div>
-  </div>
+  <%= no_results_box %>
 <% else %>
   <div class="generic-table--container">
     <div class="generic-table--results-container">
@@ -47,9 +37,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </colgroup>
         <thead>
           <tr>
-            <%= sort_header_tag "name", :caption => CostType.model_name.human %>
-            <%= sort_header_tag "unit", :caption => CostType.human_attribute_name(:unit) %>
-            <%= sort_header_tag "unit_plural", :caption => CostType.human_attribute_name(:unit_plural) %>
+            <%= sort_header_tag CostType.model_name.human, :caption => CostType.model_name.human %>
+            <%= sort_header_tag CostType.human_attribute_name(:unit), :caption => CostType.human_attribute_name(:unit) %>
+            <%= sort_header_tag CostType.human_attribute_name(:unit_plural), :caption => CostType.human_attribute_name(:unit_plural) %>
             <th>
               <div class="generic-table--sort-header-outer">
                 <div class="generic-table--sort-header">

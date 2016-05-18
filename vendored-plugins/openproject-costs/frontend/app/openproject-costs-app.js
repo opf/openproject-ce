@@ -33,6 +33,14 @@ localeFiles.keys().forEach(function(localeFile) {
   I18n.addTranslations(locale, localeFiles(localeFile)[locale]);
 });
 
+// Register Budget as select inline edit
+angular
+  .module('openproject')
+  .run(['wpEditField', function(wpEditField) {
+    wpEditField.extendFieldType('select', ['Budget']);
+  }]);
+
+
 // main app
 var openprojectCostsApp = angular.module('openproject');
 
@@ -89,7 +97,24 @@ openprojectCostsApp.run(['HookService',
   });
 
   HookService.register('workPackageDetailsMoreMenu', function(params) {
-    return [ { key: 'log_costs', resource: 'workPackage', link: 'log_costs', css: ["icon-projects"] } ];
+    return [{
+      key: 'log_costs',
+      resource: 'workPackage',
+      link: 'log_costs',
+      css: ["icon-projects"]
+    }];
+  });
+
+  HookService.register('workPackageTableContextMenu', function(params) {
+    return {
+      link: 'log_costs',
+      indexBy: function(actions) {
+        var index = _.findIndex(actions, { link: 'logTime' });
+        return index !== -1 ? index + 1 : actions.length;
+      },
+      text: I18n.t('js.button_log_costs'),
+      icon: 'projects'
+    };
   });
 }]);
 

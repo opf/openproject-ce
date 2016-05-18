@@ -213,11 +213,7 @@ module OpenProject::Costs
       schema :spent_time,
              type: 'Duration',
              writable: false,
-             show_if: -> (*) {
-               current_user_allowed_to(:view_time_entries, context: represented.project) ||
-                 (current_user_allowed_to(:view_own_time_entries, context: represented.project) &&
-                     represented.project.costs_enabled?)
-             },
+             show_if: -> (*) { represented.project && represented.project.costs_enabled? },
              required: false
 
       # N.B. in the long term we should have a type like "Currency", but that requires a proper
@@ -226,18 +222,14 @@ module OpenProject::Costs
              type: 'String',
              required: false,
              writable: false,
-             show_if: -> (*) { represented.project.costs_enabled? }
+             show_if: -> (*) { represented.project && represented.project.costs_enabled? }
 
       schema :costs_by_type,
              type: 'Collection',
              name_source: :spent_units,
              required: false,
-             writable: false,
-             show_if: -> (*) {
-               represented.project.costs_enabled? &&
-                 (current_user_allowed_to(:view_cost_entries, context: represented.project) ||
-                 current_user_allowed_to(:view_own_cost_entries, context: represented.project))
-             }
+             show_if: -> (*) { represented.project && represented.project.costs_enabled? },
+             writable: false
 
       schema_with_allowed_collection :cost_object,
                                      type: 'Budget',
@@ -250,8 +242,16 @@ module OpenProject::Costs
                                        }
                                      },
                                      show_if: -> (*) {
-                                       represented.project.costs_enabled?
+                                       represented.project && represented.project.costs_enabled?
                                      }
+    end
+
+    add_api_representer_cache_key(:v3, :work_packages, :schema, :work_package_schema) do
+      if represented.project.module_enabled?('costs_module')
+        ['costs_enabled']
+      else
+        ['costs_not_enabled']
+      end
     end
 
     assets %w(costs/costs.css
@@ -279,6 +279,11 @@ module OpenProject::Costs
       ActionView::Helpers::NumberHelper.send(:include, OpenProject::Costs::Patches::NumberHelperPatch)
     end
 
+    initializer 'costs.register_latest_project_activity' do
+      Project.register_latest_project_activity on: ::CostObject,
+                                               attribute: :updated_on
+    end
+
     config.to_prepare do
       # loading the class so that acts_as_journalized gets registered
       VariableCostObject
@@ -294,10 +299,6 @@ module OpenProject::Costs
                                                                       { cost_entries: [:project,
                                                                                        :user] },
                                                                       :cost_object]
-    end
-
-    config.to_prepare do |_app|
-      NonStupidDigestAssets.whitelist << /work_packages\/.*\.html/
     end
   end
 end

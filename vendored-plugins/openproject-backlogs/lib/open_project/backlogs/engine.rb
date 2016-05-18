@@ -34,6 +34,7 @@
 #++
 
 require 'open_project/plugins'
+require 'open_project/backlogs/version'
 
 require 'acts_as_silent_list'
 
@@ -53,7 +54,7 @@ module OpenProject::Backlogs
 
     register 'openproject-backlogs',
              author_url: 'http://finn.de',
-             requires_openproject: '>= 4.0.0',
+             requires_openproject: "= #{OpenProject::Backlogs::VERSION}",
              settings: settings do
       Redmine::AccessControl.permission(:edit_project).actions << 'projects/project_done_statuses'
       Redmine::AccessControl.permission(:edit_project).actions << 'projects/rebuild_positions'
@@ -139,7 +140,7 @@ module OpenProject::Backlogs
     extend_api_response(:v3, :work_packages, :work_package) do
       property :story_points,
                render_nil: true,
-               if: -> (*) { backlogs_enabled? && type.story? }
+               if: -> (*) { backlogs_enabled? && type && type.story? }
 
       property :remaining_time,
                exec_context: :decorator,
@@ -154,7 +155,7 @@ module OpenProject::Backlogs
     extend_api_response(:v3, :work_packages, :work_package_payload) do
       property :story_points,
                render_nil: true,
-               if: -> (*) { backlogs_enabled? && type.story? }
+               if: -> (*) { backlogs_enabled? && type && type.story? }
 
       property :remaining_time,
                exec_context: :decorator,
@@ -177,7 +178,7 @@ module OpenProject::Backlogs
              type: 'Integer',
              required: false,
              show_if: -> (*) {
-               represented.project.backlogs_enabled? &&
+               represented.project && represented.project.backlogs_enabled? &&
                  (!represented.type || represented.type.story?)
              }
 
@@ -185,7 +186,7 @@ module OpenProject::Backlogs
              type: 'Duration',
              name_source: :remaining_hours,
              required: false,
-             show_if: -> (*) { represented.project.backlogs_enabled? }
+             show_if: -> (*) { represented.project && represented.project.backlogs_enabled? }
     end
 
     add_api_attribute on: :work_package, ar_name: :story_points
@@ -194,6 +195,14 @@ module OpenProject::Backlogs
          !model.leaf? &&
          model.changed.include?('remaining_hours')
         errors.add :error_readonly, 'remaining_hours'
+      end
+    end
+
+    add_api_representer_cache_key(:v3, :work_packages, :schema, :work_package_schema) do
+      if represented.project.module_enabled?('backlogs')
+        ['backlogs_enabled']
+      else
+        ['backlogs_not_enabled']
       end
     end
 
