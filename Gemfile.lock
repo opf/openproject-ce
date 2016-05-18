@@ -120,11 +120,6 @@ GIT
       rspec-mocks (>= 2.99, < 4.0)
 
 PATH
-  remote: vendored-plugins/openproject-announcements
-  specs:
-    openproject-announcements (5.1.0)
-
-PATH
   remote: vendored-plugins/openproject-auth_plugins
   specs:
     openproject-auth_plugins (5.1.0)
@@ -852,7 +847,6 @@ DEPENDENCIES
   omniauth-openid-connect!
   omniauth-openid_connect-providers!
   omniauth-saml!
-  openproject-announcements!
   openproject-auth_plugins!
   openproject-auth_saml!
   openproject-backlogs!
