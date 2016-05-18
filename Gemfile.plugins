@@ -9,32 +9,33 @@ gem "pdf-inspector", "~>1.0.0", group: [:development, :test]
 # DO NOT CHANGE THE ORDER OF PLUGINS
 #
 group :opf_plugins do
-  gem 'openproject-global_roles',           git: "https://github.com/finnlabs/openproject-global_roles.git",          branch: CORE_VERSION
+  gem "openproject-global_roles", path: "vendored-plugins/openproject-global_roles"
 
-  gem 'openproject-auth_plugins',           git: 'https://github.com/opf/openproject-auth_plugins.git',               branch: CORE_VERSION
-  gem 'omniauth-openid_connect-providers',  git: 'https://github.com/finnlabs/omniauth-openid_connect-providers.git', branch: CORE_VERSION
-  gem 'omniauth-openid-connect',            git: 'https://github.com/finnlabs/omniauth-openid-connect.git',           branch: CORE_VERSION
-  gem 'openproject-openid_connect',         git: 'https://github.com/finnlabs/openproject-openid_connect.git',        branch: CORE_VERSION
+  gem "openproject-auth_plugins", path: "vendored-plugins/openproject-auth_plugins"
+  gem "omniauth-saml", github: "omniauth/omniauth-saml"
+  gem "openproject-auth_saml", git: 'https://github.com/finnlabs/openproject-auth_saml', branch: 'dev'
+  gem 'omniauth-openid_connect-providers',  git: 'https://github.com/finnlabs/omniauth-openid_connect-providers.git', branch: 'dev'
+  gem 'omniauth-openid-connect',            git: 'https://github.com/finnlabs/omniauth-openid-connect.git',           branch: 'dev'
+  gem "openproject-openid_connect", path: "vendored-plugins/openproject-openid_connect"
 
-  gem 'openproject-documents',              git: 'https://github.com/opf/openproject-documents.git',                  branch: CORE_VERSION
+  gem "openproject-documents", path: "vendored-plugins/openproject-documents"
 
-  gem 'openproject-help_link',              git: 'https://github.com/finnlabs/openproject-help_link.git',             branch: CORE_VERSION
-  gem 'openproject-announcements',          git: "https://github.com/finnlabs/openproject-announcements.git",         branch: CORE_VERSION
-  gem 'openproject-my_project_page',        git: 'https://github.com/finnlabs/openproject-my_project_page.git',       branch: CORE_VERSION
-  gem 'openproject-xls_export',             git: "https://github.com/finnlabs/openproject-xls_export.git",            branch: CORE_VERSION
+  gem "openproject-help_link", path: "vendored-plugins/openproject-help_link"
+  gem "openproject-announcements", path: "vendored-plugins/openproject-announcements"
+  gem "openproject-my_project_page", path: "vendored-plugins/openproject-my_project_page"
+  gem "openproject-xls_export", path: "vendored-plugins/openproject-xls_export"
 
-  gem 'reporting_engine',                   git: 'https://github.com/finnlabs/reporting_engine.git',                  branch: CORE_VERSION
-  gem 'openproject-costs',                  git: 'https://github.com/finnlabs/openproject-costs.git',                 branch: CORE_VERSION
-  gem 'openproject-reporting',              git: 'https://github.com/finnlabs/openproject-reporting.git',             branch: CORE_VERSION
+  gem "reporting_engine", path: "vendored-plugins/reporting_engine"
+  gem "openproject-costs", path: "vendored-plugins/openproject-costs"
+  gem "openproject-reporting", path: "vendored-plugins/openproject-reporting"
 
-  gem 'openproject-meeting',                git: 'https://github.com/finnlabs/openproject-meeting.git',               branch: CORE_VERSION
-  gem 'openproject-pdf_export',             git: 'https://github.com/finnlabs/openproject-pdf_export.git',            branch: CORE_VERSION
+  gem "openproject-meeting", path: "vendored-plugins/openproject-meeting"
+  gem "openproject-pdf_export", path: "vendored-plugins/openproject-pdf_export"
 
-  gem "openproject-backlogs",               git: "https://github.com/finnlabs/openproject-backlogs.git",              branch: CORE_VERSION
+  gem "openproject-backlogs", path: "vendored-plugins/openproject-backlogs"
 
-  gem 'openproject-themes-dark',            git: "https://github.com/finnlabs/openproject-themes-dark.git",           branch: CORE_VERSION
-  gem 'openproject-local_avatars',          git: "https://github.com/finnlabs/openproject-local_avatars",             branch: CORE_VERSION
-  gem 'openproject-webhooks',               git: "https://github.com/finnlabs/openproject-webhooks",                  branch: CORE_VERSION
-  gem 'openproject-github_integration',     git: "https://github.com/finnlabs/openproject-github_integration",        branch: CORE_VERSION
-  gem 'openproject-emoji',                  git: 'https://github.com/opf/openproject-emoji.git',                      branch: CORE_VERSION
+  gem "openproject-themes-dark", path: "vendored-plugins/openproject-themes-dark"
+  gem "openproject-local_avatars", path: "vendored-plugins/openproject-local_avatars"
+  gem "openproject-webhooks", path: "vendored-plugins/openproject-webhooks"
+  gem "openproject-github_integration", path: "vendored-plugins/openproject-github_integration"
 end

@@ -1,0 +1,53 @@
+<%#-- copyright
+OpenProject My Project Page Plugin
+
+Copyright (C) 2011-2014 the OpenProject Foundation (OPF)
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+See doc/COPYRIGHT.md for more details.
+
+++#%>
+
+<% if defined? block_name_id %>
+  <%= content_for block_name_id %>
+<% end %>
+
+<h3 class="widget-box--header">
+  <span class="icon-context icon-group"></span>
+  <span class="widget-box--header-title"><%=t(:label_member_plural)%></span>
+</h3>
+
+<% if @project.members.count > 0 && users_by_role(50).any? %>
+  <div class="members overview" id="users_per_role">
+    <p>
+      <%= render :partial => "members",
+                :locals => { :users_by_role => users_by_role(50),
+                             :count_users_by_role => count_users_by_role } %>
+    </p>
+    <p>
+      <% if users_by_role(50).any?{ |role, users| users.count < count_users_by_role[role] } %>
+        <%= link_to(l(:'project_page.all'), { :controller => 'my_projects_overviews',
+                                              :action => 'show_all_members',
+                                              :id => project.id },
+                                              :class => "all button -highlight" ) %>
+      <% end %>
+    </p>
+  </div>
+<% end %>
+<% if current_user.admin? %>
+  <%= link_to new_project_member_path(project_id: project.identifier), class: 'button -alt-highlight' do %>
+    <i class="button--icon icon-add"></i>
+    <span class="button--text"><%= t('activerecord.models.member') %></span>
+  <% end %>
+<% end %>

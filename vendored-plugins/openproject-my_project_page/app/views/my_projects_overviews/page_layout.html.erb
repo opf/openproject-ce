@@ -1,0 +1,69 @@
+<%#-- copyright
+OpenProject My Project Page Plugin
+
+Copyright (C) 2011-2014 the OpenProject Foundation (OPF)
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+See doc/COPYRIGHT.md for more details.
+
+++#%>
+<% html_title(l(:label_overview)) -%>
+
+<% content_for :header_tags do %>
+  <%= javascript_include_tag "my_project_page/my_project_page" %>
+  <%= stylesheet_link_tag "my_project_page/my_projects_overview", :media => 'all' %>
+  <% heads_for_wiki_formatter %>
+<% end %>
+
+<%= toolbar title: l(:label_overview) do %>
+  <li class="toolbar-item">
+    <%= styled_form_tag({:action => "add_block"}, :id => "block-form") do %>
+      <%= styled_select_tag 'block',
+                     ("<option>--#{t(:button_add)}--</option>" + options_for_select(block_options)).html_safe,
+                     :id => "block-select",
+                     class: 'form--select'
+    %>
+    <% end %>
+  </li>
+  <li class="toolbar-item"><%= link_to l(:button_save_back), {:action => 'index'}, class: 'button' %></li>
+<% end %>
+
+
+<h4><%=l(:label_visible_elements) %></h4>
+<div id="visible-grid" class="widget-boxes">
+  <% top_fields.each do |f| %>
+    <%= grid_field f %>
+  <% end %>
+
+  <div class="grid-block">
+    <% middle_fields.each do |f| %>
+      <%= grid_field f %>
+    <% end %>
+  </div>
+</div>
+
+<h4><%=l(:label_hidden_elements) %></h4>
+<div class="widget-boxes">
+  <% hidden_fields.each do |f| %>
+    <%= grid_field f %>
+  <% end %>
+</div>
+
+<h4><%= l(:label_file_plural) %></h4>
+<div class="attachments" id="page_layout_attachments">
+  <%= render(:partial => "page_layout_attachments") %>
+</div>
+
+
+

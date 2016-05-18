@@ -18,6 +18,7 @@ targets:
     <<: *redhat
     dependencies:
       - epel-release
+      - ImageMagick
   sles-11:
     env:
       - EMBED_IMAGEMAGICK=true
