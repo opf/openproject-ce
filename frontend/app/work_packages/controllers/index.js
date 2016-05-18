@@ -35,24 +35,7 @@ angular.module('openproject.workPackages.controllers')
   .constant('USER_TYPE', 'user')
   .constant('TIME_ENTRY_TYPE', 'time_entry')
   .constant('USER_FIELDS', ['assignee', 'author', 'responsible'])
-  .controller('DetailsTabOverviewController', [
-    '$scope',
-    'WorkPackagesOverviewService',
-    'WorkPackageFieldService',
-    'EditableFieldsState',
-    'WorkPackagesDisplayHelper',
-    'NotificationsService',
-    'I18n',
-    'WorkPackageAttachmentsService',
-    require('./details-tab-overview-controller')
-  ])
   .constant('ADD_WATCHER_SELECT_INDEX', -1)
-  .controller('DetailsTabWatchersController', [
-    '$scope',
-    'I18n',
-    'WatchersService',
-    'ADD_WATCHER_SELECT_INDEX', require('./details-tab-watchers-controller')
-  ])
   .constant('RELATION_TYPES', {
     relatedTo: 'Relation::Relates',
     duplicates: 'Relation::Duplicates',
@@ -72,34 +55,6 @@ angular.module('openproject.workPackages.controllers')
     precedes: 'precedes',
     follows: 'follows'
   })
-  .controller('WorkPackagesController', [
-    '$scope',
-    '$state',
-    '$stateParams',
-    'QueryService',
-    'PathHelper',
-    '$rootScope',
-    'EditableFieldsState',
-    require('./work-packages-controller')
-  ])
-  .factory('columnsModal', ['btfModal', function(btfModal) {
-    return btfModal({
-      controller: 'ColumnsModalController',
-      controllerAs: 'modal',
-      templateUrl: '/templates/work_packages/modals/columns.html',
-      afterFocusOn: '#work-packages-settings-button'
-    });
-  }])
-  .controller('ColumnsModalController', ['$scope',
-    '$filter',
-    'columnsModal',
-    'QueryService',
-    'WorkPackageService',
-    'WorkPackagesTableService',
-    '$rootScope',
-    '$timeout',
-    require('./dialogs/columns')
-  ])
   .factory('exportModal', ['btfModal', function(btfModal) {
     return btfModal({
       controller: 'ExportModalController',

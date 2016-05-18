@@ -132,8 +132,11 @@ module Redmine
               # make the same symbol available on the customized object itself.
               # This is important e.g. in the API v3 where the error messages are
               # post processed.
-              cv.errors.symbols_for(attribute).each do |symbol|
-                errors.add(cv.custom_field.accessor_name.to_sym, symbol)
+              name = cv.custom_field.accessor_name.to_sym
+              cv.errors.symbols_and_messages_for(attribute).each do |symbol, _, partial_message|
+                # Use the generated message by the custom field
+                # as it may contain specific parameters (e.g., :too_long requires :count)
+                errors.add(name, partial_message, error_symbol: symbol)
               end
             end
           end
@@ -156,6 +159,12 @@ module Redmine
           end
 
           super
+        end
+
+        def define_all_custom_field_accessors
+          available_custom_fields.each do |custom_field|
+            add_custom_field_accessors custom_field
+          end
         end
 
         private

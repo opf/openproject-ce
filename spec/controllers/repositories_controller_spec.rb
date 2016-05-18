@@ -1,3 +1,4 @@
+#-- encoding: UTF-8
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
@@ -165,8 +166,13 @@ describe RepositoriesController, type: :controller do
   end
 
   describe 'with filesystem repository' do
-    with_filesystem_repository('subversion', 'svn') do |repo_dir|
-      let(:url) { "file://#{repo_dir}" }
+    with_subversion_repository do |repo_dir|
+      let(:root_url) { repo_dir }
+      let(:url) { "file://#{root_url}" }
+
+      let(:repository) {
+        FactoryGirl.create(:repository_subversion, project: project, url: url, root_url: url)
+      }
 
       describe 'commits per author graph' do
         before do
@@ -197,6 +203,31 @@ describe RepositoriesController, type: :controller do
         end
       end
 
+      describe 'committers' do
+        let(:role) { FactoryGirl.create(:role, permissions: [:manage_repository]) }
+        describe '#get' do
+          before do
+            get :committers
+          end
+
+          it 'should be successful' do
+            expect(response).to be_success
+            expect(response).to render_template 'repositories/committers'
+          end
+        end
+        describe '#post' do
+          before do
+            repository.fetch_changesets
+            post :committers, committers: {'0' => ['oliver', user.id] }, "commit"=>"Update"
+          end
+
+          it 'should be successful' do
+            expect(response).to be_redirect
+            expect(repository.committers).to include(['oliver', user.id])
+          end
+        end
+      end
+
       describe 'stats' do
         before do
           get :stats, project_id: project.identifier
@@ -219,6 +250,79 @@ describe RepositoriesController, type: :controller do
           it 'should NOT show the commits per author graph' do
             expect(assigns(:show_commits_per_author)).to eq(false)
           end
+        end
+      end
+
+      shared_examples 'renders the repository title' do |active_breadcrumb|
+        it do
+          expect(response).to be_success
+          expect(response.body).to have_selector('.repository-breadcrumbs', text: active_breadcrumb)
+        end
+      end
+
+      describe 'show' do
+        render_views
+        let(:role) { FactoryGirl.create(:role, permissions: [:browse_repository]) }
+
+        before do
+          get :show, project_id: project.identifier, path: path
+        end
+
+        context 'with brackets' do
+          let(:path) { 'subversion_test/[folder_with_brackets]' }
+          it_behaves_like 'renders the repository title', '[folder_with_brackets]'
+        end
+
+        context 'with unicode' do
+          let(:path) { 'Föbar/äm/Sägepütz!%5D§' }
+          it_behaves_like 'renders the repository title', 'Sägepütz!%5D§'
+        end
+      end
+
+      describe 'changes' do
+        render_views
+        let(:role) { FactoryGirl.create(:role, permissions: [:browse_repository]) }
+
+        before do
+          get :changes, project_id: project.identifier, path: path
+          expect(response).to be_success
+        end
+
+        context 'with brackets' do
+          let(:path) { 'subversion_test/[folder_with_brackets]' }
+          it_behaves_like 'renders the repository title', '[folder_with_brackets]'
+        end
+
+        context 'with unicode' do
+          let(:path) { 'Föbar/äm' }
+          it_behaves_like 'renders the repository title', 'äm'
+        end
+      end
+
+      describe 'checkout path' do
+        render_views
+
+        let(:role) { FactoryGirl.create(:role, permissions: [:browse_repository]) }
+        let(:checkout_hash) {
+          {
+            'subversion' => { 'enabled' => '1',
+                              'text' => 'foo',
+                              'base_url' => 'http://localhost'
+            }
+          }
+        }
+
+        before do
+          allow(Setting).to receive(:repository_checkout_data).and_return(checkout_hash)
+          get :show, project_id: project.identifier, path: 'subversion_test'
+        end
+
+        it 'renders an empty warning view' do
+          expected_path = "http://localhost/#{project.identifier}/subversion_test"
+
+          expect(response.code).to eq('200')
+          expect(response).to render_template partial: 'repositories/_checkout_instructions'
+          expect(response.body).to have_selector("#repository-checkout-url[value='#{expected_path}']")
         end
       end
     end

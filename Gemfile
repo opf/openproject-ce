@@ -28,8 +28,9 @@
 
 source 'https://rubygems.org'
 
-gem 'rails', '4.2.4'
+gem 'rails', '~> 4.2.5'
 gem 'actionpack-action_caching'
+gem 'actionpack-xml_parser'
 gem 'activerecord-session_store'
 gem 'rails-observers'
 gem 'responders', '~> 2.0'
@@ -38,7 +39,7 @@ gem 'coderay', '~> 1.1.0'
 gem 'rubytree', '~> 0.8.3'
 gem 'rdoc', '>= 2.4.2'
 gem 'globalize', '~> 5.0.1'
-gem 'omniauth'
+gem 'omniauth', github: 'oliverguenther/omniauth'
 gem 'request_store', '~> 1.1.0'
 gem 'gravatar_image_tag', '~> 1.2.0'
 
@@ -80,7 +81,7 @@ gem 'sys-filesystem', '~> 1.1.4', require: false
 # See: config/initializers/rabl_hack.rb
 gem 'rabl', '0.9.3'
 gem 'multi_json', '~> 1.11.0'
-gem 'oj', '~> 2.11.4'
+gem 'oj', '~> 2.14.6'
 
 gem 'delayed_job_active_record', '~> 4.0.2'
 gem 'daemons'
@@ -103,15 +104,17 @@ gem 'airbrake', '~> 4.1.0', require: false
 
 gem 'transactional_lock', git: 'https://github.com/finnlabs/transactional_lock.git', branch: 'master'
 
+gem 'prawn', '~> 2.1'
+gem 'prawn-table', '~> 0.2.2'
+
 group :production do
   # we use dalli as standard memcache client
   # requires memcached 1.4+
-  # see https://github.com/mperham/dalli
-  gem 'dalli', '~> 2.7.2'
+  # see https://github.clientom/mperham/dalli
+  gem 'dalli', '~> 2.7.6'
 end
 
 gem 'sprockets',        '~> 2.12.3'
-gem 'non-stupid-digest-assets'
 gem 'sass-rails',       '~> 5.0.3'
 gem 'sass',             '~> 3.4.12'
 gem 'autoprefixer-rails'
@@ -130,7 +133,7 @@ gem 'cocaine'
 # also, better than thin since we can control worker concurrency.
 gem 'unicorn'
 
-gem 'nokogiri', '~> 1.6.6'
+gem 'nokogiri', '~> 1.6.7'
 
 gem 'carrierwave', '~> 0.10.0'
 gem 'fog', '~> 1.23.0', require: 'fog/aws/storage'
@@ -160,7 +163,7 @@ group :test do
   gem 'capybara-screenshot', '~> 1.0.4'
   gem 'capybara-select2', github: 'goodwill/capybara-select2'
   gem 'capybara-ng', '~> 0.2.1'
-  gem 'selenium-webdriver', '~> 2.47.1'
+  gem 'selenium-webdriver', '~> 2.52.0'
   gem 'poltergeist'
   gem 'timecop', '~> 0.7.1'
   gem 'webmock', '~> 1.21.0', require: false
@@ -181,10 +184,11 @@ group :ldap do
 end
 
 group :development do
-  gem 'letter_opener', '~> 1.3.0'
+  gem 'letter_opener'
   gem 'thin'
   gem 'faker'
   gem 'quiet_assets'
+  gem 'livingstyleguide', '~> 2.0.0.pre.1'
 end
 
 group :development, :test do
@@ -193,12 +197,14 @@ group :development, :test do
   gem 'pry-rescue'
   gem 'pry-byebug', platforms: [:mri]
   gem 'pry-doc'
-  gem 'parallel_tests'
+  gem 'parallel_tests', '~> 2.1.2'
   gem 'rubocop', '~> 0.32'
 end
 
 # API gems
 gem 'grape', '~> 0.10.1'
+gem 'grape-cache_control', '~> 1.0.1'
+
 gem 'roar',   '~> 1.0.0'
 gem 'reform', '~> 1.2.6', require: false
 
@@ -233,8 +239,23 @@ group :opf_plugins do
   gem 'openproject-translations', git:'https://github.com/opf/openproject-translations.git', branch: 'dev'
 end
 
-# Load Gemfile.local, Gemfile.plugins and plugins' Gemfiles
-Dir.glob File.expand_path('../{Gemfile.local,Gemfile.plugins,lib/plugins/*/Gemfile}', __FILE__) do |file|
+# TODO: Make this group :optional when bundler v10.x
+# is matured enough that we can use this everywhere
+# http://bundler.io/blog/2015/06/24/version-1-10-released.html
+group :docker do
+  gem 'passenger'
+
+  # Used to easily precompile assets
+  gem 'sqlite3', require: false
+  gem 'rails_12factor', require: !!ENV['HEROKU']
+  gem 'health_check', require: !!ENV['HEROKU']
+  gem 'newrelic_rpm', require: !!ENV['HEROKU']
+end
+
+# Load Gemfile.local, Gemfile.plugins, plugins', and custom Gemfiles
+gemfiles = Dir.glob File.expand_path('../{Gemfile.local,Gemfile.plugins,lib/plugins/*/Gemfile}', __FILE__)
+gemfiles << ENV['CUSTOM_PLUGIN_GEMFILE'] unless ENV['CUSTOM_PLUGIN_GEMFILE'].nil?
+gemfiles.each do |file|
   next unless File.readable?(file)
   eval_gemfile(file)
 end

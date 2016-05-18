@@ -80,20 +80,20 @@ See doc/COPYRIGHT.rdoc for more details.
     <li class="toolbar-item">
       <%= link_to({action: 'page'}, class: 'button') do %>
         <i class="button--icon icon-cancel"></i>
-        <span class="button--text"><%= l(:button_back) %></span>
+        <span class="button--text"><%= l(:button_save_back) %></span>
       <% end %>
     </li>
   <% end %>
 <% end %>
 
 <h4><%=l(:label_visible_elements) %></h4>
-<div id='visible-grid' class="my-page--container">
-  <div id="top" class="dragula-container widget-boxes grid-content block-receiver">
+<div id='visible-grid' class="my-page--container widget-boxes">
+  <div id="top" class="dragula-container grid-content block-receiver">
     <%= render partial: 'block_container', locals: { edit: true, blocks: @blocks['top'] } %>
   </div>
   <div class="grid-block">
     <% %w(left right).each do |position| %>
-        <div id="<%= position %>" class="dragula-container widget-boxes grid-content block-receiver">
+        <div id="<%= position %>" class="dragula-container grid-content block-receiver">
           <%= render partial: 'block_container', locals: { edit: true, blocks: @blocks[position] } %>
         </div>
     <% end %>

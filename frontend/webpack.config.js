@@ -50,6 +50,7 @@ var browsersList = JSON.stringify(_.filter(browsersListConfig.split('\n'), funct
 }));
 
 var loaders = [
+  { test: /\.ts$/,                    loader: 'ng-annotate!ts-loader' },
   { test: /[\/]angular\.js$/,         loader: 'exports?angular' },
   { test: /[\/]jquery\.js$/,          loader: 'expose?jQuery' },
   { test: /[\/]dragula\.js$/,         loader: 'expose?dragula' },
@@ -66,7 +67,8 @@ var loaders = [
   { test: /\.png$/,                   loader: 'url-loader?limit=100000&mimetype=image/png' },
   { test: /\.gif$/,                   loader: 'file-loader' },
   { test: /\.jpg$/,                   loader: 'file-loader' },
-  { test: /js-[\w|-]{2,5}\.yml$/,     loader: 'json!yaml' }
+  { test: /js-[\w|-]{2,5}\.yml$/,     loader: 'json!yaml' },
+  { test: /[\/].*\.js$/,              loader: 'ng-annotate?map=true' }
 ];
 
 for (var k in pathConfig.pluginNamesPaths) {
@@ -108,6 +110,8 @@ module.exports = {
   resolve: {
     root: __dirname,
 
+    extensions: ['', '.webpack.js', '.ts', '.js'],
+
     modulesDirectories: [
       'node_modules',
       'bower_components',
@@ -121,12 +125,9 @@ module.exports = {
 
       'angular-ui-date': 'angular-ui-date/src/date',
       'angular-truncate': 'angular-truncate/src/truncate',
-      'angular-feature-flags': 'angular-feature-flags/dist/featureFlags.js',
       'angular-context-menu': 'angular-context-menu/dist/angular-context-menu.js',
       'mousetrap': 'mousetrap/mousetrap.js',
       'hyperagent': 'hyperagent/dist/hyperagent',
-      'openproject-ui_components':
-        'openproject-ui_components/app/assets/javascripts/angular/ui-components-app',
       'ngFileUpload': 'ng-file-upload/ng-file-upload'
     }, pluginAliases)
   },

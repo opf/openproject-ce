@@ -78,7 +78,7 @@ class WorkPackages::MovesController < ApplicationController
         redirect_to project_work_packages_path(@target_project || @project)
       end
     else
-      redirect_to project_work_packages_path(@project)
+      redirect_back_or_default(project_work_packages_path(@project))
     end
   end
 
@@ -98,6 +98,15 @@ class WorkPackages::MovesController < ApplicationController
   end
 
   private
+
+  # Check if project is unique before bulk operations
+  def check_project_uniqueness
+    unless @project
+      # TODO: let users bulk move/copy work packages from different projects
+      render_error I18n.t('work_packages.move.unsupported_for_multiple_projects')
+      return false
+    end
+  end
 
   def prepare_for_work_package_move
     @work_packages = @work_packages.sort

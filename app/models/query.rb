@@ -49,8 +49,6 @@ class Query < ActiveRecord::Base
 
   validate :validate_work_package_filters
 
-  after_initialize :remember_project_scope
-
   # WARNING: sortable should not contain a column called id (except for the
   # work_packages.id column). Otherwise naming collisions can happen when AR
   # optimizes a query into two separate DB queries (e.g. when joining tables).
@@ -65,6 +63,8 @@ class Query < ActiveRecord::Base
     QueryColumn.new(:project,
                     sortable: "#{Project.table_name}.name",
                     groupable: true),
+    QueryColumn.new(:subject,
+                    sortable: "#{WorkPackage.table_name}.subject"),
     QueryColumn.new(:type,
                     sortable: "#{::Type.table_name}.position",
                     groupable: true),
@@ -79,8 +79,6 @@ class Query < ActiveRecord::Base
                     sortable: "#{IssuePriority.table_name}.position",
                     default_order: 'desc',
                     groupable: true),
-    QueryColumn.new(:subject,
-                    sortable: "#{WorkPackage.table_name}.subject"),
     QueryColumn.new(:author,
                     sortable: ["#{User.table_name}.lastname",
                                "#{User.table_name}.firstname",
@@ -95,7 +93,7 @@ class Query < ActiveRecord::Base
                     sortable: ["#{User.table_name}.lastname",
                                "#{User.table_name}.firstname",
                                "#{WorkPackage.table_name}.responsible_id"],
-                    groupable: "#{WorkPackage.table_name}.responsible_id",
+                    groupable: true,
                     join: 'LEFT OUTER JOIN users as responsible ON ' +
                           "(#{WorkPackage.table_name}.responsible_id = responsible.id)"),
     QueryColumn.new(:updated_at,
@@ -143,11 +141,6 @@ class Query < ActiveRecord::Base
     self.filters = [Queries::WorkPackages::Filter.new('status_id', operator: 'o', values: [''])] if filters.blank?
   end
 
-  # Store the fact that project is nil (used in #editable_by?)
-  def remember_project_scope
-    @is_for_all = project.nil?
-  end
-
   def validate_work_package_filters
     filters.each do |filter|
       unless filter.valid?
@@ -170,7 +163,7 @@ class Query < ActiveRecord::Base
     # Admin can edit them all and regular users can edit their private queries
     return true if user.admin? || (!is_public && user_id == user.id)
     # Members can not edit public queries that are for all project (only admin is allowed to)
-    is_public && !@is_for_all && user.allowed_to?(:manage_public_queries, project)
+    is_public && !for_all? && user.allowed_to?(:manage_public_queries, project)
   end
 
   def add_filter(field, operator, values)
@@ -233,14 +226,15 @@ class Query < ActiveRecord::Base
   def available_columns
     return @available_columns if @available_columns
     @available_columns = ::Query.available_columns
-    @available_columns += (project ?
-                            project.all_work_package_custom_fields :
+    @available_columns += if project
+                            project.all_work_package_custom_fields
+                          else
                             WorkPackageCustomField.all
-                          ).map { |cf| ::QueryCustomFieldColumn.new(cf) }
-    if WorkPackage.done_ratio_disabled?
-      @available_columns.select! { |column| column.name != :done_ratio }
-    end
-    @available_columns
+                          end.map { |cf| ::QueryCustomFieldColumn.new(cf) }
+
+    # have to use this instead of
+    # #select! as #select! can return nil
+    @available_columns = @available_columns.select(&:available?)
   end
 
   def self.available_columns=(v)
@@ -626,5 +620,9 @@ class Query < ActiveRecord::Base
 
   def connection
     self.class.connection
+  end
+
+  def for_all?
+    @for_all ||= project.nil?
   end
 end

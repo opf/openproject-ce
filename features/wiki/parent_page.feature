@@ -32,25 +32,25 @@ Feature: Parent wiki page
     Given there is 1 project with the following:
       | Name | Test |
     And the project "Test" has 1 wiki page with the following:
-      | Title | Test_page |
+      | Title | Test page |
     Given the project "Test" has 1 wiki page with the following:
-      | Title | Parent_page |
+      | Title | Parent page |
     And I am already admin
 
   @javascript
   Scenario: Changing parent page for wiki page
     When I go to the wiki page "Test page" for the project called "Test"
-    And I click on "More functions"
+    And I click on "More"
     And I follow "Change parent page"
     When I select "Parent page" from "Parent page"
     And I press "Save"
-    Then I should be on the wiki page "Test_page" for the project called "Test"
+    Then I should be on the wiki page "Test page" for the project called "Test"
     And the breadcrumbs should have the element "Parent page"
     # no check removing the parent
     When I go to the wiki page "Test page" for the project called "Test"
-    And I click on "More functions"
+    And I click on "More"
     And I follow "Change parent page"
     And I select "" from "Parent page"
     And I press "Save"
-    Then I should be on the wiki page "Test_page" for the project called "Test"
+    Then I should be on the wiki page "Test page" for the project called "Test"
     And the breadcrumbs should not have the element "Parent page"

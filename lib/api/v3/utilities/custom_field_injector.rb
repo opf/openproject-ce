@@ -65,21 +65,19 @@ module API
 
         class << self
           def create_value_representer(customizable, representer)
-            injector = CustomFieldInjector.new(representer)
-            customizable.available_custom_fields.each do |custom_field|
-              injector.inject_value(custom_field, embed_links: true)
+            new_representer_class_with(representer, customizable) do |injector|
+              customizable.available_custom_fields.each do |custom_field|
+                injector.inject_value(custom_field, embed_links: true)
+              end
             end
-
-            injector.modified_representer_class
           end
 
           def create_schema_representer(customizable, representer)
-            injector = CustomFieldInjector.new(representer)
-            customizable.available_custom_fields.each do |custom_field|
-              injector.inject_schema(custom_field, customized: customizable)
+            new_representer_class_with(representer, customizable) do |injector|
+              customizable.available_custom_fields.each do |custom_field|
+                injector.inject_schema(custom_field, customized: customizable)
+              end
             end
-
-            injector.modified_representer_class
           end
 
           def create_value_representer_for_property_patching(customizable, representer)
@@ -87,12 +85,11 @@ module API
               property_field?(cf)
             }
 
-            injector = CustomFieldInjector.new(representer)
-            property_fields.each do |custom_field|
-              injector.inject_value(custom_field)
+            new_representer_class_with(representer, customizable) do |injector|
+              property_fields.each do |custom_field|
+                injector.inject_value(custom_field)
+              end
             end
-
-            injector.modified_representer_class
           end
 
           def create_value_representer_for_link_patching(customizable, representer)
@@ -100,12 +97,11 @@ module API
               linked_field?(cf)
             }
 
-            injector = CustomFieldInjector.new(representer)
-            linked_fields.each do |custom_field|
-              injector.inject_patchable_link_value(custom_field)
+            new_representer_class_with(representer, customizable) do |injector|
+              linked_fields.each do |custom_field|
+                injector.inject_patchable_link_value(custom_field)
+              end
             end
-
-            injector.modified_representer_class
           end
 
           def linked_field?(custom_field)
@@ -115,10 +111,26 @@ module API
           def property_field?(custom_field)
             !linked_field?(custom_field)
           end
+
+          def new_representer_class_with(representer, customizable, &block)
+            injector = new(representer, customizable)
+
+            block.call injector
+
+            injector.modified_representer_class
+          end
         end
 
-        def initialize(representer_class)
-          @class = Class.new(representer_class)
+        def initialize(representer_class, customizable)
+          @class = Class.new(representer_class) do
+            class << self
+              attr_accessor :customizable
+            end
+          end
+
+          @class.customizable = customizable
+
+          @class
         end
 
         def modified_representer_class
@@ -225,6 +237,7 @@ module API
                         type: TYPE_MAP[custom_field.field_format],
                         name_source: -> (*) { custom_field.name },
                         required: custom_field.is_required,
+                        has_default: (not custom_field.default_value.nil?),
                         writable: true,
                         min_length: (custom_field.min_length if custom_field.min_length > 0),
                         max_length: (custom_field.max_length if custom_field.max_length > 0),

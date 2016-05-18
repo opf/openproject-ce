@@ -26,40 +26,13 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require 'support/pages/page'
+require 'support/pages/abstract_work_package'
 
 module Pages
-  class FullWorkPackage < Page
-    attr_reader :work_package
+  class FullWorkPackage < Pages::AbstractWorkPackage
 
-    def initialize(work_package)
-      @work_package = work_package
-    end
-
-    def expect_subject
-      within(container) do
-        expect(page).to have_content(work_package.subject)
-      end
-    end
-
-    def expect_current_path
-      current_path = URI.parse(current_url).path
-      expect(current_path).to eql path
-    end
-
-    def ensure_page_loaded
-      expect(page).to have_selector('.work-package-details-activities-activity-contents .user',
-                                    text: work_package.journals.last.user.name)
-    end
-
-    def expect_attributes(attribute_expectations)
-      attribute_expectations.each do |label_name, value|
-        expect(page).to have_selector('.attributes-key-value--key', text: label_name.to_s)
-
-        dl_element = page.find('.attributes-key-value--key', text: label_name.to_s).parent
-
-        expect(dl_element).to have_selector('.attributes-key-value--value-container', text: value)
-      end
+    def edit_field(attribute)
+      super(attribute, container)
     end
 
     private
@@ -68,8 +41,12 @@ module Pages
       find('.work-packages--show-view')
     end
 
-    def path
-      work_package_path(work_package.id, 'activity')
+    def path(tab = 'activity')
+      work_package_path(work_package.id, tab)
+    end
+
+    def create_page(args)
+      Pages::FullWorkPackageCreate.new(args)
     end
   end
 end

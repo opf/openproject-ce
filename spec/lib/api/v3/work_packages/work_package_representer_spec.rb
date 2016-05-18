@@ -591,7 +591,8 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
 
       context 'when the user has the permission to add work packages' do
         it 'should have a link to add child' do
-          expect(subject).to have_json_path('_links/addChild/href')
+          expect(subject).to be_json_eql("/api/v3/projects/#{project.identifier}/work_packages".to_json)
+            .at_path('_links/addChild/href')
         end
       end
 
@@ -698,9 +699,9 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
         let(:permission) { :delete_work_packages }
       end
 
-      describe 'log_time' do
+      describe 'logTime' do
         it_behaves_like 'action link' do
-          let(:action) { 'log_time' }
+          let(:action) { 'logTime' }
           let(:permission) { :log_time }
         end
       end
@@ -708,6 +709,13 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
       describe 'move' do
         it_behaves_like 'action link' do
           let(:action) { 'move' }
+          let(:permission) { :move_work_packages }
+        end
+      end
+
+      describe 'copy' do
+        it_behaves_like 'action link' do
+          let(:action) { 'copy' }
           let(:permission) { :move_work_packages }
         end
       end
@@ -745,12 +753,8 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
       end
 
       describe 'activities' do
-        it 'is returned as Collection resource' do
-          is_expected.to be_json_eql('Collection'.to_json).at_path('_embedded/activities/_type')
-        end
-
-        it 'is empty' do
-          is_expected.to be_json_eql(0).at_path('_embedded/activities/total')
+        it 'is not embedded' do
+          is_expected.not_to have_json_path('_embedded/activities')
         end
       end
 

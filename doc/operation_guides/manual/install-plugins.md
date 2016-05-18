@@ -1,32 +1,44 @@
-# Install Plugins
+# Install Plugins (Manual)
 
-OpenProject plug-ins are separated in ruby gems. You can install them by listing them in a file called `Gemfile.plugins`. An example `Gemfile.plugins` file looks like this:
+OpenProject plugins come under the form of Ruby gems. The packaged and docker
+based installation come with default plugins installed (the ones found in the
+[Community Edition of OpenProject](https://github.com/opf/openproject-ce)).
+
+For a manual installation, you can choose to install a different set of plugins
+by following the instructions below.
+
+## How to install a plugin
+
+You can install plugins by listing them in a file called `Gemfile.plugins`. An
+example `Gemfile.plugins` file looks like this:
 
 ```
 # Required by backlogs
-gem "openproject-pdf_export", git: "https://github.com/finnlabs/openproject-pdf_export.git", :branch => "stable/4.2"
+gem "openproject-pdf_export", git: "https://github.com/finnlabs/openproject-pdf_export.git", :branch => "stable/5"
 
-gem "openproject-backlogs", git: "https://github.com/finnlabs/openproject-backlogs.git", :branch => "stable/4.2"
+gem "openproject-backlogs", git: "https://github.com/finnlabs/openproject-backlogs.git", :branch => "stable/5"
 ```
 
-If you have modified the `Gemfile.plugins` file, always repeat the following steps of the OpenProject installation:
+If you have modified the `Gemfile.plugins` file, always repeat the following
+steps of the OpenProject installation:
 
 ```bash
-[openproject@debian]# cd ~/openproject
+[openproject@debian]# cd ~/openproject-ce
 [openproject@debian]# bundle install
 [openproject@debian]# bower install
-[openproject@debian]# RAILS_ENV="production" bundle exec rake db:migrate
-[openproject@debian]# RAILS_ENV="production" bundle exec rake db:seed
-[openproject@debian]# RAILS_ENV="production" bundle exec rake assets:precompile
+[openproject@debian]# RAILS_ENV="production" bundle exec rake db:migrate db:seed assets:precompile
 ```
-Restart the OpenProject server afterwards (yes, you can do that without restarting Apache):
+
+Restart the OpenProject server afterwards (no need to restart Apache(:
 
 ```bash
-[openproject@debian]# touch ~/openproject/tmp/restart.txt
+[openproject@debian]# touch ~/openproject-ce/tmp/restart.txt
 ```
 
-The next web-request to the server will take longer (as the application is restarted). All subsequent request should be as fast as always.
+The next request to the server will take longer (as the application is
+restarted). All subsequent request should be as fast as always.
 
-Note: plugins are only supported for the manual installation. The `Gemfile.plugins` file needs to be created first in the OpenProject root folder.
+Always make sure that the plugin version is compatible with your OpenProject
+version (e.g. use the ‘stable’ branch of both software -- OpenProject, and the
+plugin).
 
-Always make sure that the plugin version is compatible with your OpenProject version (e.g. use the ‘stable’ branch of both, OpenProject, and the plugin).

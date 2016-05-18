@@ -35,10 +35,23 @@ describe API::V3::WorkPackages::Schema::WorkPackageSchemasAPI, type: :request do
 
   let(:project) { FactoryGirl.create(:project) }
   let(:type) { FactoryGirl.create(:type) }
-  let(:schema_path) { api_v3_paths.work_package_schema project.id, type.id }
   let(:current_user) { FactoryGirl.build(:user, member_in_project: project) }
 
   describe 'GET /api/v3/work_packages/schemas/:id' do
+    let(:schema_path) { api_v3_paths.work_package_schema project.id, type.id }
+
+    def cache_key
+      # Compare with ETag composed of project and customizations
+      # to avoid evaluating the server request
+      custom_fields = project.all_work_package_custom_fields
+
+      custom_fields_key = ActiveSupport::Cache.expand_cache_key custom_fields
+
+      ["api/v3/work_packages/schema/#{project.id}-#{type.id}",
+       type.updated_at,
+       Digest::SHA2.hexdigest(custom_fields_key)]
+    end
+
     context 'logged in' do
       before do
         allow(User).to receive(:current).and_return(current_user)
@@ -48,6 +61,24 @@ describe API::V3::WorkPackages::Schema::WorkPackageSchemasAPI, type: :request do
       context 'valid schema' do
         it 'should return HTTP 200' do
           expect(last_response.status).to eql(200)
+        end
+
+        it 'should set a weak ETag' do
+          expect(last_response.headers['ETag']).to match(/W\/\"\w+\"/)
+        end
+
+        it 'caches the response' do
+          schema_class = API::V3::WorkPackages::Schema::TypedWorkPackageSchema
+          representer_class = API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter
+
+          schema = schema_class.new(project: project,
+                                    type: type)
+          self_link = api_v3_paths.work_package_schema(project.id, type.id)
+          represented_schema = representer_class.create(schema,
+                                                        self_link: self_link,
+                                                        current_user: nil)
+
+          expect(Rails.cache.fetch(represented_schema.cache_key)).to_not be_nil
         end
       end
 
@@ -66,6 +97,48 @@ describe API::V3::WorkPackages::Schema::WorkPackageSchemasAPI, type: :request do
       context 'id is missing' do
         it_behaves_like 'not found' do
           let(:schema_path) { '/api/v3/work_packages/schemas/' }
+        end
+      end
+    end
+
+    context 'not logged in' do
+      it 'should act as if the schema does not exist' do
+        get schema_path
+        expect(last_response.status).to eql(404)
+      end
+    end
+  end
+
+  describe 'GET /api/v3/work_packages/schemas/sums' do
+    let(:schema_path) { api_v3_paths.work_package_sums_schema }
+    subject { last_response }
+
+    before do
+      allow(Setting)
+        .to receive(:work_package_list_summable_columns)
+        .and_return(['estimated_hours'])
+    end
+
+    context 'logged in' do
+      before do
+        allow(User).to receive(:current).and_return(current_user)
+        get schema_path
+      end
+
+      context 'valid schema' do
+        it 'should return HTTP 200' do
+          expect(last_response.status).to eql(200)
+        end
+
+        # Further fields are tested in the representer specs
+        it 'should return the schema for estimated_hours' do
+          expected = { 'type': 'Duration',
+                       'name': 'Estimated time',
+                       'visibility': 'default',
+                       'required': false,
+                       'hasDefault': false,
+                       'writable': false }
+          expect(subject.body).to be_json_eql(expected.to_json).at_path('estimatedTime')
         end
       end
     end

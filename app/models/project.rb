@@ -33,6 +33,7 @@ class Project < ActiveRecord::Base
 
   include Project::Copy
   include Project::Storage
+  include Project::Activity
 
   # Project statuses
   STATUS_ACTIVE     = 1
@@ -51,36 +52,47 @@ class Project < ActiveRecord::Base
       .where("#{Principal.table_name}.type='User' AND #{User.table_name}.status=#{Principal::STATUSES[:active]}")
       .references(:users, :roles)
   }
+
   has_many :possible_assignee_members, -> {
     includes(:principal, :roles)
       .where(Project.possible_principles_condition)
       .references(:principals, :roles)
   }, class_name: 'Member'
   # Read only
-  has_many :possible_assignees, -> {
-      # Have to reference it again although possible_assignee_members does already specify it
-      # to be able to use the Project.possible_principles_condition there
-      includes(members: :roles)
+  has_many :possible_assignees, -> (object){
+    # Have to reference members and roles again although
+    # possible_assignee_members does already specify it to be able to use the
+    # Project.possible_principles_condition there
+    #
+    # The .where(members_users: { project_id: object.id })
+    # part is an optimization preventing to have all the members joined
+    includes(members: :roles)
+      .where(members_users: { project_id: object.id })
       .references(:roles)
       .merge(Principal.order_by_name)
-    },
-    through: :possible_assignee_members,
-    source: :principal
+  },
+  through: :possible_assignee_members,
+  source: :principal
   has_many :possible_responsible_members, -> {
     includes(:principal, :roles)
       .where(Project.possible_principles_condition)
       .references(:principals, :roles)
   }, class_name: 'Member'
   # Read only
-  has_many :possible_responsibles, -> {
-      # Have to reference it again although possible_assignee_members does already specify it
-      # to be able to use the Project.possible_principles_condition there
-      includes(members: :roles)
+  has_many :possible_responsibles, -> (object){
+    # Have to reference members and roles again although
+    # possible_responsible_members does already specify it to be able to use
+    # the Project.possible_principles_condition there
+    #
+    # The .where(members_users: { project_id: object.id })
+    # part is an optimization preventing to have all the members joined
+    includes(members: :roles)
+      .where(members_users: { project_id: object.id })
       .references(:roles)
       .merge(Principal.order_by_name)
-    },
-    through: :possible_responsible_members,
-    source: :principal
+  },
+  through: :possible_responsible_members,
+  source: :principal
   has_many :memberships, class_name: 'Member'
   has_many :member_principals, -> {
     includes(:principal)
@@ -113,7 +125,7 @@ class Project < ActiveRecord::Base
   has_one :repository, dependent: :destroy
   has_many :changesets, through: :repository
   has_one :wiki, dependent: :destroy
-  # Custom field for the project work units
+  # Custom field for the project's work_packages
   has_and_belongs_to_many :work_package_custom_fields, -> {
     order("#{CustomField.table_name}.position")
   }, class_name: 'WorkPackageCustomField',
@@ -334,17 +346,20 @@ class Project < ActiveRecord::Base
   # * project: limit the condition to project
   # * with_subprojects: limit the condition to project and its subprojects
   # * member: limit the condition to the user projects
+  # * project_alias: the alias to use for the project's table - default: 'projects'
   def self.allowed_to_condition(user, permission, options = {})
-    base_statement = "#{Project.table_name}.status=#{Project::STATUS_ACTIVE}"
+    table_alias = options.fetch(:project_alias, Project.table_name)
+
+    base_statement = "#{table_alias}.status=#{Project::STATUS_ACTIVE}"
     if perm = Redmine::AccessControl.permission(permission)
       unless perm.project_module.nil?
         # If the permission belongs to a project module, make sure the module is enabled
-        base_statement << " AND #{Project.table_name}.id IN (SELECT em.project_id FROM #{EnabledModule.table_name} em WHERE em.name='#{perm.project_module}')"
+        base_statement << " AND #{table_alias}.id IN (SELECT em.project_id FROM #{EnabledModule.table_name} em WHERE em.name='#{perm.project_module}')"
       end
     end
     if options[:project]
-      project_statement = "#{Project.table_name}.id = #{options[:project].id}"
-      project_statement << " OR (#{Project.table_name}.lft > #{options[:project].lft} AND #{Project.table_name}.rgt < #{options[:project].rgt})" if options[:with_subprojects]
+      project_statement = "#{table_alias}.id = #{options[:project].id}"
+      project_statement << " OR (#{table_alias}.lft > #{options[:project].lft} AND #{table_alias}.rgt < #{options[:project].rgt})" if options[:with_subprojects]
       base_statement = "(#{project_statement}) AND (#{base_statement})"
     end
 
@@ -354,16 +369,16 @@ class Project < ActiveRecord::Base
       statement_by_role = {}
       if user.logged?
         if Role.non_member.allowed_to?(permission) && !options[:member]
-          statement_by_role[Role.non_member] = "#{Project.table_name}.is_public = #{connection.quoted_true}"
+          statement_by_role[Role.non_member] = "#{table_alias}.is_public = #{connection.quoted_true}"
         end
         user.projects_by_role.each do |role, projects|
           if role.allowed_to?(permission)
-            statement_by_role[role] = "#{Project.table_name}.id IN (#{projects.map(&:id).join(',')})"
+            statement_by_role[role] = "#{table_alias}.id IN (#{projects.map(&:id).join(',')})"
           end
         end
       else
         if Role.anonymous.allowed_to?(permission) && !options[:member]
-          statement_by_role[Role.anonymous] = "#{Project.table_name}.is_public = #{connection.quoted_true}"
+          statement_by_role[Role.anonymous] = "#{table_alias}.is_public = #{connection.quoted_true}"
         end
       end
       if statement_by_role.empty?
@@ -593,6 +608,19 @@ class Project < ActiveRecord::Base
                                           '))')
       .references(:projects)
     end
+  end
+
+  # Returns all versions a work package can be assigned to.  Opposed to
+  # #shared_versions this returns an array of Versions, not a scope.
+  #
+  # The main benefit is in scenarios where work packages' projects are eager
+  # loaded.  Because eager loading the project e.g. via
+  # WorkPackage.includes(:project).where(type: 5) will assign the same instance
+  # (same object_id) for every work package having the same project this will
+  # reduce the number of db queries when performing operations including the
+  # project's versions.
+  def assignable_versions
+    @all_shared_versions ||= shared_versions.open.to_a
   end
 
   # Returns a hash of project users grouped by role
@@ -836,32 +864,6 @@ class Project < ActiveRecord::Base
       list << element
     end
     list
-  end
-
-  def add_issue(attributes = {})
-    ActiveSupport::Deprecation.warn 'Project.add_issue is deprecated. Use Project.add_work_package instead.'
-    add_work_package attributes
-  end
-
-  def add_work_package(attributes = {})
-    WorkPackage.new do |i|
-      i.project = self
-
-      type    = attributes.delete(:type)
-      type_id = if type && type.respond_to?(:id)
-                  type.id
-                else
-                  attributes.delete(:type_id)
-                end
-
-      i.type = if type_id
-                 project.types.find(type_id)
-               else
-                 project.types.first
-               end
-
-      i.attributes = attributes
-    end
   end
 
   def allowed_permissions

@@ -49,6 +49,15 @@ class ::Type < ActiveRecord::Base
   belongs_to :color, class_name:  'PlanningElementTypeColor',
                      foreign_key: 'color_id'
 
+  serialize :attribute_visibility, Hash
+  validates_each :attribute_visibility do |record, _attr, visibility|
+    visibility.each do |attr_name, value|
+      unless attribute_visibilities.include? value.to_s
+        record.errors.add(:attribute_visibility, "for '#{attr_name}' cannot be '#{value}'")
+      end
+    end
+  end
+
   acts_as_list
 
   validates_presence_of :name
@@ -88,6 +97,25 @@ class ::Type < ActiveRecord::Base
     ::Type.where(is_default: true)
   end
 
+  def self.enabled_in(project)
+    ::Type.includes(:projects).where(projects: { id: project })
+  end
+
+  ##
+  # The possible visibility values for a work package attribute
+  # as defined by a type are:
+  #
+  #   - default The attribute is displayed in forms if it has a value.
+  #   - visible The attribute is displayed in forms even if empty.
+  #   - hidden  The attribute is hidden in forms even if it has a value.
+  def self.attribute_visibilities
+    ['visible', 'hidden', 'default']
+  end
+
+  def self.default_attribute_visibility
+    'visible'
+  end
+
   def statuses
     return [] if new_record?
     @statuses ||= ::Type.statuses([id])
@@ -101,7 +129,7 @@ class ::Type < ActiveRecord::Base
     PlanningElementTypeColor.all
   end
 
-  def is_valid_transition?(status_id_a, status_id_b, roles)
+  def valid_transition?(status_id_a, status_id_b, roles)
     transition_exists?(status_id_a, status_id_b, roles.map(&:id))
   end
 

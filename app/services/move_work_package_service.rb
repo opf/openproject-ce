@@ -49,6 +49,9 @@ class MoveWorkPackageService
 
     move_to_type(modified_work_package, new_type)
 
+    # Reset cached custom values after project/type change
+    modified_work_package.reset_custom_values!
+
     bulk_assign_attributes(modified_work_package, attributes)
 
     modified_work_package
@@ -83,7 +86,7 @@ class MoveWorkPackageService
        work_package.project_id != new_project.id &&
        allowed_to_move_to_project?(new_project)
 
-      work_package.delete_relations(work_package)
+      delete_relations(work_package)
 
       reassign_category(work_package, new_project)
 
@@ -101,7 +104,6 @@ class MoveWorkPackageService
   def move_to_type(work_package, new_type)
     if new_type
       work_package.type = new_type
-      work_package.reset_custom_values!
     end
   end
 
@@ -180,5 +182,12 @@ class MoveWorkPackageService
              end
 
     work_package.status = status
+  end
+
+  def delete_relations(work_package)
+    unless Setting.cross_project_work_package_relations?
+      work_package.relations_from.clear
+      work_package.relations_to.clear
+    end
   end
 end

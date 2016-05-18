@@ -5,7 +5,8 @@
     "postinstall": "cd frontend && npm install",
     "test": "cd frontend && npm test && cd ..",
     "karma": "cd frontend && npm run karma && cd ..",
-    "protractor": "cd frontend && npm run protractor && cd .."
+    "webpack": "cd frontend && npm run webpack && cd ..",
+    "webpack-watch": "cd frontend && npm run webpack-watch"
   },
   "private": true
 }

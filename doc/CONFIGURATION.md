@@ -88,6 +88,22 @@ storage config above like this:
 * [`blacklisted_routes`](#blacklisted-routes) (default: [])
 * [`global_basic_auth`](#global-basic-auth)
 
+## Passing data structures
+
+The configuration uses YAML to parse overrides from ENV. Using YAML inline syntax, you can:
+
+1. Pass a symbol as an override using `OPENPROJECT_SESSION_STORE=":active_record_store"`
+
+1. Pass arrays by wrapping values in brackets (e.g., `[val1, val2, val3]`).
+
+2. Pass hashes with `{key: foo, key2: bar}`.
+
+To pass symbol arrays or hashes with symbol keys, use the YAML `!ruby/symbol` notiation.
+Example: `{!ruby/symbol key: !ruby/symbol value}` will be parsed as `{ key: :value }`.
+
+Please note: The Configuration is a HashWithIndifferentAccess and thus it should be irrelevant for hashes to use symbol keys.
+
+
 ### disable password login
 
 *default: false*
@@ -257,7 +273,7 @@ default:
 
 * `email_delivery_method`: The way emails should be delivered. Possible values: `smtp` or `sendmail`
 
-### SMTP Options:
+## SMTP Options:
 
 * `smtp_address`: SMTP server hostname, e.g. `smtp.example.net`
 * `smtp_port`: SMTP server port. Common options are `25` and `587`.
@@ -275,4 +291,7 @@ default:
 * `cache_expires_in`: Expiration time for memcache entries (default: `0`, no expiry)
 * `cache_namespace`: Namespace for cache keys, useful when multiple applications use a single memcache server (default: none)
 
+## Asset Options:
+
+* `rails_asset_host`: A custom host to use to serve static assets such as javascript, CSS, images, etc. (default: `nil`)
 

@@ -55,8 +55,8 @@ describe UsersController, type: :controller do
         end
       end
 
-      it { expect(response).to be_success }
-      it { expect(assigns(:user)).to eq(user) }
+      it do expect(response).to be_success end
+      it do expect(assigns(:user)).to eq(user) end
       it { expect(response).to render_template('deletion_info') }
     end
 
@@ -104,8 +104,8 @@ describe UsersController, type: :controller do
         end
       end
 
-      it { expect(response).to be_success }
-      it { expect(assigns(:user)).to eq(user) }
+      it do expect(response).to be_success end
+      it do expect(assigns(:user)).to eq(user) end
       it { expect(response).to render_template('deletion_info') }
     end
 
@@ -125,6 +125,48 @@ describe UsersController, type: :controller do
     end
   end
 
+  describe 'POST resend_invitation' do
+    let(:invited_user) { FactoryGirl.create :invited_user }
+
+    context 'without admin rights' do
+      let(:normal_user) { FactoryGirl.create :user }
+
+      before do
+        as_logged_in_user normal_user do
+          post :resend_invitation, id: invited_user.id
+        end
+      end
+
+      it 'returns 403 forbidden' do
+        expect(response.status).to eq 403
+      end
+    end
+
+    context 'with admin rights' do
+      let(:admin_user) { FactoryGirl.create :admin }
+
+      before do
+        expect(ActionMailer::Base.deliveries).to be_empty
+
+        as_logged_in_user admin_user do
+          post :resend_invitation, id: invited_user.id
+        end
+      end
+
+      it 'redirects back to the edit user page' do
+        expect(response).to redirect_to edit_user_path(invited_user)
+      end
+
+      it 'sends another activation email' do
+        mail = ActionMailer::Base.deliveries.first.body.parts.first.body.to_s
+        token = Token.find_by user_id: invited_user.id, action: UserInvitation.token_action
+
+        expect(mail).to include 'activate your account'
+        expect(mail).to include token.value
+      end
+    end
+  end
+
   describe 'POST destroy' do
     describe "WHEN the current user is the requested one
               WHEN the setting users_deletable_by_self is set to true" do
@@ -139,7 +181,7 @@ describe UsersController, type: :controller do
         end
       end
 
-      it { expect(response).to redirect_to(controller: 'account', action: 'login') }
+      it do expect(response).to redirect_to(controller: 'account', action: 'login') end
       it { expect(flash[:notice]).to eq(I18n.t('account.deleted')) }
     end
 
@@ -190,7 +232,7 @@ describe UsersController, type: :controller do
         end
       end
 
-      it { expect(response).to redirect_to(controller: 'users', action: 'index') }
+      it do expect(response).to redirect_to(controller: 'users', action: 'index') end
       it { expect(flash[:notice]).to eq(I18n.t('account.deleted')) }
     end
 
@@ -212,7 +254,11 @@ describe UsersController, type: :controller do
     end
   end
 
-  describe '#change_status' do
+  describe '#change_status',
+           with_settings: {
+             available_languages: %i(en de),
+             bcc_recipients: 1
+           } do
     describe 'WHEN activating a registered user' do
       let!(:registered_user) do
         FactoryGirl.create(:user, status: User::STATUSES[:registered],
@@ -220,13 +266,10 @@ describe UsersController, type: :controller do
       end
 
       before do
-        with_settings(available_languages: [:en, :de],
-                      bcc_recipients: '1') do
-          as_logged_in_user admin do
-            post :change_status, id: registered_user.id,
-                                 user: { status: User::STATUSES[:active] },
-                                 activate: '1'
-          end
+        as_logged_in_user admin do
+          post :change_status, id: registered_user.id,
+                               user: { status: User::STATUSES[:active] },
+                               activate: '1'
         end
       end
 

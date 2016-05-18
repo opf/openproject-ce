@@ -41,7 +41,9 @@ module API
                      value_representer:,
                      link_factory:,
                      required: true,
+                     has_default: false,
                      writable: true,
+                     visibility: nil,
                      current_user: nil)
         @value_representer = value_representer
         @link_factory = link_factory
@@ -49,7 +51,9 @@ module API
         super(type: type,
               name: name,
               required: required,
+              has_default: has_default,
               writable: writable,
+              visibility: visibility,
               current_user: current_user)
       end
 

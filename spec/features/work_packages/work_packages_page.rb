@@ -62,7 +62,12 @@ class WorkPackagesPage
   end
 
   def click_toolbar_button(button)
-    find('.toolbar-container').click_button button
+    close_notifications
+    find('.toolbar-container', wait: 5).click_button button
+  end
+
+  def close_notifications
+    page.all(:css, '.notification-box--close').each(&:click)
   end
 
   def select_query(query)
@@ -86,6 +91,14 @@ class WorkPackagesPage
 
   def find_filter(filter_name)
     find(".advanced-filters--filters #filter_#{filter_name}")
+  end
+
+  def find_subject_field(text = nil)
+    if text
+      find('#work-package-subject input', text: text)
+    else
+      find('#work-package-subject input')
+    end
   end
 
   private

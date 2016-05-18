@@ -46,7 +46,11 @@ module API
             raise ::API::Errors::InvalidQuery.new(error.message)
           end
 
-          collection_representer(query.results.sorted_work_packages,
+          work_packages = query
+                          .results
+                          .sorted_work_packages
+
+          collection_representer(work_packages,
                                  project: project,
                                  query_params: query_params,
                                  groups: groups,
@@ -103,6 +107,9 @@ module API
           if params[:sortBy]
             query.sort_criteria = parse_sorting_from_json(params[:sortBy])
             query_params[:sortBy] = params[:sortBy]
+          else
+            query.sort_criteria = [['parent', 'desc']]
+            query_params[:sortBy] = 'parent:desc'
           end
         end
 

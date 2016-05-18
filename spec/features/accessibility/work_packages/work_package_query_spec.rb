@@ -40,7 +40,7 @@ describe 'Work package index accessibility', type: :feature, selenium: true do
   def visit_index_page
     work_packages_page.visit_index
     # ensure the page is loaded before expecting anything
-    expect(page).to have_selector('#operators-status_id', visible: false),
+    expect(page).to have_selector('#operators-status', visible: false),
                     'Page was not fully loaded'
   end
 
@@ -113,7 +113,7 @@ describe 'Work package index accessibility', type: :feature, selenium: true do
     end
 
     shared_examples_for 'unsorted column' do
-      let(:sort_text) { I18n.t(:label_open_menu) }
+      let(:sort_text) { I18n.t(:label_open_menu) + " \"#{link_caption}\"" }
 
       it_behaves_like 'sort column'
     end
@@ -141,6 +141,7 @@ describe 'Work package index accessibility', type: :feature, selenium: true do
         before do
           find(column_header_link_selector).click
           click_sort_descending_link
+          loading_indicator_saveguard
         end
 
         it_behaves_like 'descending sorted column'
@@ -150,6 +151,7 @@ describe 'Work package index accessibility', type: :feature, selenium: true do
         before do
           find(column_header_link_selector).click
           click_sort_ascending_link
+          loading_indicator_saveguard
         end
 
         it_behaves_like 'ascending sorted column'
@@ -163,37 +165,26 @@ describe 'Work package index accessibility', type: :feature, selenium: true do
 
       it_behaves_like 'sortable column'
     end
-    # Disabling type for now. This constantly flickers.
-    # I am aware that this might indicate a bug but I haven't
-    # been able to reproduce it. FWIW, there are other tests
-    # testing the same functionality.
-    # describe 'type column' do
-    #   let(:link_caption) { 'Type' }
-    #   let(:column_header_selector) { '.work-package-table--container th:nth-of-type(3)' }
-    #   let(:column_header_link_selector) { column_header_selector + ' a' }
 
-    #   it_behaves_like 'sortable column'
-    # end
+    describe 'subject column' do
+      let(:link_caption) { 'Subject' }
+      let(:column_header_selector) { '.work-package-table--container th:nth-of-type(3)' }
+      let(:column_header_link_selector) { column_header_selector + ' a' }
 
-    describe 'status column' do
-      let(:link_caption) { 'Status' }
+      it_behaves_like 'sortable column'
+    end
+
+    describe 'type column' do
+      let(:link_caption) { 'Type' }
       let(:column_header_selector) { '.work-package-table--container th:nth-of-type(4)' }
       let(:column_header_link_selector) { column_header_selector + ' a' }
 
       it_behaves_like 'sortable column'
     end
 
-    describe 'priority column' do
-      let(:link_caption) { 'Priority' }
+    describe 'status column' do
+      let(:link_caption) { 'Status' }
       let(:column_header_selector) { '.work-package-table--container th:nth-of-type(5)' }
-      let(:column_header_link_selector) { column_header_selector + ' a' }
-
-      it_behaves_like 'sortable column'
-    end
-
-    describe 'subject column' do
-      let(:link_caption) { 'Subject' }
-      let(:column_header_selector) { '.work-package-table--container th:nth-of-type(6)' }
       let(:column_header_link_selector) { column_header_selector + ' a' }
 
       it_behaves_like 'sortable column'
@@ -201,7 +192,7 @@ describe 'Work package index accessibility', type: :feature, selenium: true do
 
     describe 'assigned to column' do
       let(:link_caption) { 'Assignee' }
-      let(:column_header_selector) { '.work-package-table--container th:nth-of-type(7)' }
+      let(:column_header_selector) { '.work-package-table--container th:nth-of-type(6)' }
       let(:column_header_link_selector) { column_header_selector + ' a' }
 
       it_behaves_like 'sortable column'
@@ -252,14 +243,16 @@ describe 'Work package index accessibility', type: :feature, selenium: true do
     end
 
     shared_examples_for 'context menu' do
-      describe 'focus' do
+      describe 'activate' do
         before do
           expect(page).to have_selector(source_link)
           element = find(source_link)
           element.native.send_keys(keys)
         end
 
-        it { expect(page).to have_focus_on(target_link) }
+        it {
+          expect(page).to have_focus_on(target_link) if sets_focus
+        }
 
         describe 'reset' do
           before do
@@ -269,16 +262,26 @@ describe 'Work package index accessibility', type: :feature, selenium: true do
             expect(page).not_to have_selector(target_link)
           end
 
-          it { expect(page).to have_focus_on(source_link) }
+          it {
+            expect(page).to have_focus_on(source_link) if sets_focus
+          }
         end
       end
     end
 
     describe 'work package context menu', js: true do
       it_behaves_like 'context menu' do
-        let(:target_link) { '#work-package-context-menu li.open a' }
+        let(:target_link) { '#work-package-context-menu li.detailsViewMenuItem a' }
         let(:source_link) { '.work-package-table--container tr.issue td.id a' }
         let(:keys) { [:shift, :alt, :f10] }
+        let(:sets_focus) { true }
+      end
+
+      it_behaves_like 'context menu' do
+        let(:target_link) { '#work-package-context-menu li.openFullScreenView a' }
+        let(:source_link) { '.work-package-table--container tr.issue td.id a' }
+        let(:keys) { [:shift, :alt, :f10] }
+        let(:sets_focus) { false }
       end
     end
 
@@ -287,6 +290,7 @@ describe 'Work package index accessibility', type: :feature, selenium: true do
         let(:source_link) { '.work-package-table--container th:nth-of-type(2) a' }
         let(:target_link) { '#column-context-menu .dropdown-menu li:first-of-type a' }
         let(:keys) { :enter }
+        let(:sets_focus) { true }
       end
     end
   end

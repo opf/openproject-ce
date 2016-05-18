@@ -27,7 +27,17 @@
 #++
 
 module UserInvitation
-  EVENT_NAME = 'user_invited'
+  module Events
+    class << self
+      def user_invited
+        'user_invited'
+      end
+
+      def user_reinvited
+        'user_reinvited'
+      end
+    end
+  end
 
   module_function
 
@@ -48,15 +58,53 @@ module UserInvitation
   #         on the returned user will yield `false`. Check for validation errors
   #         in that case.
   def invite_new_user(email:, login: nil, first_name: nil, last_name: nil)
+    placeholder = placeholder_name(email)
+
     user = User.new login: login || email,
                     mail: email,
-                    firstname: first_name || email,
-                    lastname: last_name || '(invited)',
+                    firstname: first_name || placeholder.first,
+                    lastname: last_name || placeholder.last,
                     status: Principal::STATUSES[:invited]
 
     yield user if block_given?
 
     invite_user! user
+  end
+
+  ##
+  # Sends a new invitation to the user with a new token.
+  #
+  # @param user_id [Integer] ID of the user to be re-invited.
+  # @return [Token] The new token used for the invitation.
+  def reinvite_user(user_id)
+    clear_tokens user_id
+
+    Token.create(user_id: user_id, action: token_action).tap do |token|
+      OpenProject::Notifications.send Events.user_reinvited, token
+    end
+  end
+
+  def clear_tokens(user_id)
+    Token.where(user_id: user_id, action: token_action).destroy_all
+  end
+
+  ##
+  # Creates a placeholder name for the user based on their email address.
+  # For the unlikely case that the local or domain part of the email address
+  # are longer than 30 characters they will be trimmed to 27 characters and an
+  # elipsis will be appended.
+  def placeholder_name(email)
+    first, last = email.split('@').map { |name| trim_name(name) }
+
+    [first, '@' + last]
+  end
+
+  def trim_name(name)
+    if name.size > 30
+      name[0..26] + '...'
+    else
+      name
+    end
   end
 
   ##
@@ -70,7 +118,7 @@ module UserInvitation
     user, token = user_invitation user
 
     if token
-      OpenProject::Notifications.send(EVENT_NAME, token)
+      OpenProject::Notifications.send(Events.user_invited, token)
 
       user
     end

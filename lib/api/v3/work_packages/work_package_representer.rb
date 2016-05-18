@@ -48,6 +48,15 @@ module API
           end
         end
 
+        def initialize(model, current_user:, embed_links: false)
+          # Define all accessors on the customizable as they
+          # will be used afterwards anyway. Otherwise, we will have to
+          # go through method_missing which will take more time.
+          model.define_all_custom_field_accessors
+
+          super
+        end
+
         self_link title_getter: -> (*) { represented.subject }
 
         link :update do
@@ -77,7 +86,7 @@ module API
           } if current_user_allowed_to(:delete_work_packages, context: represented.project)
         end
 
-        link :log_time do
+        link :logTime do
           {
             href: new_work_package_time_entry_path(represented),
             type: 'text/html',
@@ -90,6 +99,14 @@ module API
             href: new_work_package_move_path(represented),
             type: 'text/html',
             title: "Move #{represented.subject}"
+          } if current_user_allowed_to(:move_work_packages, context: represented.project)
+        end
+
+        link :copy do
+          {
+            href: new_work_package_move_path(represented, copy: true, ids: [represented.id]),
+            type: 'text/html',
+            title: "Copy #{represented.subject}"
           } if current_user_allowed_to(:move_work_packages, context: represented.project)
         end
 
@@ -181,9 +198,8 @@ module API
 
         link :addChild do
           {
-            href: new_project_work_packages_path(represented.project,
-                                                work_package: { parent_id: represented }),
-            type: 'text/html',
+            href: api_v3_paths.work_packages_by_project(represented.project.identifier),
+            method: :post,
             title: "Add child of #{represented.subject}"
           } if current_user_allowed_to(:add_work_packages, context: represented.project)
         end
@@ -230,7 +246,10 @@ module API
 
         links :children do
           visible_children.map do |child|
-            { href: "#{root_path}api/v3/work_packages/#{child.id}", title: child.subject }
+            {
+              href: api_v3_paths.work_package(child.id),
+              title: child.subject
+            }
           end unless visible_children.empty?
         end
 
@@ -287,11 +306,6 @@ module API
                  exec_context: :decorator,
                  getter: -> (*) { datetime_formatter.format_datetime(represented.updated_at) }
 
-        property :activities,
-                 embedded: true,
-                 exec_context: :decorator,
-                 if: -> (*) { embed_links }
-
         property :watchers,
                  embedded: true,
                  exec_context: :decorator,
@@ -313,14 +327,6 @@ module API
 
         def _type
           'WorkPackage'
-        end
-
-        def activities
-          activities = ::Journal::AggregatedJournal.aggregated_journals(journable: represented)
-          self_link = api_v3_paths.work_package_activities represented.id
-          Activities::ActivityCollectionRepresenter.new(activities,
-                                                        self_link,
-                                                        current_user: current_user)
         end
 
         def watchers
@@ -360,6 +366,21 @@ module API
         def visible_children
           @visible_children ||= represented.children.select(&:visible?)
         end
+
+        self.to_eager_load = [{ children: { project: :enabled_modules } },
+                              { parent: { project: :enabled_modules } },
+                              { project: :enabled_modules },
+                              :status,
+                              :priority,
+                              :type,
+                              :fixed_version,
+                              { custom_values: :custom_field },
+                              :author,
+                              :assigned_to,
+                              :responsible,
+                              :watcher_users,
+                              :category,
+                              :attachments]
       end
     end
   end

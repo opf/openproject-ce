@@ -1,0 +1,87 @@
+<div class="toolbar-container">
+  <div wp-toolbar class="toolbar">
+    <selectable-title
+        focus
+        selected-title="selectedTitle"
+        groups="groups"
+        transition-method="loadQuery">
+    </selectable-title>
+
+    <ul class="toolbar-items">
+      <li class="toolbar-item">
+        <wp-create-button
+            project-identifier="projectIdentifier"
+            state-name="work-packages.list.new">
+        </wp-create-button>
+      </li>
+      <li class="toolbar-item hidden-for-mobile">
+        <wp-filter-button
+            filters="query.filters"
+            disabled="editAll.state">
+        </wp-filter-button>
+      </li>
+      <li class="toolbar-item hidden-for-mobile">
+        <ul id="work-packages-view-mode-selection" class="toolbar-button-group">
+          <li>
+            <wp-list-view-button
+                edit-all="editAll"
+                project-identifier="projectIdentifier">
+            </wp-list-view-button>
+          </li>
+          <li>
+            <wp-details-view-button
+                next-wp-func="nextAvailableWorkPackage">
+            </wp-details-view-button>
+          </li>
+          <li>
+            <wp-view-button
+                next-wp-func="nextAvailableWorkPackage">
+            </wp-view-button>
+          </li>
+        </ul>
+      </li>
+      <li class="toolbar-item hidden-for-mobile">
+        <label for="work-packages-settings-button" class="hidden-for-sighted">
+          {{ I18n.t('js.button_settings') }}
+        </label>
+        <button id="work-packages-settings-button"
+                ng-disabled="editAll.state"
+                title="{{ I18n.t('js.button_settings') }}"
+                class="button last work-packages-settings-button"
+                has-dropdown-menu
+                target="SettingsDropdownMenu"
+                locals="query">
+          <i class="button--icon icon-show-more"></i>
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<filter-container></filter-container>
+
+<back-url></back-url>
+
+<div class="work-packages--split-view"
+     cg-busy="loadingIndicator.mainPage"
+     ng-class="{'edit-all-mode': editAll.state}">
+  <div class="work-packages--list">
+    <div class="work-packages--list-table-area">
+      <wp-table ng-if="rows && columns"
+                project-identifier="projectIdentifier"
+                columns="columns"
+                rows="rows"
+                query="query"
+                group-by="query.groupBy"
+                display-sums="query.displaySums"
+                resource="resource"
+                activation-callback="openWorkPackageInFullView(id, force)">
+      </wp-table>
+    </div>
+    <div class="work-packages--list-pagination-area">
+      <table-pagination total-entries="totalEntries">
+      </table-pagination>
+    </div>
+  </div>
+  <div class="work-packages--details" ui-view ng-show="workPackage"></div>
+</div>

@@ -30,11 +30,12 @@
 
 describe('workPackageDetailsToolbar', function() {
   var I18n, HookService, compile, scope, element, stateParams;
-  var html = "<work-package-details-toolbar work-package='workPackage'></work-package-details-toolbar>";
+  var html = "<wp-details-toolbar work-package='workPackage'></wp-details-toolbar>";
   stateParams = {};
 
 
   beforeEach(module('ui.router',
+                    'openproject',
                     'openproject.workPackages.controllers',
                     'openproject.uiComponents',
                     'openproject.workPackages',
@@ -85,19 +86,32 @@ describe('workPackageDetailsToolbar', function() {
   });
 
   var pluginActions = {
-    plugin_action_1: { plugin_action_1: ['plugin_action_1_css_1', 'plugin_action_1_css_2'] },
-    plugin_action_2: { plugin_action_2: ['plugin_action_2_css_1'] }
+    plugin_action_1: { key: 'plugin_action_1',
+                       resource: 'workPackage',
+                       link: 'plugin_action_1',
+                       css: ['plugin_action_1_css_1', 'plugin_action_1_css_2'] },
+    plugin_action_2: { key: 'plugin_action_2',
+                       resource: 'workPackage',
+                       link: 'plugin_action_2',
+                       css: ['plugin_action_2_css_1'] }
   };
 
   beforeEach(function() {
     var workPackage = {
       links: {
-        log_time: { href: 'log_timeMeLink' },
+        logTime: { href: 'log_timeMeLink' },
         duplicate: { href: 'duplicateMeLink' },
         move: { href: 'moveMeLink' },
         delete: { href: 'deleteMeLink' },
         plugin_action_1: { href: 'plugin_actionMeLink' },
         plugin_action_2: { href: 'plugin_actionMeLink' }
+      },
+      embedded: {
+        project: {
+          links: {
+            createWorkPackage: { href: 'createWorkPackageLink' }
+          }
+        }
       }
     };
 
@@ -168,7 +182,7 @@ describe('workPackageDetailsToolbar', function() {
   describe('Core actions', function() {
     var listRootSelector = 'ul.dropdown-menu';
     var actions = {
-      log_time: 'icon-log_time',
+      logTime: 'icon-log_time',
       move: 'icon-move',
       delete: 'icon-delete'
     };

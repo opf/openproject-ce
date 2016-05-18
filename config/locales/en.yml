@@ -40,6 +40,11 @@ en:
     plugins:
       no_results_title_text: There are currently no plugins available.
 
+  announcements:
+    show_until: Show until
+    is_active: currently displayed
+    is_inactive: currently not displayed
+
   auth_sources:
     index:
       no_results_content_title: There are currently no authentication modes.
@@ -142,6 +147,9 @@ en:
       no_results_title_text: There are currently no workflows.
 
   work_packages:
+    move:
+      unsupported_for_multiple_projects: 'Bulk move/copy is not supported for work packages from multiple projects'
+
     list_simple:
       assigned:
         no_results_title_text: There are currently no work packages assigned to me.
@@ -206,6 +214,8 @@ en:
 
   activerecord:
     attributes:
+      announcements:
+        show_until: "Display until"
       attachment:
         downloads: "Downloads"
         file: "File"
@@ -251,13 +261,14 @@ en:
         roles: "Roles"
       project:
         identifier: "Identifier"
-        work_packages: "Work Packages"
+        latest_activity_at: "Latest activity at"
         parent: "Subproject of"
-        versions: "Versions"
         project_type: "Project type"
+        queries: "Queries"
         responsible: "Responsible"
         types: "Types"
-        queries: "Queries"
+        versions: "Versions"
+        work_packages: "Work Packages"
       query:
         column_names: "Columns"
         group_by: "Group results by"
@@ -322,7 +333,11 @@ en:
         reported_project_status: Project status
         created_at: Created
       work_package:
+        begin_insertion: "Begin of the insertion"
+        begin_deletion: "Begin of the deletion"
         done_ratio: "Progress (%)"
+        end_insertion: "End of the insertion"
+        end_deletion: "End of the deletion"
         fixed_version: "Version"
         parent: "Parent"
         parent_issue: "Parent"
@@ -349,7 +364,8 @@ en:
         greater_than: "must be greater than %{count}."
         greater_than_or_equal_to: "must be greater than or equal to %{count}."
         smaller_than_or_equal_to_max_length: "must be smaller than or equal to maximum length."
-        greater_than_start_date: "must be greater than start date."
+        greater_than_start_date: "must be greater than the start date."
+        greater_than_or_equal_to_start_date: "must be greater than or equal to the start date."
         inclusion: "is not set to one of the allowed values."
         invalid: "is invalid."
         less_than_or_equal_to: "must be less than or equal to %{count}."
@@ -450,6 +466,7 @@ en:
 
   errors:
     header_invalid_fields: "There were problems with the following fields:"
+    field_erroneous_label: "This field is invalid: %{full_errors}\nPlease enter a valid value."
 
   activity:
     created: "Created: %{title}"
@@ -548,6 +565,7 @@ en:
   button_reset: "Reset"
   button_rollback: "Rollback to this version"
   button_save: "Save"
+  button_save_back: "Save and back"
   button_show: "Show"
   button_sort: "Sort"
   button_submit: "Submit"
@@ -565,7 +583,7 @@ en:
   button_delete_menu_entry: "Delete menu item"
 
   copy_project:
-    started: "Started to copy project \"%{source_project_name}\" to \"%{target_project_name}\". You will be informed by Mail as soon as \"%{target_project_name}\" is available."
+    started: "Started to copy project \"%{source_project_name}\" to \"%{target_project_name}\". You will be informed by mail as soon as \"%{target_project_name}\" is available."
     failed: "Cannot copy project %{source_project_name}"
     succeeded: "Created project %{target_project_name}"
     errors: "Error"
@@ -573,9 +591,7 @@ en:
       failed: "Could not copy project \"%{source_project_name}\" to project \"%{target_project_name}\"."
       succeeded: "Copied project \"%{source_project_name}\" to \"%{target_project_name}\"."
 
-  create_child_page: "Create new child page"
-  create_child_page_for: "Create new child page: \"%{title}\""
-  create_new_page: "Create new page"
+  create_new_page: "Wiki page"
 
   date:
     abbr_day_names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -748,6 +764,8 @@ en:
   error_can_not_remove_role: "This role is in use and cannot be deleted."
   error_can_not_reopen_work_package_on_closed_version: "A work package assigned to a closed version cannot be reopened"
   error_check_user_and_role: "Please choose a user and a role."
+  error_cookie_missing: 'The OpenProject cookie is missing. Please ensure that cookies are enabled, as this application will not properly function without.'
+  error_token_authenticity: 'Unable to verify Cross-Site Request Forgery token.'
   error_work_package_done_ratios_not_updated: "Work package done ratios not updated."
   error_work_package_not_found_in_project: "The work package was not found or does not belong to this project"
   error_must_be_project_member: "must be project member"
@@ -759,6 +777,8 @@ en:
   error_unable_delete_status: "The work package status cannot be deleted since it is used by at least one work package."
   error_unable_delete_default_status: "Unable to delete the default work package status. Please select another default work package status before deleting the current one."
   error_unable_to_connect: "Unable to connect (%{value})"
+  error_unable_delete_wiki: "Unable to delete the wiki page."
+  error_unable_update_wiki: "Unable to update the wiki page."
   error_workflow_copy_source: "Please select a source type or role"
   error_workflow_copy_target: "Please select target type(s) and role(s)"
   error_menu_item_not_created: Menu item could not be added
@@ -797,13 +817,15 @@ en:
       projects: "Newest visible projects in this instance."
       users: "Newest registered users in this instance."
     blocks:
-      community: "OpenProject Community"
+      community: "OpenProject community"
     links:
       user_guides: "User guides"
       faq: "FAQ"
       glossary: "Glossary"
       shortcuts: "Shortcuts"
       forums: "Forums"
+      blog: "OpenProject blog"
+      boards: "Community forum"
 
   instructions_after_registration: "You can sign in as soon as your account has been activated by clicking %{signin}."
   instructions_after_logout: "You can sign in again by clicking %{signin}."
@@ -821,6 +843,7 @@ en:
       indefinite_expiration: "Never"
 
   label_account: "Account"
+  label_active: "Active"
   label_activity: "Activity"
   label_add_edit_translations: "Add and edit translations"
   label_add_another_file: "Add another file"
@@ -839,6 +862,8 @@ en:
   label_all: "all"
   label_all_time: "all time"
   label_all_words: "All words"
+  label_always_visible: "Always displayed"
+  label_announcement: "Announcement"
   label_and_its_subprojects: "%{value} and its subprojects"
   label_api_access_key: "API access key"
   label_api_access_key_created_on: "API access key created %{value} ago"
@@ -878,6 +903,7 @@ en:
   label_wiki_menu_item: Wiki menu item
   label_select_main_menu_item: Select new main menu item
   label_required_disk_storage: "Required disk storage"
+  label_resend_invitation: Resend invitation
   label_change_plural: "Changes"
   label_change_properties: "Change properties"
   label_change_status: "Change status"
@@ -966,6 +992,7 @@ en:
   label_float: "Float"
   label_follows: "follows"
   label_force_user_language_to_default: "Set language of users having a non allowed language to default"
+  label_form_configuration: Form configuration
   label_general: "General"
   label_generate_key: "Generate a key"
   label_git_path: "Path to .git directory"
@@ -1013,6 +1040,7 @@ en:
   label_jump_to_a_project: "Jump to a project..."
   label_language_based: "Based on user's language"
   label_last_activity: "Last activity"
+  label_last_change_on: "Last change on"
   label_last_changes: "last %{count} changes"
   label_last_login: "Last login"
   label_last_month: "last month"
@@ -1110,6 +1138,7 @@ en:
   label_previous_week: "Previous week"
   label_principal_invite_via_email: " or invite new users via email"
   label_principal_search: "Add existing users or groups"
+  label_product_version: "Product version"
   label_professional_support: "Professional support"
   label_profile: "Profile"
   label_project_all: "All Projects"
@@ -1397,6 +1426,7 @@ en:
   notice_unable_delete_time_entry: "Unable to delete time log entry."
   notice_unable_delete_version: "Unable to delete version."
   notice_user_missing_authentication_method: User has yet to chose a password or another way the sign in.
+  notice_user_invitation_resent: Another invitation has been sent to %{email}.
   present_access_key_value: "Your %{key_name} is: %{value}"
   notice_automatic_set_of_standard_type: "Set standard type automatically."
   notice_logged_out: "You have been logged out."
@@ -1543,7 +1573,7 @@ en:
       instructions: "Checkout instructions"
       show_instructions: "Display checkout instructions"
       text_instructions: "This text is displayed alongside the checkout URL for guidance on how to check out the repository."
-      not_available: "Checkout instructions are not available for this repository"
+      not_available: "Checkout instructions are not defined for this repository. Ask your administrator to enable them for this repository in the system settings."
     create_managed_delay: "Please note: The repository is managed, it is created asynchronously on the disk and will be available shortly."
     create_successful: "The repository has been registered."
     delete_sucessful: "The repository has been deleted."
@@ -1620,6 +1650,16 @@ en:
 
   search_input_placeholder: "search ..."
 
+  setting_email_delivery_method: "Email delivery method"
+  setting_sendmail_location: "Location of the sendmail executable"
+  setting_smtp_enable_starttls_auto: "Automatically use STARTTLS if available"
+  setting_smtp_address: "SMTP server"
+  setting_smtp_port: "SMTP port"
+  setting_smtp_authentication: "SMTP authentication"
+  setting_smtp_domain: "SMTP domain"
+  setting_smtp_user_name: "SMTP username"
+  setting_smtp_password: "SMTP password"
+  setting_smtp_domain: "SMTP HELLO domain"
   setting_activity_days_default: "Days displayed on project activity"
   setting_app_subtitle: "Application subtitle"
   setting_app_title: "Application title"
@@ -1671,6 +1711,7 @@ en:
   setting_mail_handler_api_description: "The email web handler enables OpenProject to receive emails containing specific commands as an instrumentation mechanism (e.g., to create and update work packages)."
   setting_mail_handler_api_key: "API key"
   setting_mail_handler_body_delimiters: "Truncate emails after one of these lines"
+  setting_mail_handler_body_delimiter_regex: "Truncate emails matching this regex"
   setting_new_project_user_role_id: "Role given to a non-admin user who creates a project"
   setting_password_active_rules: "Active character classes"
   setting_password_count_former_banned: "Number of most recently used passwords banned for reuse"
@@ -1719,7 +1760,7 @@ en:
     session: "Session"
     brute_force_prevention: "Automated user blocking"
 
-  show_hide_project_menu: "Show/Hide project menu"
+  show_hide_project_menu: "Expand/Collapse project menu"
 
   status_active: "active"
   status_invited: invited
@@ -1736,6 +1777,11 @@ en:
   text_are_you_sure: "Are you sure?"
   text_are_you_sure_with_children: "Delete work package and all child work packages?"
   text_assign_to_project: "Assign to the project"
+  text_form_configuration: >
+    You can customize which attributes will be displayed by default
+    in forms for work packages of this type.
+    Fields that are required but don't have a default value cannot be customized.
+    They will always be shown.
   text_caracters_maximum: "%{count} characters maximum."
   text_caracters_minimum: "Must be at least %{count} characters long."
   text_comma_separated: "Multiple values allowed (comma separated)."
@@ -1752,6 +1798,7 @@ en:
   text_file_repository_writable: "Attachments directory writable"
   text_git_repo_example: "a bare and local repository (e.g. /gitrepo, c:\\gitrepo)"
   text_hint_disable_with_0: "Note: Disable with 0"
+  text_hours_between: "Between %{min} and %{max} hours."
   text_work_package_added: "Work package %{id} has been reported by %{author}."
   text_work_package_category_destroy_assignments: "Remove category assignments"
   text_work_package_category_destroy_question: "Some work packages (%{count}) are assigned to this category. What do you want to do?"
@@ -1785,6 +1832,7 @@ en:
   text_project_identifier_info: "Only lower case letters (a-z), numbers, dashes and underscores are allowed, must start with a lower case letter."
   text_reassign: "Reassign to work package:"
   text_regexp_info: "eg. ^[A-Z0-9]+$"
+  text_regexp_multiline: 'The regex is applied in a multi-line mode. e.g., ^---\s+'
   text_repository_usernames_mapping: "Select or update the OpenProject user mapped to each username found in the repository log.\nUsers with the same OpenProject and repository username or email are automatically mapped."
   text_select_mail_notifications: "Select actions for which email notifications should be sent."
   text_status_changed_by_changeset: "Applied in changeset %{value}."
@@ -1806,6 +1854,7 @@ en:
   text_workflow_edit: "Select a role and a type to edit the workflow"
   text_zoom_in: "Zoom in"
   text_zoom_out: "Zoom out"
+  text_setup_mail_configuration: "Configure your email provider"
 
   time:
     am: "am"
@@ -2004,12 +2053,27 @@ en:
       quarters: "Quarters"
       years: "Years"
 
-  title_remove_and_delete_user: Remove the invited user from the project and delete them.
+  title_remove_and_delete_user: Remove the invited user from the project and delete him/her.
+
+  tooltip_resend_invitation: >
+    Sends another invitation email with a fresh token in
+    case the old one expired or the user did not get the original email.
+
+  tooltip:
+    attribute_visibility:
+      default: Show if not empty
+      visible: Show even if empty
+      hidden: Hide by default
 
   queries:
     apply_filter: Apply preconfigured filter
 
   label_work_package_hierarchy: "Work Package Hierarchy"
+
+  top_menu:
+    additional_resources: "Additional resources"
+    getting_started: "Getting started"
+    help_and_support: "Help and support"
 
   total_progress: "Total progress"
 

@@ -28,22 +28,29 @@
 
 angular.module('openproject.workPackages.helpers')
   .factory('ApiHelper', ['NotificationsService', require('./api-helper')])
-  .factory('FiltersHelper', ['I18n', require('./filters-helper')])
   .constant('ACTIVE_USER_STATUSES', ['active', 'registered'])
   .factory('UsersHelper', ['ACTIVE_USER_STATUSES', require('./users-helper')])
-  .constant('PERMITTED_BULK_ACTIONS', ['edit', 'watch', 'move', 'copy',
-    'delete'
-  ])
-  .service('WorkPackageContextMenuHelper', ['PERMITTED_BULK_ACTIONS',
-    'WorkPackagesTableService', 'UrlParamsHelper', require(
-      './work-package-context-menu-helper')
+  .constant('PERMITTED_BULK_ACTIONS', [
+    {
+      icon: 'edit',
+      link: 'update'
+    },
+    // TODO: reenable watch
+    {
+      icon: 'move',
+      link: 'move'
+    },
+    {
+      icon: 'copy',
+      link: 'copy'
+    },
+    {
+      icon: 'delete',
+      link: 'delete'
+    }
   ])
   .factory('WorkPackagesHelper', ['TimezoneService', 'currencyFilter',
     'CustomFieldHelper', require('./work-packages-helper')
-  ])
-  .factory('WorkPackagesTableHelper', [
-    'WorkPackagesHelper',
-    require('./work-packages-table-helper')
   ])
   .factory('WorkPackagesDisplayHelper', [
     'WorkPackageFieldService',

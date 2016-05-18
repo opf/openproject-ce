@@ -81,11 +81,9 @@ jsButton.prototype.draw = function() {
 
   var button = document.createElement('button');
   button.setAttribute('type','button');
+  button.setAttribute('aria-label', this.title);
   if (this.className) button.className = this.className;
   button.title = this.title;
-  var span = document.createElement('span');
-  span.appendChild(document.createTextNode(this.title));
-  button.appendChild(span);
 
   if (this.icon != undefined) {
     button.style.backgroundImage = 'url('+this.icon+')';
@@ -172,7 +170,7 @@ jsToolBar.prototype = {
   button: function(toolName) {
     var tool = this.elements[toolName];
     if (typeof tool.fn[this.mode] != 'function') return null;
-    var b = new jsButton(tool.title, tool.fn[this.mode], this, 'jstb_'+toolName);
+    var b = new jsButton(tool.title, tool.fn[this.mode], this, 'icon-small jstb_'+toolName);
     if (tool.icon != undefined) b.icon = tool.icon;
     return b;
   },

@@ -67,12 +67,11 @@ module OpenProject
     # * :download - Force download (default: false)
     def link_to_attachment(attachment, options = {})
       text = options.delete(:text) || attachment.filename
-      action = options.delete(:download) ? 'download' : 'show'
       only_path = options.delete(:only_path) { true }
 
       link_to h(text),
               { controller: '/attachments',
-                action: action,
+                action: 'download',
                 id: attachment,
                 filename: attachment.filename,
                 host: Setting.host_name,
@@ -117,7 +116,7 @@ module OpenProject
       project_link_name = project.name
 
       if show_icon && User.current.member_of?(project)
-        project_link_name = icon_wrapper('icon-context icon-star1', I18n.t(:description_my_project).html_safe + '&nbsp;'.html_safe) + project_link_name
+        project_link_name = icon_wrapper('icon-context icon-star', I18n.t(:description_my_project).html_safe + '&nbsp;'.html_safe) + project_link_name
       end
 
       if project.active?

@@ -71,42 +71,13 @@ describe JournalsController, type: :controller do
       end
 
       it 'should present the diff correctly' do
-        expect(response.body.strip).to eq("<div class=\"text-diff\">\n  <ins class=\"diffmod\">description</ins>\n</div>")
+        expect(response.body.strip).to eq("<div class=\"text-diff\">\n  <label class=\"hidden-for-sighted\">Begin of the insertion</label><ins class=\"diffmod\">description</ins><label class=\"hidden-for-sighted\">End of the insertion</label>\n</div>")
       end
     end
 
     describe 'w/o authorization' do
       let(:permissions) { [] }
       it { expect(response).not_to be_success }
-    end
-  end
-
-  describe '#edit' do
-    describe 'authorization' do
-      let(:permissions) { [:edit_work_packages, :edit_own_work_package_notes] }
-
-      before do
-        work_package.update_attribute :description, 'description'
-        allow(User).to receive(:current).and_return user
-
-        get :edit, id: journal.id
-      end
-
-      context 'with permissions to edit work packages and edit own work package notes' do
-        example { assert_response :success }
-      end
-
-      context 'without permission to edit work packages' do
-        let(:permissions) { [:edit_own_work_package_notes] }
-
-        example { assert_response :success }
-      end
-
-      context 'without permission to edit journals' do
-        let(:permissions) { [:edit_work_packages] }
-
-        example { assert_response :forbidden }
-      end
     end
   end
 end

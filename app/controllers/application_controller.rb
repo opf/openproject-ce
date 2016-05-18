@@ -37,6 +37,7 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  include I18n
   include Redmine::I18n
 
   layout 'base'
@@ -89,7 +90,14 @@ class ApplicationController < ActionController::Base
     # is raised here, but is denied by disable_api.
     #
     # See http://stackoverflow.com/a/15350123 for more information on login CSRF.
-    render_error status: 422, message: 'Invalid form authenticity token.' unless api_request?
+    unless api_request?
+
+      # Check whether user have cookies enabled, otherwise they'll only be
+      # greeted with the CSRF error upon login.
+      message = I18n.t(:error_token_authenticity)
+      message << ' ' + I18n.t(:error_cookie_missing) if openproject_cookie_missing?
+      render_error status: 422, message: message
+    end
   end
 
   rescue_from ActionController::ParameterMissing do |exception|
@@ -104,7 +112,8 @@ class ApplicationController < ActionController::Base
                 :set_localization,
                 :check_session_lifetime,
                 :stop_if_feeds_disabled,
-                :set_cache_buster
+                :set_cache_buster,
+                :reload_mailer_configuration!
 
   include Redmine::Search::Controller
   include Redmine::MenuManager::MenuController
@@ -125,6 +134,10 @@ class ApplicationController < ActionController::Base
       response.headers['Pragma'] = 'no-cache'
       response.headers['Expires'] = 'Fri, 01 Jan 1990 00:00:00 GMT'
     end
+  end
+
+  def reload_mailer_configuration!
+    OpenProject::Configuration.reload_mailer_configuration!
   end
 
   # The current user is a per-session kind of thing and session stuff is controller responsibility.
@@ -165,7 +178,7 @@ class ApplicationController < ActionController::Base
       if (key = api_key_from_request) && accept_key_auth_actions.include?(params[:action])
         # Use API key
         User.find_by_api_key(key)
-      else
+      elsif OpenProject::Configuration.apiv2_enable_basic_auth?
         # HTTP Basic, either username/password or API key/random
         authenticate_with_http_basic do |username, password|
           User.try_to_login(username, password) || User.find_by_api_key(username)
@@ -192,6 +205,13 @@ class ApplicationController < ActionController::Base
     return true if User.current.logged?
     require_login if Setting.login_required?
   end
+
+  # Checks if the session cookie is missing.
+  # This is useful only on a second request
+  def openproject_cookie_missing?
+    request.cookies[OpenProject::Configuration['session_cookie_name']].nil?
+  end
+  helper_method :openproject_cookie_missing?
 
   def log_requesting_user
     return unless Setting.log_requesting_user?
@@ -396,15 +416,6 @@ class ApplicationController < ActionController::Base
     render_404
   end
 
-  # Check if project is unique before bulk operations
-  def check_project_uniqueness
-    unless @project
-      # TODO: let users bulk edit/move/destroy issues from different projects
-      render_error 'Can not bulk edit/move/destroy issues from different projects'
-      return false
-    end
-  end
-
   # Make sure that the user is a member of the project (or admin) if project is private
   # used as a before_filter for actions that do not require any particular permission
   # on the project.
@@ -509,7 +520,7 @@ class ApplicationController < ActionController::Base
 
   def render_feed(items, options = {})
     @items = items || []
-    @items = @items.sort do |x, y| y.event_datetime <=> x.event_datetime end
+    @items = @items.sort { |x, y| y.event_datetime <=> x.event_datetime }
     @items = @items.slice(0, Setting.feeds_limit.to_i)
     @title = options[:title] || Setting.app_title
     render template: 'common/feed', layout: false, content_type: 'application/atom+xml'

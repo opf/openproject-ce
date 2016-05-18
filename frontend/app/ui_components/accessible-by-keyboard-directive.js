@@ -32,9 +32,11 @@ module.exports = function() {
     transclude: true,
     scope: {
       execute: '&',
+      isDisabled: '=?',
       linkClass: '@',
       linkTitle: '@',
-      spanClass: '@'
+      spanClass: '@',
+      ariaLabel: '@'
     },
     templateUrl: '/templates/components/accessible_by_keyboard.html'
   };

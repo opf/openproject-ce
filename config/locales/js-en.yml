@@ -53,17 +53,26 @@ en:
     button_more: "More"
     button_move: "Move"
     button_open_details: "Open details view"
+    button_open_fullscreen: "Open fullscreen view"
     button_quote: "Quote"
     button_save: "Save"
     button_settings: "Settings"
     button_uncheck_all: "Uncheck all"
     button_update: "Update"
     description_available_columns: "Available Columns"
-    description_select_work_package: "Select work package"
+    description_select_work_package: "Select work package #%{id}"
     description_selected_columns: "Selected Columns"
-    description_subwork_package: "Sub work package of"
+    description_subwork_package: "Child of work package #%{id}"
     filter:
+      description:
+        text_open_filter: "Open this filter with 'ALT' and arrow keys."
+        text_close_filter: "To select an entry leave the focus for example by pressing enter. To leave without filter select the first (empty) entry."
       noneElement: "(none)"
+      sorting:
+        criteria:
+          one: "First sorting criteria"
+          two: "Second sorting criteria"
+          three: "Third sorting criteria"
     general_text_no: "no"
     general_text_yes: "yes"
     general_text_No: "No"
@@ -83,10 +92,13 @@ en:
     label_author: "Author: %{user}"
     label_board_locked: "Locked"
     label_board_sticky: "Sticky"
+    label_create_work_package: "Create new work package"
     label_date: "Date"
+    label_date_with_format: "Enter the %{date_attribute} using the following format: %{format}"
     label_deactivate: "Deactivate"
     label_descending: "Descending"
     label_description: "Description"
+    label_cancel_comment: "Cancel comment"
     label_closed_work_packages: "closed"
     label_collapse: "Collapse"
     label_collapsed: "collapsed"
@@ -110,7 +122,7 @@ en:
     label_format_pdf_with_descriptions: "PDF with descriptions"
     label_greater_or_equal: ">="
     label_group_by: "Group by"
-    label_hide_attributes: "Hide empty"
+    label_hide_attributes: "Show less"
     label_hide_column: "Hide column"
     label_in: "in"
     label_in_less_than: "in less than"
@@ -142,7 +154,7 @@ en:
     label_select_watcher: "Select a watcher..."
     label_selected_filter_list: "Selected filters"
     label_share: "Share"
-    label_show_attributes: "Show all"
+    label_show_attributes: "Show all attributes"
     label_show_in_menu: "Show page in menu"
     label_sort_by: "Sort by"
     label_sorted_by: "sorted by"
@@ -157,6 +169,7 @@ en:
     label_visible_for_others: "Page visible for others"
     label_updated_on: "updated on"
     label_work_package: "Work package"
+    label_work_package_plural: "Work packages"
     label_watch: "Watch"
     label_watch_work_package: "Watch work package"
     label_watcher_added_successfully: "Watcher successfully added!"
@@ -181,11 +194,11 @@ en:
     label_rejected_files_reason: "These files cannot be uploaded as their size is greater than %{maximumFilesize}"
     label_wait: "Please wait for configuration..."
     label_upload_counter: "%{done} of %{count} files finished"
-    label_successful_update: 'Successful update'
     label_validation_error: "The work package could not be saved due to the following errors:"
 
     placeholders:
       default: '-'
+      selection: 'Please select'
 
     text_are_you_sure: "Are you sure?"
 
@@ -351,21 +364,27 @@ en:
       description_options_hide: "Hide options"
       description_options_show: "Show options"
       error: "An error has occured."
+      error_edit_prohibited: "Editing %{attribute} is blocked for this work package. Either this attribute is derived from relations (e.g, children) or otherwise not configurable."
       error_update_failed: "The work package could not be updated."
+      edit_attribute: "%{attribute} - Edit"
+      key_value: "%{key}: %{value}"
       label_enable_multi_select: "Enable multiselect"
       label_disable_multi_select: "Disable multiselect"
       label_filter_add: "Add filter"
       label_options: "Options"
       label_column_multiselect: "Combined dropdown field: Select with arrow keys, confirm selection with enter, delete with backspace"
-      label_column_select: "Status - Combined dropdown field: Selection with auto-completion."
       message_error_during_bulk_delete: An error occurred while trying to delete work packages.
       message_successful_bulk_delete: Successfully deleted work packages.
+      message_successful_show_in_fullscreen: "Click here to open this work package in fullscreen view."
+      no_value: "No value"
+      inline_create:
+       title: 'Click here to add a new work package to this list'
       create:
         header: 'New Work Package'
+        header_with_parent: 'New work package (Child of %{type} #%{id})'
       no_results:
-        title: No work packages to display
-        description_html: |
-          <p>Either none have been created or all work packages are filtered out.</p>
+        title: No work packages to display.
+        description: Either none have been created or all work packages are filtered out.
       property_groups:
         details: "Details"
         people: "People"
@@ -434,7 +453,9 @@ en:
         page_settings: "Rename query ..."
         delete: "Delete"
       filter: "Filter"
-      unselected_title: "Work packages"
+      unselected_title: "Work package"
+      search_query_label: "Search saved filter queries"
+      search_query_title: "Click to search saved filter queries"
     modals:
       label_settings: "Rename query"
       label_name: "Name"
@@ -446,6 +467,7 @@ en:
     notice_successful_create: "Successful creation."
     notice_successful_delete: "Successful deletion."
     notice_successful_update: "Successful update."
+
     notice_bad_request: "Bad Request."
     relations:
       empty: No relation exists
@@ -456,7 +478,7 @@ en:
       button_cancel: "%{attribute}: Cancel"
       button_save_all: "Save"
       button_cancel_all: "Cancel"
-      link_formatting_help: "Text formatting"
+      link_formatting_help: "Text formatting help"
       btn_preview_enable: "Preview"
       btn_preview_disable: "Disable preview"
       null_value_label: "No value"
@@ -464,6 +486,8 @@ en:
       errors:
         required: '%{field} cannot be empty'
         number: '%{field} is not a valid number'
+        maxlength: '%{field} cannot contain more than %{maxLength} digit(s)'
+        minlength: '%{field} cannot contain less than %{minLength} digit(s)'
 
     error_could_not_resolve_version_name: "Couldn't resolve version name"
     error_could_not_resolve_user_name: "Couldn't resolve user name"

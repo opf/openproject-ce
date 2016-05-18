@@ -74,6 +74,26 @@ module Pages
       Setting.per_page_options = "#{n}, 50, 100"
     end
 
+    def expect_current_path
+      uri = URI.parse(current_url)
+      expected_path = uri.path
+      expected_path += '?' + uri.query if uri.query
+
+      expect(expected_path).to eql path
+    end
+
+    def expect_notification(type: :success, message:)
+      expect(page).to have_selector(".notification-box.-#{type}", text: message)
+    end
+
+    def dismiss_notification!
+      page.find('.notification-box--close').click
+    end
+
+    def expect_no_notification(type: :success, message: nil)
+      expect(page).to have_no_selector(".notification-box.-#{type}", text: message)
+    end
+
     def path
       nil
     end

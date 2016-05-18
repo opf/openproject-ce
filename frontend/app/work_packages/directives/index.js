@@ -34,67 +34,15 @@ angular.module('openproject.workPackages.directives')
     'WorkPackageService',
     'QueryService', require('./query-columns-directive')
   ])
-  .directive('queryFilter', [
-    'WorkPackageLoadingHelper',
-    'QueryService',
-    'PaginationService',
-    'I18n',
-    'OPERATORS_NOT_REQUIRING_VALUES',
-    '$timeout',
-    '$animate', require('./query-filter-directive')
-  ])
-  .constant('ADD_FILTER_SELECT_INDEX', -1)
-  .directive('queryFilters', [
-    '$timeout',
-    'FiltersHelper',
-    'I18n',
-    'ADD_FILTER_SELECT_INDEX', require('./query-filters-directive')
-  ])
   .directive('queryForm', require('./query-form-directive'))
-  .directive('sortHeader', [
-    'I18n', require('./sort-header-directive')
-  ])
-  .directive('workPackageColumn', ['PathHelper', 'WorkPackagesHelper',
-    'UserService',
-    require('./work-package-column-directive')
-  ])
   .constant('PERMITTED_MORE_MENU_ACTIONS', [
-    'log_time',
-    'move',
-    'delete'
-  ])
-  .directive('workPackageDetailsToolbar', [
-    'PERMITTED_MORE_MENU_ACTIONS',
-    '$state',
-    '$window',
-    '$location',
-    'I18n',
-    'HookService',
-    'WorkPackageService',
-    'WorkPackageAuthorization',
-    require('./work-package-details-toolbar-directive')
+    { key: 'log_time', link: 'logTime', resource: 'workPackage' },
+    { key: 'move', link: 'move', resource: 'workPackage' },
+    { key: 'delete', link: 'delete', resource: 'workPackage' },
+    { key: 'copy', link: 'createWorkPackage', resource: 'project' }
   ])
   .directive('workPackageDynamicAttribute', ['$compile', require(
     './work-package-dynamic-attribute-directive')])
-  .directive('workPackageGroupHeader', require(
-    './work-package-group-header-directive'))
-  .directive('workPackageGroupSums', require(
-    './work-package-group-sums-directive'))
-  .directive('workPackageRow', ['I18n', 'WorkPackagesTableService', require(
-    './work-package-row-directive')])
-  .directive('workPackageTotalSums', [
-    'WorkPackageService',
-    require('./work-package-total-sums-directive')
-  ])
-  .directive('workPackagesTable', [
-    'I18n',
-    'WorkPackagesTableService',
-    '$window',
-    '$timeout',
-    'featureFlags',
-    'PathHelper',
-    require('./work-packages-table-directive')
-  ])
   .directive('workPackageAttachments', [
     'WorkPackageAttachmentsService',
     'NotificationsService',
@@ -107,11 +55,6 @@ angular.module('openproject.workPackages.directives')
   .directive('workPackageWatcher', [
     'I18n',
     require('./work-package-watcher-directive')
-  ])
-  .directive('workPackageWatcherButton', [
-    'I18n',
-    'WorkPackageService',
-    require('./work-package-watcher-button-directive')
   ])
   .directive('workPackageWatchersLookup', [
     'I18n',

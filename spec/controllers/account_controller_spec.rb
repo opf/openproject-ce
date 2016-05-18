@@ -171,10 +171,8 @@ describe AccountController, type: :controller do
     end
   end
 
-  describe '#login with omniauth_direct_login enabled' do
-    before do
-      allow(Concerns::OmniauthLogin).to receive(:direct_login_provider).and_return('some_provider')
-    end
+  describe '#login with omniauth_direct_login enabled',
+            with_config: { omniauth_direct_login_provider: 'some_provider' } do
 
     describe 'GET' do
       it 'redirects to some_provider' do
@@ -291,6 +289,7 @@ describe AccountController, type: :controller do
   context 'POST #register' do
     context 'with self registration on automatic' do
       before do
+        allow(OpenProject::Configuration).to receive(:disable_password_login?).and_return(false)
         allow(Setting).to receive(:self_registration).and_return('3')
       end
 

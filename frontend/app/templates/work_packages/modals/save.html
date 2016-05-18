@@ -1,6 +1,6 @@
 <div class="ng-modal-window">
   <div class="ng-modal-inner">
-    <div class="modal-header"><i class="icon-close" ng-click="modal.closeMe()" title="{{ ::I18n.t('js.close_popup_title') }}"></i></div>
+    <div class="modal-header"><a><i class="icon-close" ng-click="modal.closeMe()" title="{{ ::I18n.t('js.close_popup_title') }}"></i></a></div>
 
     <h3>{{ ::I18n.t('js.label_save_as') }}</h3>
 
@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="form--space">
-        <button class="button -highlight -with-icon icon-yes"
+        <button class="button -highlight -with-icon icon-checkmark"
           ng-click="saveQueryAs(queryName)"
           ng-disabled="modalSaveForm.$invalid">
           {{ ::I18n.t('js.modals.button_save') }}

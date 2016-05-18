@@ -30,15 +30,15 @@ See doc/COPYRIGHT.rdoc for more details.
 <h2 class="legacy-heading">
   <% if @page.parent %>
     <% breadcrumb_for_page(@page.parent, l("create_new_page")) %>
-    <%= l("create_child_page_for", title: @page.parent.pretty_title) %>
   <% else %>
     <% breadcrumb_paths(l("create_new_page")) %>
-    <%= l("create_new_page") %>
   <% end %>
+  <%= l("create_new_page") %>
 </h2>
 
-<%= labelled_tabular_form_for @content, as: :content, url: wiki_create_path(project_id: @project), html: {method: :post, multipart: true, id: 'wiki_form'} do |f| %>
+<% html_title l("create_new_page") %>
 
+<%= labelled_tabular_form_for @content, as: :content, url: create_project_wiki_index_path(project_id: @project), html: {method: :post, multipart: true, id: 'wiki_form'} do |f| %>
   <%= error_messages_for 'page' %>
 
     <div class="form--field -required">
@@ -47,9 +47,24 @@ See doc/COPYRIGHT.rdoc for more details.
         <%= page_fields.text_field :title, size: 120 %>
       <% end %>
     </div>
-    <div class="form--field -required -vertical">
-      <%= f.text_area :text, cols: 100, rows: 25, class: 'wiki-edit', accesskey: accesskey(:edit),
-                      :'ng-non-bindable' => '' %>
+    <% if @page.parent %>
+      <div class="form--field -required">
+        <%= f.fields_for :page, @page do |page_fields| %>
+          <%= page_fields.select :parent_id,
+                "<option value=''></option>".html_safe + wiki_page_options_for_select(@wiki.pages,
+                                                                                      @page.parent),
+                {label: WikiPage.human_attribute_name(:parent_title)},
+                {class: "parent-select form--select"} %>
+        <% end%>
+      </div>
+    <% end %>
+    <div class="attributes-group">
+      <div class="attributes-group--header">
+        <div class="attributes-group--header-container">
+          <h3 class="attributes-group--header-text"><%= WikiPage.human_attribute_name(:text) %></h3>
+         </div>
+       </div>
+      <%= f.text_area :text, :cols => 100, :rows => 25, :class => 'wiki-edit', :accesskey => accesskey(:edit) %>
     </div>
 
     <div class="form--field">
@@ -58,9 +73,9 @@ See doc/COPYRIGHT.rdoc for more details.
 
     <%= render partial: 'attachments/form', f: f %>
 
-  <hr class="form--separator">
-  <%= f.button l(:button_save), class: 'button -highlight -with-icon icon-yes' %>
-  <%= preview_link preview_wiki_path(@project), 'wiki_form-preview' %>
+  <hr class="form--separator" />
+  <%= f.button l(:button_save), class: 'button -highlight -with-icon icon-checkmark' %>
+  <%= preview_link preview_project_wiki_index_path(@project), 'wiki_form-preview' %>
 
   <%= wikitoolbar_for 'content_text' %>
 <% end %>

@@ -1,6 +1,7 @@
 <div class="ng-modal-window">
   <div class="ng-modal-inner modal-content">
-    <div class="modal-header"><i class="icon-close" ng-click="modal.closeMe()" title="{{ ::I18n.t('js.close_popup_title') }}"></i></div>
+    <div class="modal-header">
+      <a><i class="icon-close" ng-click="modal.closeMe()" title="{{ ::I18n.t('js.close_popup_title') }}"></i></a></div>
 
     <h3>{{ ::I18n.t('js.label_sorting') }}</h3>
 
@@ -8,17 +9,20 @@
       <div id="modal-sorting" class="modal-content-container" cg-busy="promise">
         <div class="form--row" ng-repeat="element in sortElements">
           <div class="form--field -full-width">
+            <label
+               for="modal-sorting-attribute-{{$index}}"
+               class="form--label hidden-for-sighted">
+              {{ I18n.t('js.filter.sorting.criteria.' + { 1: 'one', 2: 'two', 3: 'three'}[$index + 1]) }}
+            </label>
             <div class="form--field-container">
-              <ui-select ng-model="element[0]" theme="select2" focus="!$index" aria-labelledby="sorting_select_description">
-                <ui-select-match>{{$select.selected.label}}</ui-select-match>
-                <ui-select-choices repeat="column as column in getRemainingAvailableColumnsData() | filter: { label: $select.search } | orderBy:'label'">
-                  <div ng-bind-html="column.label | highlight: $select.search"></div>
-                </ui-select-choices>
-              </ui-select>
-              <div class="form--tooltip-container">
-                <span class="tooltip--right -multiline" tabindex="0" data-tooltip="{{ ::I18n.t('js.work_packages.label_column_select') }}" aria-labelledby="sorting_select_description">
-                  <i class="icon icon-help1"></i>
-                </span>
+              <div class="form--select-container">
+                <select
+                   id="modal-sorting-attribute-{{$index}}"
+                   ng-model="element[0]"
+                   focus="!$index"
+                   class="form--select"
+                   ng-options="column.label for column in getRemainingAvailableColumnsData(element[0]) track by column.id">
+                </select>
               </div>
             </div>
           </div>
@@ -26,27 +30,24 @@
             <div class="form--field-container">
               <label class="option-label">
                 <input type="radio"
-                       tabindex="0"
                        ng-model="element[1]"
                        ng-required="element[0].id"
                        ng-disabled="!element[0].id"
-                       ng-value="availableDirectionsData[1]">
+                       ng-value="availableDirectionsData[1]"
+                       name="modal-sorting-attribute-{{$index}}--sort-direction">
                 {{availableDirectionsData[1].label}}
               </label>
               <label class="option-label">
                 <input type="radio"
-                       tabindex="0"
                        ng-model="element[1]"
                        ng-required="element[0].id"
                        ng-disabled="!element[0].id"
-                       ng-value="availableDirectionsData[0]">
+                       ng-value="availableDirectionsData[0]"
+                       name="modal-sorting-attribute-{{$index}}--sort-direction">
                 {{availableDirectionsData[0].label}}
               </label>
             </div>
           </div>
-        </div>
-        <div id="sorting_select_description" class="hidden-for-sighted">
-          {{ ::I18n.t('js.work_packages.label_column_select') }}
         </div>
       </div>
       <button class="button -highlight"

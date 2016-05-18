@@ -41,11 +41,13 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
   }
   let(:self_link) { '/a/self/link' }
   let(:embedded) { true }
+  let(:action) { :update }
   let(:representer) {
     described_class.create(schema,
                            form_embedded: embedded,
                            self_link: self_link,
-                           current_user: current_user)
+                           current_user: current_user,
+                           action: action)
   }
 
   before do
@@ -278,18 +280,6 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
         let(:required) { false }
         let(:writable) { false }
       end
-
-      context 'not allowed to view time entries' do
-        before do
-          allow(current_user).to receive(:allowed_to?).with(:view_time_entries,
-                                                            work_package.project)
-            .and_return false
-        end
-
-        it 'does not show spentTime' do
-          is_expected.not_to have_json_path('spentTime')
-        end
-      end
     end
 
     describe 'percentageDone' do
@@ -366,7 +356,51 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
         let(:type) { 'Project' }
         let(:name) { I18n.t('attributes.project') }
         let(:required) { true }
-        let(:writable) { false }
+        let(:writable) { true }
+      end
+
+      context 'when updating' do
+        it_behaves_like 'links to allowed values via collection link' do
+          let(:path) { 'project' }
+          let(:href) { api_v3_paths.available_projects_on_edit(work_package.id) }
+        end
+      end
+
+      context 'when creating' do
+        let(:action) { :create }
+
+        it_behaves_like 'links to allowed values via collection link' do
+          let(:path) { 'project' }
+          let(:href) { api_v3_paths.available_projects_on_create }
+        end
+      end
+
+      context 'when not embedded' do
+        let(:embedded) { false }
+
+        it_behaves_like 'does not link to allowed values' do
+          let(:path) { 'project' }
+        end
+      end
+    end
+
+    describe 'parentId' do
+      it_behaves_like 'has basic schema properties' do
+        let(:path) { 'parentId' }
+        let(:type) { 'Integer' }
+        let(:name) { I18n.t('activerecord.attributes.work_package.parent') }
+        let(:required) { false }
+        let(:writable) { true }
+      end
+    end
+
+    describe 'parent' do
+      it_behaves_like 'has basic schema properties' do
+        let(:path) { 'parent' }
+        let(:type) { 'WorkPackage' }
+        let(:name) { I18n.t('activerecord.attributes.work_package.parent') }
+        let(:required) { false }
+        let(:writable) { true }
       end
     end
 
@@ -492,6 +526,16 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
             let(:path) { 'assignee' }
           end
         end
+
+        context 'when not having a project (yet)' do
+          before do
+            work_package.project = nil
+          end
+
+          it_behaves_like 'does not link to allowed values' do
+            let(:path) { 'assignee' }
+          end
+        end
       end
 
       describe 'responsible' do
@@ -515,6 +559,16 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
             let(:path) { 'responsible' }
           end
         end
+
+        context 'when not having a project (yet)' do
+          before do
+            work_package.project = nil
+          end
+
+          it_behaves_like 'does not link to allowed values' do
+            let(:path) { 'responsible' }
+          end
+        end
       end
     end
 
@@ -524,6 +578,48 @@ describe ::API::V3::WorkPackages::Schema::WorkPackageSchemaRepresenter do
           .and_call_original
         representer.to_json
       end
+    end
+  end
+
+  describe '#cache_key' do
+    def joined_cache_key
+      representer.cache_key.join('/')
+    end
+
+    before do
+      allow(work_package.project)
+        .to receive(:all_work_package_custom_fields)
+        .and_return []
+
+      original_cache_key
+    end
+
+    let(:original_cache_key) { joined_cache_key }
+
+    it 'changes when the project changes' do
+      work_package.project = FactoryGirl.build_stubbed(:project)
+
+      expect(joined_cache_key).to_not eql(original_cache_key)
+    end
+
+    it 'changes when the type updates' do
+      work_package.type.updated_at += 1.hour
+
+      expect(joined_cache_key).to_not eql(original_cache_key)
+    end
+
+    it 'changes when the type changes' do
+      work_package.type = FactoryGirl.build_stubbed(:type)
+
+      expect(joined_cache_key).to_not eql(original_cache_key)
+    end
+
+    it 'changes when the custom_fields changes' do
+      allow(work_package.project)
+        .to receive(:all_work_package_custom_fields)
+        .and_return [FactoryGirl.build_stubbed(:custom_field)]
+
+      expect(joined_cache_key).to_not eql(original_cache_key)
     end
   end
 end

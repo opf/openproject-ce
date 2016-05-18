@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 See doc/COPYRIGHT.rdoc for more details.
 
 ++#%>
+<% html_title(l(:label_administration), "#{ l('account.deletion_info.heading', name: @user.name)}") -%>
 <%= labelled_tabular_form_for :user, url: user_path(@user), html: { method: :delete, class: 'confirm_required form danger-zone' } do %>
   <div class='wiki'>
     <section class="form--section">
@@ -41,7 +42,7 @@ See doc/COPYRIGHT.rdoc for more details.
         <%= l("account.deletion_info.data_consequences.#{User.current == @user ? 'self' : 'other'}") %>
       </p>
       <p class="danger-zone--warning">
-        <span class="icon icon-attention2"></span>
+        <span class="icon icon-error"></span>
         <span><%= l("account.deletion_info.info.#{User.current == @user ? 'self' : 'other'}") %></span>
       </p>
       <p>

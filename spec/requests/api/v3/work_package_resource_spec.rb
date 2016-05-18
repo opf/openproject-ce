@@ -36,39 +36,11 @@ describe 'API v3 Work package resource', type: :request do
 
   let(:closed_status) { FactoryGirl.create(:closed_status) }
 
-  let!(:timeline)    { FactoryGirl.create(:timeline,     project_id: project.id) }
-  let!(:other_wp)    {
-    FactoryGirl.create(:work_package, project_id: project.id,
-                                      status: closed_status)
-  }
   let(:work_package) {
     FactoryGirl.create(:work_package, project_id: project.id,
-                                      description: description
+                                      description: 'lorem ipsum'
                       )
   }
-  let(:description) {
-    %{
-{{>toc}}
-
-h1. OpenProject Masterplan for 2015
-
-h2. three point plan
-
-# One ###{other_wp.id}
-# Two
-# Three
-
-h3. random thoughts
-
-h4. things we like
-
-* Pointed
-* Relaxed
-* Debonaire
-
-{{timeline(#{timeline.id})}}
-  }}
-
   let(:project) do
     FactoryGirl.create(:project, identifier: 'test_project', is_public: false)
   end
@@ -93,12 +65,17 @@ h4. things we like
 
   before do
     allow(User).to receive(:current).and_return current_user
+
+    # some way some of these specs rely on this setting being disabled
+    # so we set it excplicitly as a precondition
+    Setting.cross_project_work_package_relations = 0
   end
 
   describe '#get list' do
     subject { last_response }
 
     before(:each) do
+      work_package.save!
       get api_v3_paths.work_packages
     end
 
@@ -156,6 +133,38 @@ h4. things we like
 
       describe 'response body' do
         subject(:parsed_response) { JSON.parse(last_response.body) }
+        let!(:timeline)    { FactoryGirl.create(:timeline,     project_id: project.id) }
+        let!(:other_wp)    {
+          FactoryGirl.create(:work_package, project_id: project.id,
+                                            status: closed_status)
+        }
+        let(:work_package) {
+          FactoryGirl.create(:work_package, project_id: project.id,
+                                            description: description
+                            )
+        }
+        let(:description) {
+          %{
+      {{>toc}}
+
+      h1. OpenProject Masterplan for 2015
+
+      h2. three point plan
+
+      # One ###{other_wp.id}
+      # Two
+      # Three
+
+      h3. random thoughts
+
+      h4. things we like
+
+      * Pointed
+      * Relaxed
+      * Debonaire
+
+      {{timeline(#{timeline.id})}}
+        }}
 
         it 'should respond with work package in HAL+JSON format' do
           expect(parsed_response['id']).to eq(work_package.id)
@@ -512,6 +521,8 @@ h4. things we like
 
         context 'valid type changing custom fields' do
           let(:custom_field) { FactoryGirl.create(:work_package_custom_field) }
+          let(:custom_field_parameter) { { :"customField#{custom_field.id}" => true } }
+          let(:params) { valid_params.merge(type_parameter).merge(custom_field_parameter) }
 
           before do
             project.types << target_type
@@ -521,8 +532,10 @@ h4. things we like
 
           include_context 'patch request'
 
-          it 'responds with the new custom field added' do
-            expect(subject.body).to have_json_path("customField#{custom_field.id}")
+          it 'responds with the new custom field having the desired value' do
+            expect(subject.body)
+              .to be_json_eql(true.to_json)
+              .at_path("customField#{custom_field.id}")
           end
         end
 
@@ -546,6 +559,61 @@ h4. things we like
                      expected: '/api/v3/types/:id',
                      actual: type_link)
             }
+          end
+        end
+      end
+
+      context 'project' do
+        let(:target_project) do
+          FactoryGirl.create(:project, is_public: false)
+        end
+        let(:project_link) { api_v3_paths.project target_project.id }
+        let(:project_parameter) { { _links: { project: { href: project_link } } } }
+        let(:params) { valid_params.merge(project_parameter) }
+
+        before do
+          FactoryGirl.create :member,
+                             user: current_user,
+                             project: target_project,
+                             roles: [FactoryGirl.create(:role, permissions: [:move_work_packages])]
+
+          allow(User).to receive(:current).and_return current_user
+        end
+
+        context 'is changed' do
+          include_context 'patch request'
+
+          it 'is successful' do
+            expect(response.status).to eq(200)
+          end
+
+          it_behaves_like 'lock version updated'
+
+          it 'responds with the project changed' do
+            href = {
+              href: project_link,
+              title: target_project.name
+            }
+            expect(response.body).to be_json_eql(href.to_json).at_path('_links/project')
+          end
+        end
+
+        context 'with a custom field defined on the target project' do
+          let(:custom_field) { FactoryGirl.create(:work_package_custom_field) }
+          let(:custom_field_parameter) { { :"customField#{custom_field.id}" => true } }
+          let(:params) { valid_params.merge(project_parameter).merge(custom_field_parameter) }
+
+          before do
+            target_project.work_package_custom_fields << custom_field
+            work_package.type.custom_fields << custom_field
+          end
+
+          include_context 'patch request'
+
+          it 'responds with the new custom field having the desired value' do
+            expect(subject.body)
+              .to be_json_eql(true.to_json)
+              .at_path("customField#{custom_field.id}")
           end
         end
       end
@@ -963,6 +1031,155 @@ h4. things we like
 
       it 'does not delete the work package' do
         expect(WorkPackage.exists?(work_package.id)).to be_truthy
+      end
+    end
+  end
+
+  describe '#post' do
+    let(:path) { api_v3_paths.work_packages }
+    let(:permissions) { [:add_work_packages, :view_project] }
+    let(:status) { FactoryGirl.build(:status, is_default: true) }
+    let(:priority) { FactoryGirl.build(:priority, is_default: true) }
+    let(:type) { project.types.first }
+    let(:parameters) do
+      {
+        subject: 'new work packages',
+        _links: {
+          type: {
+            href: api_v3_paths.type(type.id)
+          },
+          project: {
+            href: api_v3_paths.project(project.id)
+          }
+        }
+      }
+    end
+
+    before do
+      status.save!
+      priority.save!
+
+      FactoryGirl.create(:user_preference, user: current_user, others: { no_self_notified: false })
+      post path, parameters.to_json, 'CONTENT_TYPE' => 'application/json'
+    end
+
+    context 'notifications' do
+      let(:permissions) { [:add_work_packages, :view_project, :view_work_packages] }
+
+      it 'sends a mail by default' do
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+      end
+
+      context 'without notifications' do
+        let(:path) { "#{api_v3_paths.work_packages}?notify=false" }
+
+        it 'should not send a mail' do
+          expect(ActionMailer::Base.deliveries.count).to eq(0)
+        end
+      end
+
+      context 'with notifications' do
+        let(:path) { "#{api_v3_paths.work_packages}?notify=true" }
+
+        it 'should send a mail' do
+          expect(ActionMailer::Base.deliveries.count).to eq(1)
+        end
+      end
+    end
+
+    it 'should return Created(201)' do
+      expect(last_response.status).to eq(201)
+    end
+
+    it 'should create a work package' do
+      expect(WorkPackage.all.count).to eq(1)
+    end
+
+    it 'should use the given parameters' do
+      expect(WorkPackage.first.subject).to eq(parameters[:subject])
+    end
+
+    it 'should be associated with the provided project' do
+      expect(WorkPackage.first.project).to eq(project)
+    end
+
+    it 'should be associated with the provided type' do
+      expect(WorkPackage.first.type).to eq(type)
+    end
+
+    context 'no permissions' do
+      let(:current_user) { FactoryGirl.create(:user) }
+
+      it 'should hide the endpoint' do
+        expect(last_response.status).to eq(403)
+      end
+    end
+
+    context 'view_project permission' do
+      # Note that this just removes the add_work_packages permission
+      # view_project is actually provided by being a member of the project
+      let(:permissions) { [:view_project] }
+
+      it 'should point out the missing permission' do
+        expect(last_response.status).to eq(403)
+      end
+    end
+
+    context 'empty parameters' do
+      let(:parameters) { {} }
+
+      it_behaves_like 'multiple errors', 422
+
+      it 'should not create a work package' do
+        expect(WorkPackage.all.count).to eq(0)
+      end
+    end
+
+    context 'bogus parameters' do
+      let(:parameters) do
+        {
+          bogus: 'bogus',
+          _links: {
+            type: {
+              href: api_v3_paths.type(project.types.first.id)
+            },
+            project: {
+              href: api_v3_paths.project(project.id)
+            }
+          }
+        }
+      end
+
+      it_behaves_like 'constraint violation' do
+        let(:message) { "Subject can't be blank" }
+      end
+
+      it 'should not create a work package' do
+        expect(WorkPackage.all.count).to eq(0)
+      end
+    end
+
+    context 'invalid value' do
+      let(:parameters) do
+        {
+          subject: nil,
+          _links: {
+            type: {
+              href: api_v3_paths.type(project.types.first.id)
+            },
+            project: {
+              href: api_v3_paths.project(project.id)
+            }
+          }
+        }
+      end
+
+      it_behaves_like 'constraint violation' do
+        let(:message) { "Subject can't be blank" }
+      end
+
+      it 'should not create a work package' do
+        expect(WorkPackage.all.count).to eq(0)
       end
     end
   end

@@ -1,0 +1,158 @@
+#-- copyright
+# OpenProject is a project management system.
+# Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License version 3.
+#
+# OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
+# Copyright (C) 2006-2013 Jean-Philippe Lang
+# Copyright (C) 2010-2013 the ChiliProject Team
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+# See doc/COPYRIGHT.rdoc for more details.
+#++
+
+require 'support/pages/page'
+
+module Pages
+  class AbstractWorkPackage < Page
+    attr_reader :work_package
+
+    def initialize(work_package)
+      @work_package = work_package
+    end
+
+    def visit_tab!(tab)
+      visit path(tab)
+    end
+
+    def edit_field(attribute, context)
+      WorkPackageField.new(context, attribute)
+    end
+
+    def expect_subject
+      within(container) do
+        expect(page).to have_content(work_package.subject)
+      end
+    end
+
+    def ensure_page_loaded
+      tries = 0
+      begin
+        find('.work-package-details-activities-activity-contents .user',
+             text: work_package.journals.last.user.name,
+             wait: 10)
+      rescue => e
+        # HACK This error may happen since activities are loaded several times
+        # in the old resource, and may cause a reload.
+        tries += 1
+        retry unless tries > 5
+      end
+    end
+
+    def expect_attributes(attribute_expectations)
+      attribute_expectations.each do |label_name, value|
+        label = label_name.to_s
+
+        expect(page).to have_selector(".wp-edit-field.#{label.camelize(:lower)}", text: value)
+      end
+    end
+
+    def expect_attribute_hidden(label)
+      expect(page).not_to have_selector(".wp-edit-field.#{label.downcase}")
+    end
+
+    def expect_activity(user, number: nil)
+      container = '#work-package-activites-container'
+      container += " #activity-#{number}" if number
+
+      expect(page).to have_selector(container + ' .user', text: user.name)
+    end
+
+    def expect_parent(parent = nil)
+      parent ||= work_package.parent
+
+      expect(parent).to_not be_nil
+
+      visit_tab!('relations')
+
+      expect(page).to have_selector('.relation.parent .content',
+                                    text: "##{parent.id} #{parent.subject}")
+    end
+
+    def update_attributes(key_value_map)
+      set_attributes(key_value_map)
+    end
+
+    def set_attributes(key_value_map)
+      key_value_map.each_with_index.map do |(key, value), index|
+        field = WorkPackageField.new(page, key)
+        field.activate_edition
+
+        field.set_value value
+        field.save!
+
+        unless index == key_value_map.length - 1
+          ensure_no_conflicting_modifications
+        end
+      end
+    end
+
+    def add_child
+      visit_tab!('relations')
+
+      page.find('.relation a', text: I18n.t('js.relation_labels.children')).click
+
+      click_button I18n.t('js.relation_buttons.add_child')
+
+      create_page(parent_work_package: work_package)
+    end
+
+    def visit_copy!
+      page = create_page(original_work_package: work_package)
+      page.visit!
+
+      page
+    end
+
+    def view_all_attributes
+      # click_link does not work for reasons(TM)
+
+      page.find('a', text: I18n.t('js.label_show_attributes')).click
+    end
+
+    def trigger_edit_mode
+      page.click_button(I18n.t('js.button_edit'))
+    end
+
+    def save!
+      page.click_button(I18n.t('js.button_save'))
+    end
+
+    private
+
+    def create_page(_args)
+      raise NotImplementedError
+    end
+
+    def ensure_no_conflicting_modifications
+      expect_notification(message: 'Successful update')
+      dismiss_notification!
+      expect_no_notification(message: 'Successful update')
+    end
+  end
+end

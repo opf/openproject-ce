@@ -36,6 +36,13 @@ module API
         class ApiV3Path
           extend API::Utilities::UrlHelper
 
+          # Determining the root_path on every url we want to render is
+          # expensive. As the root_path will not change within a
+          # request, we can cache the first response on each request.
+          def self.root_path
+            RequestStore.store[:cached_root_path] ||= super
+          end
+
           def self.root
             "#{root_path}api/v3"
           end
@@ -48,8 +55,8 @@ module API
             "#{root}/attachments/#{id}"
           end
 
-          def self.attachment_download(id)
-            download_attachment_path(id)
+          def self.attachment_download(id, filename = nil)
+            download_attachment_path(id, filename)
           end
 
           def self.attachments_by_work_package(id)
@@ -68,6 +75,14 @@ module API
             "#{work_package(work_package_id)}/available_watchers"
           end
 
+          def self.available_projects_on_edit(work_package_id)
+            "#{work_package(work_package_id)}/available_projects"
+          end
+
+          def self.available_projects_on_create
+            "#{work_packages}/available_projects"
+          end
+
           def self.categories(project_id)
             "#{project(project_id)}/categories"
           end
@@ -80,7 +95,11 @@ module API
             "#{root}/configuration"
           end
 
-          def self.create_work_package_form(project_id)
+          def self.create_work_package_form
+            "#{work_packages}/form"
+          end
+
+          def self.create_project_work_package_form(project_id)
             "#{work_packages_by_project(project_id)}/form"
           end
 
@@ -224,6 +243,10 @@ module API
 
           def self.work_package_schema(project_id, type_id)
             "#{root}/work_packages/schemas/#{project_id}-#{type_id}"
+          end
+
+          def self.work_package_sums_schema
+            "#{root}/work_packages/schemas/sums"
           end
 
           def self.work_package_watchers(id)

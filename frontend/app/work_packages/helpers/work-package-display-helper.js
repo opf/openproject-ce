@@ -31,23 +31,32 @@ module.exports = function(WorkPackageFieldService, $window, $timeout) {
   // specifies unhideable (during creation)
   var unhideableFields = [
     'subject',
-    'type',
-    'status',
-    'description',
-    'priority',
-    'assignee',
-    'percentageDone'
+    'description'
   ];
   var firstTimeFocused = false;
   var isGroupHideable = function (groupedFields, groupName, workPackage, cb) {
         if (!workPackage) {
           return true;
         }
+
+        if (groupName === 'details') {
+          return false; // never hide details to keep show all button arround
+        }
+
         var group = _.find(groupedFields, {groupName: groupName});
         var isHideable = typeof cb === 'undefined' ? isFieldHideable : cb;
-        return _.every(group.attributes, function(field) {
+        return group.attributes.length === 0 || _.every(group.attributes, function(field) {
           return isHideable(workPackage, field);
         });
+      },
+      isGroupEmpty = function (groupedFields, groupName) {
+        var group = _.find(groupedFields, {groupName: groupName});
+
+        return group.attributes.length === 0;
+      },
+      shouldHideGroup = function(hideEmptyActive, groupedFields, groupName, workPackage, cb) {
+        return hideEmptyActive && isGroupHideable(groupedFields, groupName, workPackage, cb) ||
+          !hideEmptyActive && isGroupEmpty(groupedFields, groupName);
       },
       isFieldHideable = function (workPackage, field) {
         if (!workPackage) {
@@ -69,10 +78,6 @@ module.exports = function(WorkPackageFieldService, $window, $timeout) {
 
         if (_.contains(unhideableFields, field)) {
           return !WorkPackageFieldService.isEditable(workPackage, field);
-        }
-
-        if (WorkPackageFieldService.isRequired(workPackage, field)) {
-          return false;
         }
 
         return WorkPackageFieldService.isHideable(workPackage, field);
@@ -116,6 +121,8 @@ module.exports = function(WorkPackageFieldService, $window, $timeout) {
 
   return {
     isGroupHideable: isGroupHideable,
+    isGroupEmpty: isGroupEmpty,
+    shouldHideGroup: shouldHideGroup,
     isFieldHideable: isFieldHideable,
     isFieldHideableOnCreate: isFieldHideableOnCreate,
     isSpecified: isSpecified,

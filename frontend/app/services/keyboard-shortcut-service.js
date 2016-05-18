@@ -47,15 +47,15 @@ module.exports = function($window, $rootScope, $timeout, PathHelper) {
   var shortcuts = {
     '?': showHelpModal,
     'up up down down left right left right b a enter': showHelpModal,
-    'g m': 'staticMyPagePath',
-    'g o': projectScoped('staticProjectPath'),
-    'g w p': projectScoped('staticProjectWorkPackagesPath'),
-    'g w i': projectScoped('staticProjectWikiPath'),
+    'g m': 'myPagePath',
+    'g o': projectScoped('projectPath'),
+    'g w p': projectScoped('projectWorkPackagesPath'),
+    'g w i': projectScoped('projectWikiPath'),
     'g a': projectScoped('activityFromPath'),
-    'g c': projectScoped('staticProjectCalendarPath'),
-    'g n': projectScoped('staticProjectNewsPath'),
-    'g t': projectScoped('staticProjectTimelinesPath'),
-    'n w p': projectScoped('staticWorkPackageNewWithParametersPath'),
+    'g c': projectScoped('projectCalendarPath'),
+    'g n': projectScoped('projectNewsPath'),
+    'g t': projectScoped('projectTimelinesPath'),
+    'n w p': projectScoped('projectWorkPackageNewPath'),
 
     'g e': accessKey('edit'),
     'g p': accessKey('preview'),
@@ -116,7 +116,7 @@ module.exports = function($window, $rootScope, $timeout, PathHelper) {
   }
 
   function showHelpModal() {
-    modalHelperInstance.createModal(PathHelper.staticKeyboardShortcutsHelpPath());
+    modalHelperInstance.createModal(PathHelper.keyboardShortcutsHelpPath());
   }
 
   // this could be extracted into a separate component if it grows
@@ -128,7 +128,7 @@ module.exports = function($window, $rootScope, $timeout, PathHelper) {
     focusElements = [];
     domLists = angular.element(accessibleListSelector);
     domLists.find('tbody tr').each(function(index, tr){
-      var firstLink = angular.element(tr).find('a:visible:not(.toggle-all)')[0];
+      var firstLink = angular.element(tr).find(':visible:tabbable:not(.toggle-all, input)')[0];
       if ( firstLink !== undefined ) { focusElements.push(firstLink); }
     });
     return focusElements;
@@ -142,7 +142,7 @@ module.exports = function($window, $rootScope, $timeout, PathHelper) {
       angular
         .element(document.activeElement)
         .parents(accessibleRowSelector)
-        .find('a:visible')[0]
+        .find(':visible:tabbable:not(input)')[0]
     );
     angular.element(list[(index+offset+list.length) % list.length]).focus();
   }

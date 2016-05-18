@@ -43,7 +43,7 @@ module WatchersHelper
     path = send(:"#{(watched ? 'unwatch' : 'watch')}_path", object_type: object.class.to_s.underscore.pluralize,
                                                             object_id: object.id,
                                                             replace: options.delete('replace'))
-    html_options[:class] = html_options[:class].to_s + (watched ? ' icon icon-watch-1' : ' icon icon-not-watch')
+    html_options[:class] = html_options[:class].to_s + ' button'
 
     method = watched ?
       :delete :
@@ -53,7 +53,11 @@ module WatchersHelper
       l(:button_unwatch) :
       l(:button_watch)
 
-    link_to(label, path, html_options.merge(remote: true, method: method))
+    link_to(content_tag(:i,'', class: watched ? 'button--icon icon-watched' : ' button--icon icon-unwatched') +
+      content_tag(:span, label, class: 'button--text'), path, html_options.merge(remote: true, method: method))
+
+
+
   end
 
   # Returns HTML for a list of users watching the given object

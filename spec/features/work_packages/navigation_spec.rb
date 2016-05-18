@@ -53,9 +53,8 @@ RSpec.feature 'Work package navigation', js: true, selenium: true do
     split_work_package.expect_subject
     split_work_package.expect_current_path
 
-    # open work package full screen
-
-    full_work_package = global_work_packages.open_full_screen(work_package)
+    # Go to full screen by double click
+    full_work_package = global_work_packages.open_full_screen_by_doubleclick(work_package)
 
     full_work_package.expect_subject
     full_work_package.expect_current_path
@@ -84,9 +83,18 @@ RSpec.feature 'Work package navigation', js: true, selenium: true do
     split_project_work_package.expect_subject
     split_project_work_package.expect_current_path
 
-    # open work package full screen
+    # open work package full screen by button
+    full_work_package = project_work_packages.open_full_screen_by_button(work_package)
 
-    full_work_package = project_work_packages.open_full_screen(work_package)
+    full_work_package.expect_subject
+    full_work_package.expect_current_path
+
+    # Back to table
+    global_work_packages.visit!
+    global_work_packages.expect_work_package_listed(work_package)
+
+    # Link to full screen from index
+    global_work_packages.open_full_screen_by_link(work_package)
 
     full_work_package.expect_subject
     full_work_package.expect_current_path
@@ -99,6 +107,6 @@ RSpec.feature 'Work package navigation', js: true, selenium: true do
     visit '/work_packages/0'
 
     expect(page).to have_selector('.errorExplanation',
-                                  text: I18n.t('notice_file_not_found'))
+                                  text: I18n.t('notice_not_authorized'))
   end
 end

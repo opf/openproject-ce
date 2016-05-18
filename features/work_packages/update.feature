@@ -74,53 +74,6 @@ Feature: Updating work packages
     And I am already logged in as "manager"
 
   @javascript
-  Scenario: Updating the work package and seeing the results on the show page
-    When I go to the edit page of the work package called "wp1"
-    And I click the edit work package button
-    And I click on "Show all"
-    And I fill in the following:
-      | Type           | Phase2      |
-    # This is to be removed once the bug
-    # that clears the inserted/selected values
-    # after a type refresh is fixed.
-    And I wait for the AJAX requests to finish
-    And I fill in the following:
-      | Responsible    | the manager |
-      | Assignee       | the manager |
-      | Start date     | 2013-03-04  |
-      | Due date       | 2013-03-06  |
-      | Estimated time | 5.00        |
-      | Progress (%)   | 30          |
-      | Priority       | prio2       |
-      | Status         | status2     |
-      | Subject        | New subject |
-      | Description    | Desc2       |
-    And I submit the form by the "Save" button
-    And I wait for the AJAX requests to finish
-    Then I should see "Successful update"
-    Then I should be on the page of the work package "New subject"
-    And the work package should be shown with the following values:
-      | Responsible    | the manager |
-      | Assignee       | the manager |
-      | Date           | 03/04/2013 - 03/06/2013 |
-      | Estimated time | 5.00        |
-      | Progress (%)   | 30          |
-      | Priority       | prio2       |
-      | Status         | status2     |
-      | Subject        | New subject |
-      | Type           | Phase2      |
-      | Description    | Desc2       |
-
-  @javascript
-  Scenario: User adds a comment to a work package with previewing the stuff before
-    When I go to the page of the issue "wp1"
-    And I click on the edit button
-    And I fill in a comment with "human horn"
-    And I preview the comment to be added and see "human horn"
-    And I submit the form by the "Save" button
-    And I should see the comment "human horn"
-
-  @javascript
   Scenario: On a work package with children a user should not be able to change attributes which are overridden by children
     And there are the following work packages in project "ecookbook":
       | subject | type   | status  | fixed_version | priority | done_ratio | estimated_hours | start_date | due_date   |
@@ -130,12 +83,8 @@ Feature: Updating work packages
       | child |
     When I go to the edit page of the work package "parent"
     And I click the edit work package button
-    And I click on "Show all"
     Then the work package should be shown with the following values:
-      | Priority       | prio2                   |
-      | Date           | 10/01/2015 - 10/30/2015 |
-      | Estimated time | 5                       |
-      | Progress (%)   | 50                      |
+      | Subject        | parent                   |
     And there should not be a "Progress \(%\)" field
     And there should not be a "Priority" field
     And there should not be a "Start date" field

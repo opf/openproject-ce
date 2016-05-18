@@ -27,19 +27,21 @@ See doc/COPYRIGHT.rdoc for more details.
 
 ++#%>
 
+<% html_title @copy ? l(:button_copy) : l(:button_move), l('activerecord.models.work_package') %>
 <h2><%= @copy ? l(:button_copy) : l(:button_move) %></h2>
 <ul>
   <% @work_packages.each do |work_package| -%>
     <li><%= link_to_work_package work_package %></li>
   <% end -%>
 </ul>
-<%= styled_form_tag({action: 'create'}, id: 'move_form') do %>
+<%= styled_form_tag({action: 'create'}, id: 'move_form', class: '-wide-labels') do %>
   <%= @work_packages.collect {|i| hidden_field_tag('ids[]', i.id)}.join.html_safe %>
+  <%= back_url_hidden_field_tag %>
   <section class="form--section">
     <fieldset class="form--fieldset">
       <legend class="form--fieldset-legend"><%= l(:label_change_properties) %></legend>
       <div class="grid-block">
-        <div class="grid-content">
+        <div class="grid-content medium-6">
           <div class="form--field">
             <label class="form--label" for="new_project_id"><%= WorkPackage.human_attribute_name(:project) %>:</label>
             <div class="form--field-container">
@@ -94,7 +96,7 @@ See doc/COPYRIGHT.rdoc for more details.
             </div>
           </div>
         </div>
-        <div class="grid-content">
+        <div class="grid-content medium-6">
           <div class="form--field">
             <label class="form--label" for='start_date'><%= WorkPackage.human_attribute_name(:start_date) %></label>
             <div class="form--field-container">

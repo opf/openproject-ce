@@ -92,7 +92,7 @@ Feature: Project Settings
     When I am already admin
     And  I go to the settings page of the project "project1"
     And  I select "project2" from "Subproject of"
-    And  I click on "Update" within "#content"
+    And  I click on "Save" within "#content"
     And  I follow "Copy" within "#content"
     And  I fill in "Name" with "Copied Project"
     And  I fill in "Identifier" with "cp"
@@ -175,9 +175,8 @@ Feature: Project Settings
     And   I go to the page of the planning element "pe2" of the project called "Copied Project"
     Then  I should see "pe2" within "#content"
 
-  @javascript @wip
+  @javascript
   Scenario: Copying a project with a complex issue
-    # FIXME 16364 assignee is not shown on work package views (full and split screen)
     Given the project "project1" has 1 version with:
       | name           | version1   |
       | description    | yeah, boy  |
@@ -202,7 +201,8 @@ Feature: Project Settings
     Then I should see "Started to copy project"
     And  I go to the work packages index page for the project "Copied Project"
     Then I should see "foo" within "#content"
-    And  I follow "foo" within "#content"
+    When I check "Select work package" within "tbody tr:first-of-type td.checkbox"
+    And I press "Activate Fullscreen view"
     Then I should see "Alice Alison" within "#content"
     And  I should see "foo" within "#content"
     And  I should see "Bob Bobbit" within "#content"

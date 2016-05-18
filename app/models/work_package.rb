@@ -62,7 +62,6 @@ class WorkPackage < ActiveRecord::Base
     order("#{Changeset.table_name}.committed_on ASC, #{Changeset.table_name}.id ASC")
   }
 
-
   scope :recently_updated, ->() {
     # Specified as a String due to https://github.com/rails/rails/issues/15405
     # TODO: change to Hash on upgrade to Rails 4.1.
@@ -314,21 +313,6 @@ class WorkPackage < ActiveRecord::Base
   end
 
   # RELATIONS
-  def delete_relations(work_package)
-    unless Setting.cross_project_work_package_relations?
-      work_package.relations_from.clear
-      work_package.relations_to.clear
-    end
-  end
-
-  def delete_invalid_relations(_invalid_work_packages)
-    invalid_work_package.each do |work_package|
-      work_package.relations.each do |relation|
-        relation.destroy unless relation.valid?
-      end
-    end
-  end
-
   # Returns true if this work package is blocked by another work package that is still open
   def blocked?
     !relations_to.detect { |ir| ir.relation_type == 'blocks' && !ir.from.closed? }.nil?
@@ -354,6 +338,10 @@ class WorkPackage < ActiveRecord::Base
     time_entries.build(attributes)
   end
 
+  def move_time_entries(project)
+    time_entries.update_all(project_id: project)
+  end
+
   def all_dependent_packages(except = [])
     except << self
     dependencies = []
@@ -373,7 +361,9 @@ class WorkPackage < ActiveRecord::Base
 
   def soonest_start
     @soonest_start ||= (
-      self_and_ancestors.map(&:relations_to)
+      self_and_ancestors.includes(relations_to: :from)
+                        .where(relations: { relation_type: Relation::TYPE_PRECEDES })
+                        .map(&:relations_to)
                         .flatten
                         .map(&:successor_soonest_start)
     ).compact.max
@@ -399,7 +389,10 @@ class WorkPackage < ActiveRecord::Base
   #   * the version it was already assigned to
   #     (to make sure, that you can still update closed tickets)
   def assignable_versions
-    @assignable_versions ||= (project.shared_versions.open + [Version.find_by(id: fixed_version_id_was)]).compact.uniq.sort
+    @assignable_versions ||= begin
+      current_version = fixed_version_id_changed? ? Version.find_by(id: fixed_version_id_was) : fixed_version
+      (project.assignable_versions + [current_version]).compact.uniq.sort
+    end
   end
 
   def kind
@@ -420,30 +413,17 @@ class WorkPackage < ActiveRecord::Base
     !due_date.nil? && (due_date < Date.today) && !closed?
   end
 
-  # TODO: move into Business Object and rename to update
-  # update for now is a public method defined by AR
-  def update_by!(user, attributes)
-    attributes = attributes.dup
-    raw_attachments = attributes.delete(:attachments)
-
-    update_by(user, attributes)
-
-    attach_files(raw_attachments)
-
-    save
-  end
-
-  def update_by(user, attributes)
-    add_journal(user, attributes.delete(:notes) || '')
-
-    add_time_entry_for(user, attributes.delete(:time_entry))
-    attributes.delete(:attachments)
-
-    self.attributes = attributes
-  end
-
   def is_milestone?
     type && type.is_milestone?
+  end
+
+  # Overwriting awesome nested set here as it considers unpersisted work
+  # packages to not be leaves.
+  # https://github.com/collectiveidea/awesome_nested_set/blob/master/lib/awesome_nested_set/model.rb#L135
+  # The OP workflow however requires to first create a WP before children can
+  # be assigned to it. Unpersisted WPs are hence always leaves.
+  def leaf?
+    new_record? || super
   end
 
   # Returns an array of status that user is able to apply
@@ -456,19 +436,11 @@ class WorkPackage < ActiveRecord::Base
       author == user,
       assigned_to_id_changed? ? assigned_to_id_was == user.id : assigned_to_id == user.id
     )
-    statuses << status unless statuses.empty?
     statuses << Status.default if include_default
-    statuses = statuses.uniq.sort
-    blocked? ? statuses.reject(&:is_closed?) : statuses
-  end
+    statuses.reject!(&:is_closed?) if blocked?
+    statuses << status
 
-  # Returns the total number of hours spent on this issue and its descendants
-  #
-  # Example:
-  #   spent_hours => 0.0
-  #   spent_hours => 50.2
-  def spent_hours(usr = User.current)
-    @spent_hours ||= compute_spent_hours(usr)
+    statuses.uniq.sort
   end
 
   # >>> issues.rb >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -501,63 +473,6 @@ class WorkPackage < ActiveRecord::Base
   def estimated_hours=(h)
     converted_hours = (h.is_a?(String) ? h.to_hours : h)
     write_attribute :estimated_hours, !!converted_hours ? converted_hours : h
-  end
-
-  # Saves an issue, time_entry, attachments, and a journal from the parameters
-  # Returns false if save fails
-  def save_issue_with_child_records(params, existing_time_entry = nil)
-    WorkPackage.transaction do
-      if params[:time_entry] && (params[:time_entry][:hours].present? || params[:time_entry][:comments].present?) && User.current.allowed_to?(:log_time, project)
-        @time_entry = existing_time_entry || TimeEntry.new
-        @time_entry.project = project
-        @time_entry.work_package = self
-        @time_entry.user = User.current
-        @time_entry.spent_on = Date.today
-        @time_entry.attributes = params[:time_entry]
-        time_entries << @time_entry
-      end
-
-      if valid?
-        attachments = Attachment.attach_files(self, params[:attachments])
-
-        # TODO: Rename hook
-        Redmine::Hook.call_hook(
-          :controller_issues_edit_before_save,
-          params: params,
-          issue: self,
-          time_entry: @time_entry,
-          journal: current_journal)
-        begin
-          if save
-            # TODO: Rename hook
-            Redmine::Hook.call_hook(
-              :controller_issues_edit_after_save,
-              params: params,
-              issue: self,
-              time_entry: @time_entry,
-              journal: current_journal)
-          else
-            raise ActiveRecord::Rollback
-          end
-        rescue ActiveRecord::StaleObjectError
-          attachments[:files].each(&:destroy)
-          error_message = l(:notice_locking_conflict)
-
-          journals_since = journals.after(lock_version)
-
-          if journals_since.any?
-            changes = journals_since.map { |j| "#{j.user.name} (#{j.created_at.to_s(:short)})" }
-            error_message << ' ' << l(:notice_locking_conflict_additional_information,
-                                      users: changes.join(', '))
-          end
-
-          error_message << ' ' << l(:notice_locking_conflict_reload_page)
-
-          errors.add :base, error_message
-          raise ActiveRecord::Rollback
-        end
-      end
-    end
   end
 
   # >>> issues.rb >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -615,6 +530,33 @@ class WorkPackage < ActiveRecord::Base
     allowed = user.allowed_to? :edit_work_package_notes, project,  global: project.present?
     allowed = user.allowed_to? :edit_own_work_package_notes, project,  global: project.present?  unless allowed
     allowed
+  end
+
+  # Adds the 'virtual' attribute 'hours' to the result set.  Using the
+  # patch in config/initializers/eager_load_with_hours, the value is
+  # returned as the #hours attribute on each work package.
+  def self.include_spent_hours(user)
+    WorkPackage::SpentTime.new(user).scope('time_per_wp')
+      .select('time_per_wp.hours')
+  end
+
+  # Returns the total number of hours spent on this work package and its descendants.
+  # The result can be a subset of the actual spent time in cases where the user's permissions
+  # are limited, i.e. he lacks the view_time_entries and/or view_work_packages permission.
+  #
+  # Example:
+  #   spent_hours => 0.0
+  #   spent_hours => 50.2
+  #
+  #   The value can stem from either eager loading the value via
+  #   WorkPackage.include_spent_hours in which case the work package has an
+  #   #hours attribute or it is loaded on calling the method.
+  def spent_hours(user = User.current)
+    if respond_to?(:hours)
+      hours.to_f
+    else
+      compute_spent_hours(user)
+    end || 0.0
   end
 
   protected
@@ -716,6 +658,12 @@ class WorkPackage < ActiveRecord::Base
   # the user is allowed to move a work package to
   def self.allowed_target_projects_on_move(user)
     Project.where(Project.allowed_to_condition(user, :move_work_packages))
+  end
+
+  # Returns a scope for the projects
+  # the user is create a work package in
+  def self.allowed_target_projects_on_create(user)
+    Project.where(Project.allowed_to_condition(user, :add_work_packages))
   end
 
   # Do not redefine alias chain on reload (see #4838)
@@ -937,11 +885,12 @@ class WorkPackage < ActiveRecord::Base
     end
   end
 
-  def compute_spent_hours(usr = User.current)
-    spent_time = TimeEntry.visible(usr)
-                 .on_work_packages(self_and_descendants.visible(usr))
-                 .sum(:hours)
-
-    spent_time || 0.0
+  def compute_spent_hours(user)
+    WorkPackage::SpentTime
+      .new(user, self)
+      .scope('time_per_wp')
+      .where(id: id)
+      .pluck('time_per_wp.hours')
+      .first
   end
 end

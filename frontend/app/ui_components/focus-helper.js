@@ -28,6 +28,19 @@
 
 // TODO move to UI components
 module.exports = function($timeout, FOCUSABLE_SELECTOR) {
+
+  var minimumOffsetForNewSwitchInMs = 50;
+  var lastFocusSwitch = -minimumOffsetForNewSwitchInMs;
+
+  function throttleAndCheckIfAllowedFocusChange() {
+    var allowFocusSwitch = (Date.now() - lastFocusSwitch) >= minimumOffsetForNewSwitchInMs;
+
+    // Always update so that a chain of focus-change-requests gets considered as one
+    lastFocusSwitch = Date.now();
+
+    return allowFocusSwitch;
+  }
+
   var FocusHelper = {
     getFocusableElement: function(element) {
       var focusser = element.find('input.ui-select-focusser');
@@ -50,18 +63,22 @@ module.exports = function($timeout, FOCUSABLE_SELECTOR) {
           $focusable = angular.element(focusable),
           isDisabled = $focusable.is('[disabled]');
 
-      if(isDisabled) {
+      if(isDisabled && !$focusable.attr('ng-disabled')) {
         $focusable.removeProp('disabled');
       }
 
       focusable.focus();
 
-      if(isDisabled) {
+      if(isDisabled && !$focusable.attr('ng-disabled')) {
         $focusable.prop('disabled');
       }
     },
 
     focusElement: function(element) {
+      if (!throttleAndCheckIfAllowedFocusChange()) {
+        return;
+      }
+
       $timeout(function() {
         FocusHelper.focus(element);
       });

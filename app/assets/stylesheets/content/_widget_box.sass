@@ -103,7 +103,7 @@ $widget-box--enumeration-width: 20px
       li:before
         @include icon-common
         @extend .icon-context
-        content: "\e03f"
+        @extend .icon-arrow-right1:before
         display: inline-block
         font-size: 0.6rem
         color: $content-icon-link-color
@@ -124,3 +124,8 @@ $widget-box--enumeration-width: 20px
           //necessary for correct alignment even with long texts
           width: calc(100% - #{$widget-box--enumeration-width})
 
+@include breakpoint(680px down)
+  .widget-boxes
+    &.-flex
+      .widget-box
+        flex-basis: 100%

@@ -27,16 +27,17 @@
 //++
 
 angular.module('openproject.workPackages.services')
-  .service('WorkPackagesTableService', [
-    '$filter',
-    'QueryService',
-    'WorkPackagesTableHelper',
-    require('./work-packages-table-service')
-  ])
   .constant('WORK_PACKAGE_ATTRIBUTES', [
     {
       groupName: 'details',
-      attributes: ['type', 'status', 'percentageDone', 'date', 'priority', 'version', 'category']
+      attributes: [
+        'type',
+        'status',
+        'percentageDone',
+        ['startDate', 'dueDate'],
+        'priority',
+        'version',
+        'category']
     },
     {
       groupName: 'people',

@@ -1,0 +1,106 @@
+//-- copyright
+// OpenProject is a project management system.
+// Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License version 3.
+//
+// OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
+// Copyright (C) 2006-2013 Jean-Philippe Lang
+// Copyright (C) 2010-2013 the ChiliProject Team
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+//
+// See doc/COPYRIGHT.rdoc for more details.
+//++
+
+.work-package-table--container table.generic-table tbody td
+  padding-left: 0
+  line-height: 24px
+
+// Styles for inline editable attributes
+.work-package-table--container td.-editable
+  padding-top: 0
+  padding-bottom: 0
+  display: table-cell
+  width: auto
+
+  &:hover .wp-edit-field.-error:hover
+    border-color: $nm-color-error-border
+
+.wp-edit-field
+  padding-left: 0
+
+  // Avoid jumping subject field
+  &:first-of-type
+    padding: 0
+  &.-active
+    padding: 0
+
+  &.-error
+
+    .wp-table--cell-span,
+    input,
+    select
+      background: $nm-color-error-background
+      border-color: $nm-color-error-border
+
+      &:hover
+        border-color: lighten($nm-color-error-border, 10%)
+
+  form
+    width: 100%
+
+  .-hidden-overflow
+    overflow: hidden
+    text-overflow: ellipsis
+
+// Editable fields cursor
+.-editable .wp-table--cell-span
+  cursor: text
+  border-color: transparent
+  border-style: solid
+  border-radius: 2px
+  border-width: 1px
+  line-height: 1.6
+
+  &:hover,
+  &:focus
+    border-color: $inplace-edit--border-color
+
+    .work-package--placeholder
+      padding: 0 10px 0 0px
+
+// Default cursor on non-editable and id fields
+.wp-table--cell-span
+  padding: 0 5px 0 5px
+  cursor: not-allowed
+
+  &.id
+    cursor: pointer
+
+// Animations on leaving work packages
+.wp--row.-animated-leave
+  &.ng-leave
+    -webkit-transition: all 1s ease-in-out
+    -moz-transition: all 1s ease-in-out
+    -o-transition: all 1s ease-in-out
+    transition: all 1s ease-in-out
+
+  &.ng-leave-active
+    height: 0
+    line-height: 0
+    opacity: 0
+

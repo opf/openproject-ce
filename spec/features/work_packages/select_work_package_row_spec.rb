@@ -51,7 +51,8 @@ describe 'Select work package row', type: :feature, js:true, selenium: true do
 
   describe 'Work package row selection', js: true do
     def select_work_package_row(number, mouse_button_behavior = :left)
-      element = find(".work-package-table--container tr:nth-of-type(#{number}).issue td.id")
+      element = find(".work-package-table--container tr:nth-of-type(#{number}) .wp-table--cell.status")
+      loading_indicator_saveguard
       case mouse_button_behavior
       when :double
         element.double_click
@@ -63,7 +64,8 @@ describe 'Select work package row', type: :feature, js:true, selenium: true do
     end
 
     def select_work_package_row_with_shift(number)
-      element = find(".work-package-table--container tr:nth-of-type(#{number}).issue td.id")
+      element = find(".work-package-table--container tr:nth-of-type(#{number}) .wp-table--cell.status")
+      loading_indicator_saveguard
 
       page.driver.browser.action.key_down(:shift)
         .click(element.native)
@@ -72,7 +74,8 @@ describe 'Select work package row', type: :feature, js:true, selenium: true do
     end
 
     def select_work_package_row_with_ctrl(number)
-      element = find(".work-package-table--container tr:nth-of-type(#{number}).issue td.id")
+      element = find(".work-package-table--container tr:nth-of-type(#{number}) .wp-table--cell.status")
+      loading_indicator_saveguard
 
       page.driver.browser.action.key_down(:control)
         .click(element.native)
@@ -120,7 +123,7 @@ describe 'Select work package row', type: :feature, js:true, selenium: true do
 
     describe 'single selection' do
       shared_examples_for 'single select' do
-        before do select_work_package_row(1, mouse_button) end
+        before do select_work_package_row(1, :left) end
 
         it_behaves_like 'work package row selected' do
           let(:index) { 1 }
@@ -304,13 +307,14 @@ describe 'Select work package row', type: :feature, js:true, selenium: true do
       end
     end
 
-    describe 'opening work package details' do
+    describe 'opening work package full screen view' do
       before do
         select_work_package_row(1, :double)
       end
 
-      it_behaves_like 'work package row selected' do
-        let(:index) { 1 }
+      it do
+        expect(page).to have_selector('.work-packages--details--subject',
+                                      text: work_package_3.subject)
       end
     end
 
@@ -323,11 +327,30 @@ describe 'Select work package row', type: :feature, js:true, selenium: true do
       end
 
       it do
-        subject = page.find("#inplace-edit--write-value--subject")
-        expect(subject.value).to eq(work_package_3.subject)
+        wp_page = Pages::FullWorkPackage.new(work_package_3)
+        subject_field = wp_page.edit_field :subject
 
-        # Cancel edit + move to index
+        subject_field.expect_active!
+        expect(subject_field.input_element.value).to eq(work_package_3.subject)
+
+        # Cancel edit
         find('#work-packages--edit-actions-cancel').click
+      end
+    end
+
+    describe 'opening last selected work package' do
+      before do
+        select_work_package_row(2)
+        check_row_selection_state(2)
+      end
+
+      it do
+        find('#work-packages-details-view-button').click
+
+        split_wp = Pages::SplitWorkPackage.new(work_package_2)
+        split_wp.expect_attributes Subject: work_package_2.subject
+
+        find('#work-packages-list-view-button').click
       end
     end
   end

@@ -161,6 +161,29 @@ h1:hover, h2:hover, h3:hover
     font-weight: bold
     font-size: $wiki-default-font-size
 
+  .wiki-title
+    max-width: 100%
+    overflow: hidden
+    text-overflow: ellipsis
+
+#wiki_form .attributes-group
+  .attributes-group--header-text
+    color: lighten($body-font-color, 10)
+  .form--label
+    display: none
+
+  .form--field-container
+    max-width: 100%
+
+    .form--text-area-container
+      margin-top: -46px
+
+      .jstElements
+        margin-bottom: 18px
+
+#wiki_page_parent_id
+  overflow: auto
+
 blockquote
   font-style: italic
   &.icon:before
@@ -169,3 +192,11 @@ blockquote
     bottom: 10px
     right: 15px
     padding: 0 0 0 0
+
+.toolbar-container ~ .wiki-content
+  margin-top: -64px
+
+@include breakpoint(680px down)
+  .toolbar-container ~ .wiki-content
+    margin-top: 0
+

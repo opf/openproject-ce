@@ -50,10 +50,6 @@ This is the general structure (to a depth of 3 folders):
 │       └── css
 ├── scripts
 └── tests
-    ├── integration
-    │   ├── mocks
-    │   ├── pages
-    │   └── specs
     └── unit
         ├── factories
         ├── lib
@@ -120,5 +116,5 @@ In this example, what would usually happen during compilation is the asynchronou
 
 As there are quite a few directives, the OpenProject frontend prevents the request to the server by using `angular.$templateCache`. 
 
-Using a buildstep in the `gulp` process (via `webpack` actually): templates are compiled as JS and put alongside the rest of the code in `openproject-core-app.js`. The `loader` for the templates can be found in `./frontend/webpack.config.js` which is dependent on [`ngtemplate-loader`](https://github.com/WearyMonkey/ngtemplate-loader).
+As part of the webpack step (`npm run webpack`), templates are compiled as JS and put alongside the rest of the code in `openproject-core-app.js`. The `loader` for the templates can be found in `./frontend/webpack.config.js` which is dependent on [`ngtemplate-loader`](https://github.com/WearyMonkey/ngtemplate-loader).
 

@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'features/work_packages/details/inplace_editor/work_package_field'
+require 'support/work_packages/work_package_field'
 require 'features/work_packages/work_packages_page'
 require 'features/page_objects/notification'
 
@@ -29,7 +29,6 @@ describe 'new work package', js: true do
     FactoryGirl.create(:user_preference, user: user, others: { warn_on_leaving_unsaved: false })
   end
 
-
   before do
     status.save!
     priority.save!
@@ -38,11 +37,7 @@ describe 'new work package', js: true do
     login_as(user)
 
     work_packages_page.visit_index
-    work_packages_page.click_toolbar_button 'Work packages'
-
-    within '#tasksDropdown' do
-      click_link 'Task'
-    end
+    create_work_package('Task')
   end
 
   def save_work_package!(expect_success=true)
@@ -55,7 +50,27 @@ describe 'new work package', js: true do
     end
   end
 
+  def create_work_package(type)
+    loading_indicator_saveguard
+    work_packages_page.click_toolbar_button 'Work package'
+
+    within '#tasksDropdown' do
+      click_link type
+    end
+  end
+
   shared_examples 'work package creation workflow' do
+    it 'creates a subsequent work package' do
+      work_packages_page.find_subject_field.set(subject)
+      save_work_package!
+
+      subject_field.expect_state_text(subject)
+
+      create_work_package('Bug')
+      expect(page).to have_selector(safeguard_selector, wait: 10)
+      expect(page).to have_selector('#inplace-edit--write-value--type option[selected]',
+                                    text: 'Bug')
+    end
 
     context 'with missing values' do
       it 'shows an error when subject is missing' do
@@ -85,28 +100,30 @@ describe 'new work package', js: true do
         select 'Bug', from: 'inplace-edit--write-value--type'
 
         save_work_package!
-        expect(page).to have_selector('#work-package-type', text: 'Bug')
+
+        wp_page.expect_attributes subject: subject
+        wp_page.expect_attributes type: 'Bug'
       end
 
       context 'custom fields' do
         let(:custom_fields) {
-          fields = [
-            FactoryGirl.create(
-              :work_package_custom_field,
-              field_format: 'string',
-              is_required: true,
-              is_for_all: true
-            ),
-            FactoryGirl.create(
-              :work_package_custom_field,
-              field_format: 'list',
-              possible_values: %w(foo bar xyz),
-              is_required: false,
-              is_for_all: true
-            )
-          ]
-
-          fields
+          [custom_field1, custom_field2]
+        }
+        let(:custom_field1) {
+          FactoryGirl.create(
+            :work_package_custom_field,
+            field_format: 'string',
+            is_required: true,
+            is_for_all: true
+          )
+        }
+        let(:custom_field2) {
+          FactoryGirl.create(
+            :work_package_custom_field,
+            field_format: 'list',
+            possible_values: %w(foo bar xyz),
+            is_required: false,
+            is_for_all: true)
         }
         let(:type_task) { FactoryGirl.create(:type_task, custom_fields: custom_fields) }
         let(:project) {
@@ -117,7 +134,7 @@ describe 'new work package', js: true do
 
         it do
           within '.panel-toggler' do
-            click_on 'Show all'
+            find('a', text: 'Show all attributes').click
           end
 
           ids = custom_fields.map(&:id)
@@ -127,35 +144,40 @@ describe 'new work package', js: true do
                                       options: %w(- foo bar xyz))
 
           select 'foo', from: "inplace-edit--write-value--customField#{ids.last}"
-
           save_work_package!(false)
           # Its a known bug that custom fields validation errors do not contain their names
           notification.expect_error("can't be blank.")
 
           cf1.set 'Custom field content'
-          save_work_package!(false)
+          save_work_package!(true)
 
-          expect(page).to have_selector("#work-package-customField#{ids.first}", 'Custom field content')
-          expect(page).to have_selector("#work-package-customField#{ids.last}", 'foo')
+          wp_page.expect_attributes "customField#{custom_field1.id}" => 'Custom field content',
+                                    "customField#{custom_field2.id}" => 'foo'
         end
       end
     end
   end
 
   context 'split screen' do
+    let(:safeguard_selector) { '.work-packages--details-content.-create-mode' }
+    let(:wp_page) { Pages::SplitWorkPackage.new(WorkPackage.new) }
+
     before do
       # Safeguard to ensure the create form to be loaded
-      expect(page).to have_selector('.work-packages--details-content.-create-mode', wait: 10)
+      expect(page).to have_selector(safeguard_selector, wait: 10)
     end
 
     it_behaves_like 'work package creation workflow'
   end
 
   context 'full screen' do
+    let(:safeguard_selector) { '.work-package--new-state' }
+    let(:wp_page) { Pages::FullWorkPackage.new(WorkPackage.new) }
+
     before do
       find('#work-packages-show-view-button').click
       # Safeguard to ensure the create form to be loaded
-      expect(page).to have_selector('.work-package--new-state', wait: 10)
+      expect(page).to have_selector(safeguard_selector, wait: 10)
     end
 
     it_behaves_like 'work package creation workflow'

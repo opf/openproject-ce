@@ -939,9 +939,9 @@ describe Project, type: :model do
         assert !@source_project.wiki.pages.include?(wiki_page)
       end
 
-      parent = @project.wiki.find_page('Parent_page')
-      child1 = @project.wiki.find_page('Child_page_1')
-      child2 = @project.wiki.find_page('Child_page_2')
+      parent = @project.wiki.find_page('Parent page')
+      child1 = @project.wiki.find_page('Child page 1')
+      child2 = @project.wiki.find_page('Child page 2')
       assert_equal parent, child1.parent
       assert_equal parent, child2.parent
     end
@@ -1074,8 +1074,8 @@ describe Project, type: :model do
 
       it 'should return 100 if the version has only closed issues' do
         v1 = FactoryGirl.create(:version, project: @project)
-        FactoryGirl.create(:work_package, project: @project, status: Status.find_by_name('Closed'), fixed_version: v1)
         v2 = FactoryGirl.create(:version, project: @project)
+        FactoryGirl.create(:work_package, project: @project, status: Status.find_by_name('Closed'), fixed_version: v1)
         FactoryGirl.create(:work_package, project: @project, status: Status.find_by_name('Closed'), fixed_version: v2)
 
         assert_equal 100, @project.completed_percent
@@ -1083,8 +1083,8 @@ describe Project, type: :model do
 
       it 'should return the averaged completed percent of the versions (not weighted)' do
         v1 = FactoryGirl.create(:version, project: @project)
-        FactoryGirl.create(:work_package, project: @project, status: Status.find_by_name('New'), estimated_hours: 10, done_ratio: 50, fixed_version: v1)
         v2 = FactoryGirl.create(:version, project: @project)
+        FactoryGirl.create(:work_package, project: @project, status: Status.find_by_name('New'), estimated_hours: 10, done_ratio: 50, fixed_version: v1)
         FactoryGirl.create(:work_package, project: @project, status: Status.find_by_name('New'), estimated_hours: 10, done_ratio: 50, fixed_version: v2)
 
         assert_equal 50, @project.completed_percent

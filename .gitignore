@@ -39,6 +39,7 @@
 /log/*.log
 /npm-debug.log
 /tmp
+*.swp
 
 # Ignore RubyMine files
 /.idea
@@ -79,6 +80,7 @@
 .rspec
 # coverage in plugins
 /lib/plugins/*/coverage
-
 # asset cache
 /.sass-cache/
+# Frontend debug log
+/frontend/npm-debug.log*

@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 See doc/COPYRIGHT.rdoc for more details.
 
 ++#%>
+<% html_title l(:label_administration), l(:label_workflow_plural) -%>
 <%= render partial: 'action_menu', locals: { title: Workflow.model_name.human } %>
 <%= render partial: 'layouts/action_menu_specific' %>
 <%= styled_form_tag({}, method: 'get') do %>
@@ -90,7 +91,7 @@ See doc/COPYRIGHT.rdoc for more details.
         </div>
         <%= javascript_tag "hideFieldset($('assignee_workflows'))" unless @workflows['assignee'].present? %>
       </fieldset>
-      <%= styled_button_tag l(:button_save), class: '-highlight -with-icon icon-yes' %>
+      <%= styled_button_tag l(:button_save), class: '-highlight -with-icon icon-checkmark' %>
     <% end %>
 <% end %>
 

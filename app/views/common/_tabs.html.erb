@@ -31,7 +31,7 @@ See doc/COPYRIGHT.rdoc for more details.
   <ul>
     <% tabs.each do |tab| %>
       <li><%=
-    position_span = you_are_here_info(tab[:name] == selected_tab)
+    position_span = you_are_here_info(tab[:name], tab[:name] != selected_tab)
     caption = case tab[:label]
     when Proc
       tab[:label].call
@@ -45,8 +45,8 @@ See doc/COPYRIGHT.rdoc for more details.
     <% end %>
   </ul>
   <div class="tabs-buttons" style="display:none;">
-    <button class="tab-left icon-context icon-pulldown-arrow2" onclick="moveTabLeft(this);"></button>
-    <button class="tab-right icon-context icon-pulldown-arrow4" onclick="moveTabRight(this);"></button>
+    <button class="tab-left icon-context icon-arrow-left4" onclick="moveTabLeft(this);"></button>
+    <button class="tab-right icon-context icon-arrow-right5" onclick="moveTabRight(this);"></button>
   </div>
 </div>
 

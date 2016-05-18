@@ -102,8 +102,10 @@ module OpenProject
 
             return if doc.at_xpath('/info/entry/repository/uuid')
 
-            raise Exceptions::ScmUnauthorized.new if io_include?(stderr,
-                                                                 'E215004: Authentication failed')
+            stderr.each_line do |l|
+              Rails.logger.error("SVN access error: #{l}") if l =~ /E\d+:/
+              raise Exceptions::ScmUnauthorized.new if l.include?('E215004: Authentication failed')
+            end
           end
 
           raise Exceptions::ScmUnavailable
@@ -222,8 +224,12 @@ module OpenProject
         # --non-interactive         avoid prompts
         def build_svn_cmd(args)
           if @login.present?
-            args.push('--username', shell_quote(@login))
-            args.push('--password', shell_quote(@password)) if @password.present?
+            args.push('--username', @login)
+            args.push('--password', @password) if @password.present?
+          end
+
+          if self.class.config[:trustedssl]
+            args.push('--trust-server-cert')
           end
 
           args.push('--no-auth-cache', '--non-interactive')
@@ -299,13 +305,6 @@ module OpenProject
           xml_capture(cmd, force_encoding: true) do |doc|
             doc.xpath('/log/logentry').each &block
           end
-        end
-
-        def target(path = '')
-          base = path.match(/\A\//) ? root_url : url
-          uri = "#{base}/#{path}"
-          URI.escape(URI.escape(uri), '[]')
-          # shell_quote(uri.gsub(/[?<>\*]/, ''))
         end
 
         ##

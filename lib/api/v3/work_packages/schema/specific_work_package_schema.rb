@@ -32,30 +32,32 @@ module API
     module WorkPackages
       module Schema
         class SpecificWorkPackageSchema < BaseWorkPackageSchema
+          attr_reader :work_package
+
           def initialize(work_package:)
             @work_package = work_package
           end
 
-          def project
-            @work_package.project
-          end
-
-          def type
-            @work_package.type
-          end
+          delegate :project_id,
+                   :project,
+                   :type,
+                   :id,
+                   to: :@work_package
 
           def assignable_values(property, current_user)
             case property
             when :status
               assignable_statuses_for(current_user)
             when :type
-              project.try(:types)
+              if project.respond_to?(:types)
+                project.types.includes(:color)
+              end
             when :version
-              @work_package.try(:assignable_versions)
+              @work_package.try(:assignable_versions) if project
             when :priority
               IssuePriority.active
             when :category
-              project.categories
+              project.categories if project.respond_to?(:categories)
             end
           end
 

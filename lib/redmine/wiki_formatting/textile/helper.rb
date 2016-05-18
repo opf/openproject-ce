@@ -39,13 +39,10 @@ module Redmine
           help_button = content_tag :button,
                                     '',
                                     type: 'button',
-                                    class: 'jstb_help icon icon-help',
+                                    class: 'jstb_help',
                                     onclick: open_help,
-                                    title: l(:setting_text_formatting) do
-                                      content_tag :span, class: 'hidden-for-sighted' do
-                                        l(:setting_text_formatting)
-                                      end
-                                    end
+                                    :'aria-label' => ::I18n.t('js.inplace.link_formatting_help'),
+                                    title: ::I18n.t('js.inplace.link_formatting_help')
 
           javascript_tag(<<-EOF)
             var wikiToolbar = new jsToolBar($('#{field_id}'));

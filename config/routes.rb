@@ -58,18 +58,6 @@ OpenProject::Application.routes.draw do
   end
 
   namespace :api do
-    # Handles all routes of the now removed api v1.
-    # Always returns a 410.
-    # This does not care if the route actually existed to
-    # avoid maintaining knowledge of the now removed api.
-    match '/v1/*rest', via: [:get, :post, :put, :delete],
-                       to: proc {
-                         [410,
-                          { 'Content-Type' => 'text/plain' },
-                          ["OpenProject API v1 has been removed.\n" \
-                           'See https://community.openproject.org/news/65']]
-                       }
-
     namespace :v2 do
       resources :authentication
       resources :users, only: [:index]
@@ -123,10 +111,7 @@ OpenProject::Application.routes.draw do
     end
 
     namespace :experimental do
-      resources :work_packages, only: [:index] do
-        get :column_data, on: :collection
-        get :column_sums, on: :collection
-      end
+      resources :work_packages, only: [:index]
       resources :queries, only: [:create, :update, :destroy] do
         get :available_columns, on: :collection
         get :custom_field_filters, on: :collection
@@ -178,8 +163,8 @@ OpenProject::Application.routes.draw do
 
   # only providing routes for journals when there are multiple subclasses of journals
   # all subclasses will look for the journals routes
-  resources :journals, only: [:edit, :update] do
-    get :preview, on: :member
+  resources :journals, only: :index do
+    get 'diff/:field', action: :diff, on: :member, as: 'diff'
   end
 
   # REVIEW: review those wiki routes
@@ -190,14 +175,6 @@ OpenProject::Application.routes.draw do
   scope 'projects/:project_id/query/:query_id' do
     resources :query_menu_items, except: [:show]
   end
-
-  get 'projects/:project_id/wiki/new' => 'wiki#new', as: 'wiki_new'
-  post 'projects/:project_id/wiki/new' => 'wiki#create', as: 'wiki_create'
-  get 'projects/:project_id/wiki/:id/new' => 'wiki#new_child', as: 'wiki_new_child'
-  get 'projects/:project_id/wiki/:id/toc' => 'wiki#index', as: 'wiki_page_toc'
-  post 'projects/:project_id/wiki/preview' => 'wiki#preview', as: 'preview_wiki'
-  post 'projects/:id/wiki' => 'wikis#edit'
-  delete 'projects/:id/wiki/destroy' => 'wikis#destroy'
 
   # generic route for adding/removing watchers.
   # Models declared as acts_as_watchable will be automatically added to
@@ -210,11 +187,6 @@ OpenProject::Application.routes.draw do
   end
 
   resources :watchers, only: [:destroy]
-
-  # TODO: remove
-  scope 'issues' do
-    get 'changes' => 'journals#index', as: 'changes'
-  end
 
   resources :projects, except: [:edit] do
     member do
@@ -230,7 +202,6 @@ OpenProject::Application.routes.draw do
 
       get 'identifier', action: 'identifier'
       patch 'identifier', action: 'update_identifier'
-
 
       match 'copy_project_from_(:coming_from)' => 'copy_projects#copy_project', via: :get, as: :copy_from,
             constraints: { coming_from: /(admin|settings)/ }
@@ -268,17 +239,26 @@ OpenProject::Application.routes.draw do
     end
     resources :time_entries, controller: 'timelog'
 
-    resources :wiki, except: [:index, :new, :create] do
+    # Match everything to be the ID of the wiki page except the part that
+    # is reserved for the format. This assumes that we have only two formats:
+    # .txt and .html
+    resources :wiki,
+              constraints: { id: /([^\/]+(?=\.txt|\.html)|[^\/]+)/ },
+              except: [:index, :create] do
       collection do
+        post '/new' => 'wiki#create', as: 'create'
         get :export
         get :date_index
+        post :preview
         get '/index' => 'wiki#index'
       end
 
       member do
+        get '/new' => 'wiki#new_child', as: 'new_child'
         get '/diff/:version/vs/:version_from' => 'wiki#diff', as: 'wiki_diff_compare'
         get '/diff(/:version)' => 'wiki#diff', as: 'wiki_diff'
         get '/annotate/:version' => 'wiki#annotate', as: 'wiki_annotate'
+        get '/toc' => 'wiki#index'
         match :rename, via: [:get, :patch]
         get :parent_page, action: 'edit_parent_page'
         patch :parent_page, action: 'update_parent_page'
@@ -302,7 +282,6 @@ OpenProject::Application.routes.draw do
     end
 
     resources :work_packages, only: [] do
-
       collection do
         get '/report/:detail' => 'work_packages/reports#report_details'
         get '/report' => 'work_packages/reports#report'
@@ -371,6 +350,7 @@ OpenProject::Application.routes.draw do
   scope 'admin' do
     match '/projects' => 'admin#projects', via: :get, as: :admin_projects
 
+    resource :announcements, only: [:edit, :update]
     resources :enumerations
 
     resources :groups do
@@ -452,9 +432,6 @@ OpenProject::Application.routes.draw do
     end
   end
 
-  # Misc journal routes. TODO: move into resources
-  match '/journals/:id/diff/:field' => 'journals#diff', via: :get, as: 'journal_diff'
-
   namespace :time_entries do
     resource :report, controller: 'reports',
                       only: [:show]
@@ -473,6 +450,7 @@ OpenProject::Application.routes.draw do
       post :change_status
       post :edit_membership
       post :destroy_membership
+      post :resend_invitation
       get :deletion_info
     end
   end
@@ -496,14 +474,14 @@ OpenProject::Application.routes.draw do
     post :preview, on: :collection
   end
 
-  resources :attachments, only: [:show, :destroy], format: false do
+  resources :attachments, only: [:destroy], format: false do
     member do
-      scope via: :get,  constraints: { id: /\d+/, filename: /[^\/]*/ } do
-        match 'download(/:filename)' => 'attachments#download', as: 'download'
-        match ':filename' => 'attachments#show'
+      scope via: :get, constraints: { id: /\d+/, filename: /[^\/]*/ } do
+        match '(/:filename)' => 'attachments#download', as: 'download'
       end
     end
   end
+
   # redirect for backwards compatibility
   scope constraints: { id: /\d+/, filename: /[^\/]*/ } do
     get '/attachments/download/:id/:filename' => redirect("#{rails_relative_url_root}/attachments/%{id}/download/%{filename}"), format: false
@@ -586,4 +564,9 @@ OpenProject::Application.routes.draw do
   get '/robots' => 'homescreen#robots', defaults: { format: :txt }
 
   root to: 'account#login'
+
+  # Development route for styleguide
+  if Rails.env.development?
+    get '/styleguide' => redirect('/assets/styleguide.html')
+  end
 end

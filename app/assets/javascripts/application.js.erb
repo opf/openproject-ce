@@ -44,7 +44,6 @@
 //= require breadcrumb
 //= require findDomElement
 //= require jstoolbar
-//= require ajaxappender
 //= require settings
 //= require modal
 //= require tab_handling
@@ -90,7 +89,7 @@ jQuery(document).ready(function ($) {
   });
 
   $(document).on('click', '#show_more_wp_properties', function(el){
-    $(this).find('.icon').toggleClass('icon-arrow-right6-3 icon-arrow-right6-1');
+    $(this).find('.icon').toggleClass('icon-arrow-down2 icon-arrow-up2');
     Effect.toggle("work_package_descr_fields", "appear", {duration:0.3});
     enable_textarea_auto_completion(jQuery("#work_package_description"));
 
@@ -126,7 +125,7 @@ function setGroupRowStatus(el) {
   var toggleAllLink = row.find(".toggle-all");
   var toggleAllLinkText = isOpen ? I18n.t('js.label_collapse_all') : I18n.t('js.label_expand_all');
 
-  collapseExpandButton.toggleClass("icon-minus");
+  collapseExpandButton.toggleClass("icon-minus2");
   collapseExpandButton.toggleClass("icon-plus");
   toggleAllLink.text(toggleAllLinkText);
 }
@@ -335,63 +334,6 @@ function observeProjectIdentifier() {
   Event.observe('project_identifier', 'keyup', f);
 }
 
-function observeParentIssueField(url) {
-  new Ajax.Autocompleter('issue_parent_id',
-                         'parent_issue_candidates',
-                         url,
-                         { minChars: 1,
-                           frequency: 0.5,
-                           paramName: 'q',
-                           updateElement: function(value) {
-                             document.getElementById('issue_parent_id').value = value.id;
-                           },
-                           parameters: 'scope=relatable'
-                           });
-}
-
-function observeWorkPackageParentField(url) {
-  new Ajax.Autocompleter('work_package_parent_id',
-                         'parent_issue_candidates',
-                         url,
-                         { minChars: 1,
-                           frequency: 0.5,
-                           paramName: 'q',
-                           updateElement: function(value) {
-                             document.getElementById('work_package_parent_id').value = value.id;
-                           },
-                           parameters: 'scope=relatable'
-                           });
-}
-
-function observeRelatedIssueField(url) {
-  new Ajax.Autocompleter('relation_to_id',
-                         'related_issue_candidates',
-                         url,
-                         { minChars: 1,
-                           frequency: 0.5,
-                           paramName: 'q',
-                           updateElement: function(value) {
-                             document.getElementById('relation_to_id').value = value.id;
-                           },
-                           parameters: 'scope=relatable'
-                           });
-}
-
-// Hides types and issues custom fields on the new project form when
-// work_package_tracking module is disabled.
-function observeProjectModules() {
-  var f = function() {
-    if (jQuery('#project_enabled_module_names_work_package_tracking').attr('checked')) {
-      jQuery('#project_types, #project_issue_custom_fields').show();
-    } else {
-      jQuery('#project_types, #project_issue_custom_fields').hide();
-    }
-  };
-
-  jQuery(window).load(f);
-  jQuery('#project_enabled_module_names_work_package_tracking').change(f);
-}
-
 var WarnLeavingUnsaved = function(message) {
   this.message = message;
   var changedForms = false;
@@ -490,12 +432,6 @@ function addClickEventToAllErrorMessages() {
       return false;
     });
   });
-}
-
-function toggleEmailDecoratorFields() {
-  lang = jQuery("#emails_decorators_switch").val();
-  jQuery(".emails_decorators").hide();
-  jQuery("#emails_decorators_" + lang).show();
 }
 
 $(document).observe('dom:loaded', function() {
@@ -985,7 +921,9 @@ var I18nForms = (function ($) {
           new_translation.hide();
           new_translation.find('.destroy_flag').val('1')
                                                .attr('disabled', false);
-          new_translation.find('input, textarea').val('');
+          new_translation.find('input, textarea').val('')
+                                                 .removeAttr('aria-required')
+                                                 .removeAttr('required');
           new_translation.find('.locale_selector').val(locale);
           new_translation.insertAfter(translations.first());
 

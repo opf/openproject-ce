@@ -49,12 +49,57 @@ module API
             def create(work_package_schema, context)
               create_class(work_package_schema).new(work_package_schema, context)
             end
+
+            def visibility(property)
+              lambda do
+                if type = represented.type
+                  key = property.to_s.gsub /^customField/, "custom_field_"
+
+                  type.attribute_visibility[key]
+                end
+              end
+            end
+
+            # override the various schema methods to include
+            # the same visibility lambda for all properties by default
+
+            def schema(property, *args)
+              opts, _ = args
+              opts[:visibility] = visibility property
+
+              super property, **opts
+            end
+
+            def schema_with_allowed_link(property, *args)
+              opts, _ = args
+              opts[:visibility] = visibility property
+
+              super property, **opts
+            end
+
+            def schema_with_allowed_collection(property, *args)
+              opts, _ = args
+              opts[:visibility] = visibility property
+
+              super property, **opts
+            end
           end
 
           def initialize(schema, context)
             @self_link = context.delete(:self_link) || nil
             @show_lock_version = !context.delete(:hide_lock_version)
+            @action = context.delete(:action) || :update
             super(schema, context)
+          end
+
+          def cache_key
+            custom_fields = represented.project.all_work_package_custom_fields
+
+            custom_fields_key = ActiveSupport::Cache.expand_cache_key custom_fields
+
+            ["api/v3/work_packages/schema/#{represented.project.id}-#{represented.type.id}",
+             represented.type.updated_at,
+             Digest::SHA2.hexdigest(custom_fields_key)]
           end
 
           link :self do
@@ -91,9 +136,6 @@ module API
 
           schema :spent_time,
                  type: 'Duration',
-                 show_if: -> (_) do
-                   current_user_allowed_to(:view_time_entries, context: represented.project)
-                 end,
                  required: false
 
           schema :percentage_done,
@@ -111,21 +153,48 @@ module API
           schema :author,
                  type: 'User'
 
-          schema :project,
-                 type: 'Project'
+          schema_with_allowed_link :project,
+                                   type: 'Project',
+                                   required: true,
+                                   href_callback: -> (*) {
+                                     if @action == :create
+                                       api_v3_paths.available_projects_on_create
+                                     else
+                                       api_v3_paths.available_projects_on_edit(represented.id)
+                                     end
+                                   }
+
+          schema :parent_id,
+                 type: 'Integer',
+                 required: false,
+                 writable: true
+
+          # TODO:
+          # * remove parent_id above in favor of only having :parent
+          # * create an available_work_package_parent resource
+          # * turn :parent into a schema_with_allowed_link
+
+          schema :parent,
+                 type: 'WorkPackage',
+                 required: false,
+                 writable: true
 
           schema_with_allowed_link :assignee,
                                    type: 'User',
                                    required: false,
                                    href_callback: -> (*) {
-                                     api_v3_paths.available_assignees(represented.project.id)
+                                     if represented.project
+                                       api_v3_paths.available_assignees(represented.project_id)
+                                     end
                                    }
 
           schema_with_allowed_link :responsible,
                                    type: 'User',
                                    required: false,
                                    href_callback: -> (*) {
-                                     api_v3_paths.available_responsibles(represented.project.id)
+                                     if represented.project
+                                       api_v3_paths.available_responsibles(represented.project_id)
+                                     end
                                    }
 
           schema_with_allowed_collection :type,
@@ -135,7 +204,8 @@ module API
                                              href: api_v3_paths.type(type.id),
                                              title: type.name
                                            }
-                                         }
+                                         },
+                                         has_default: true
 
           schema_with_allowed_collection :status,
                                          value_representer: Statuses::StatusRepresenter,
@@ -144,7 +214,8 @@ module API
                                              href: api_v3_paths.status(status.id),
                                              title: status.name
                                            }
-                                         }
+                                         },
+                                         has_default: true
 
           schema_with_allowed_collection :category,
                                          value_representer: Categories::CategoryRepresenter,
@@ -173,7 +244,8 @@ module API
                                              href: api_v3_paths.priority(priority.id),
                                              title: priority.name
                                            }
-                                         }
+                                         },
+                                         has_default: true
         end
       end
     end

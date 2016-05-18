@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "commonjs",
+    "noEmitOnError": false,
+    "noImplicitAny": false,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "removeComments": true
+  },
+  "files": [
+    "app/components/**/*.test.ts",
+    "app/typings/open-project.typings.ts",
+    "typings/tsd.d.ts"
+  ]
+}

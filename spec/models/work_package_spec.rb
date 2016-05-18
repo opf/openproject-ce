@@ -42,13 +42,13 @@ describe WorkPackage, type: :model do
   let(:work_package) {
     WorkPackage.new.tap do |w|
       w.attributes = { project_id: project.id,
-                             type_id: type.id,
-                             author_id: user.id,
-                             status_id: status.id,
-                             priority: priority,
-                             subject: 'test_create',
-                             description: 'WorkPackage#create',
-                             estimated_hours: '1:30' }
+                       type_id: type.id,
+                       author_id: user.id,
+                       status_id: status.id,
+                       priority: priority,
+                       subject: 'test_create',
+                       description: 'WorkPackage#create',
+                       estimated_hours: '1:30' }
     end
   }
 
@@ -74,11 +74,11 @@ describe WorkPackage, type: :model do
       let(:work_package_minimal) {
         WorkPackage.new.tap do |w|
           w.attributes = { project_id: project.id,
-                                 type_id: type.id,
-                                 author_id: user.id,
-                                 status_id: status.id,
-                                 priority: priority,
-                                 subject: 'test_create' }
+                           type_id: type.id,
+                           author_id: user.id,
+                           status_id: status.id,
+                           priority: priority,
+                           subject: 'test_create' }
         end
       }
 
@@ -224,17 +224,11 @@ describe WorkPackage, type: :model do
   end
 
   describe '#assignable_versions' do
+    let(:stub_version2) { FactoryGirl.build_stubbed(:version) }
     def stub_shared_versions(v = nil)
       versions = v ? [v] : []
 
-      # open seems to be defined on the array's singleton class
-      # as such it seems not possible to stub it
-      # achieving the same here
-      versions.define_singleton_method :open do
-        self
-      end
-
-      allow(stub_work_package.project).to receive(:shared_versions).and_return(versions)
+      allow(stub_work_package.project).to receive(:assignable_versions).and_return(versions)
     end
 
     it "should return all the project's shared versions" do
@@ -243,11 +237,24 @@ describe WorkPackage, type: :model do
       expect(stub_work_package.assignable_versions).to eq([stub_version])
     end
 
-    it 'should return the current fixed_version' do
+    it 'should return the former fixed_version if the version changed' do
       stub_shared_versions
 
-      allow(stub_work_package).to receive(:fixed_version_id_was).and_return(5)
-      allow(Version).to receive(:find_by).with(id: 5).and_return(stub_version)
+      stub_work_package.fixed_version = stub_version2
+
+      allow(stub_work_package).to receive(:fixed_version_id_changed?).and_return true
+      allow(stub_work_package).to receive(:fixed_version_id_was).and_return(stub_version.id)
+      allow(Version).to receive(:find_by).with(id: stub_version.id).and_return(stub_version)
+
+      expect(stub_work_package.assignable_versions).to eq([stub_version])
+    end
+
+    it 'should return the current fixed_version if the versiondid not change' do
+      stub_shared_versions
+
+      stub_work_package.fixed_version = stub_version
+
+      allow(stub_work_package).to receive(:fixed_version_id_changed?).and_return false
 
       expect(stub_work_package.assignable_versions).to eq([stub_version])
     end
@@ -700,6 +707,9 @@ describe WorkPackage, type: :model do
     }
 
     before do
+      version_1
+      version_2
+      project.reload
       work_package_1
       work_package_2
     end
@@ -969,130 +979,6 @@ describe WorkPackage, type: :model do
     end
   end
 
-  describe '#new_statuses_allowed_to' do
-    let(:role) { FactoryGirl.create(:role) }
-    let(:type) { FactoryGirl.create(:type) }
-    let(:user) { FactoryGirl.create(:user) }
-    let(:other_user) { FactoryGirl.create(:user) }
-    let(:statuses) { (1..5).map { |_i| FactoryGirl.create(:status) } }
-    let(:priority) { FactoryGirl.create :priority, is_default: true }
-    let(:status) { statuses[0] }
-    let(:project) do
-      FactoryGirl.create(:project, types: [type]).tap { |p| p.add_member(user, role).save }
-    end
-    let(:workflow_a) {
-      FactoryGirl.create(:workflow, role_id: role.id,
-                                    type_id: type.id,
-                                    old_status_id: statuses[0].id,
-                                    new_status_id: statuses[1].id,
-                                    author: false,
-                                    assignee: false)
-    }
-    let(:workflow_b) {
-      FactoryGirl.create(:workflow, role_id: role.id,
-                                    type_id: type.id,
-                                    old_status_id: statuses[0].id,
-                                    new_status_id: statuses[2].id,
-                                    author: true,
-                                    assignee: false)
-    }
-    let(:workflow_c) {
-      FactoryGirl.create(:workflow, role_id: role.id,
-                                    type_id: type.id,
-                                    old_status_id: statuses[0].id,
-                                    new_status_id: statuses[3].id,
-                                    author: false,
-                                    assignee: true)
-    }
-    let(:workflow_d) {
-      FactoryGirl.create(:workflow, role_id: role.id,
-                                    type_id: type.id,
-                                    old_status_id: statuses[0].id,
-                                    new_status_id: statuses[4].id,
-                                    author: true,
-                                    assignee: true)
-    }
-    let(:workflows) { [workflow_a, workflow_b, workflow_c, workflow_d] }
-
-    it 'should respect workflows w/o author and w/o assignee' do
-      workflows
-      expect(status.new_statuses_allowed_to([role], type, false, false))
-        .to match_array([statuses[1]])
-      expect(status.find_new_statuses_allowed_to([role], type, false, false))
-        .to match_array([statuses[1]])
-    end
-
-    it 'should respect workflows w/ author and w/o assignee' do
-      workflows
-      expect(status.new_statuses_allowed_to([role], type, true, false))
-        .to match_array([statuses[1], statuses[2]])
-      expect(status.find_new_statuses_allowed_to([role], type, true, false))
-        .to match_array([statuses[1], statuses[2]])
-    end
-
-    it 'should respect workflows w/o author and w/ assignee' do
-      workflows
-      expect(status.new_statuses_allowed_to([role], type, false, true))
-        .to match_array([statuses[1], statuses[3]])
-      expect(status.find_new_statuses_allowed_to([role], type, false, true))
-        .to match_array([statuses[1], statuses[3]])
-    end
-
-    it 'should respect workflows w/ author and w/ assignee' do
-      workflows
-      expect(status.new_statuses_allowed_to([role], type, true, true))
-        .to match_array([statuses[1], statuses[2], statuses[3], statuses[4]])
-      expect(status.find_new_statuses_allowed_to([role], type, true, true))
-        .to match_array([statuses[1], statuses[2], statuses[3], statuses[4]])
-    end
-
-    it 'should respect workflows w/o author and w/o assignee on work packages' do
-      workflows
-      work_package = WorkPackage.create(type_id: type.id,
-                                        status: status,
-                                        priority: priority,
-                                        project: project)
-      expect(work_package.new_statuses_allowed_to(user)).to match_array([statuses[0], statuses[1]])
-    end
-
-    it 'should respect workflows w/ author and w/o assignee on work packages' do
-      workflows
-      work_package = WorkPackage.create(type_id: type.id,
-                                        status: status,
-                                        priority: priority,
-                                        project: project,
-                                        author: user)
-      expect(work_package.new_statuses_allowed_to(user))
-        .to match_array([statuses[0], statuses[1], statuses[2]])
-    end
-
-    it 'should respect workflows w/o author and w/ assignee on work packages' do
-      workflows
-      work_package = WorkPackage.create(type_id: type.id,
-                                        status: status,
-                                        subject: 'test',
-                                        priority: priority,
-                                        project: project,
-                                        assigned_to: user,
-                                        author: other_user)
-      expect(work_package.new_statuses_allowed_to(user))
-        .to match_array([statuses[0], statuses[1], statuses[3]])
-    end
-
-    it 'should respect workflows w/ author and w/ assignee on work packages' do
-      workflows
-      work_package = WorkPackage.create(type_id: type.id,
-                                        status: status,
-                                        subject: 'test',
-                                        priority: priority,
-                                        project: project,
-                                        author: user,
-                                        assigned_to: user)
-      expect(work_package.new_statuses_allowed_to(user))
-        .to match_array([statuses[0], statuses[1], statuses[2], statuses[3], statuses[4]])
-    end
-  end
-
   describe '#add_time_entry' do
     it 'should return a new time entry' do
       expect(stub_work_package.add_time_entry).to be_a TimeEntry
@@ -1113,205 +999,72 @@ describe WorkPackage, type: :model do
     end
   end
 
-  describe '#update_by!' do
-    let(:instance) { FactoryGirl.create(:work_package) }
+  describe '#move_time_entries' do
+    let(:time_entry) do
+      FactoryGirl.build(:time_entry,
+                        work_package: work_package,
+                        project: work_package.project)
+    end
+    let(:target_project) { FactoryGirl.build(:project) }
 
-    it 'should return true' do
-      expect(instance.update_by!(user, {})).to be_truthy
+    before do
+      time_entry.save!
+      target_project.save!
     end
 
-    it 'should set the values' do
-      instance.update_by!(user,  subject: 'New subject')
+    it 'moves the time_entry to the defined project' do
+      work_package.move_time_entries(target_project)
 
-      expect(instance.subject).to eq('New subject')
-    end
+      time_entry.reload
 
-    describe 'creates a journal entry' do
-      it 'with the supplied notes' do
-        instance.update_by!(user, notes: 'blubs')
-        expect(instance.journals.last.notes).to eq('blubs')
-      end
-
-      it 'by the given user' do
-        instance.update_by!(user, notes: 'blubs')
-        expect(instance.journals.last.user).to eq(user)
-      end
-
-      context 'without supplying journal notes' do
-        it 'creates an entry by the given user' do
-          instance.update_by!(user, subject: 'blubs')
-          expect(instance.journals.last.user).to eq(user)
-        end
-
-        it 'has empty journal notes' do
-          instance.update_by!(user, subject: 'blubs')
-          expect(instance.journals.last.notes).to eq('')
-        end
-      end
-    end
-
-    it 'should attach an attachment' do
-      raw_attachments = [double('attachment')]
-      attachment = FactoryGirl.build(:attachment)
-
-      expect(instance).to receive(:attach_files)
-        .with(raw_attachments)
-        .and_return(attachment)
-
-      instance.update_by!(user,  attachments: raw_attachments)
-    end
-
-    it 'should only attach the attachment when saving was successful' do
-      raw_attachments = [double('attachment')]
-
-      expect(Attachment).not_to receive(:attach_files)
-
-      instance.update_by!(user,  subject: '', attachments: raw_attachments)
-    end
-
-    it 'should add a time entry' do
-      activity = FactoryGirl.create(:time_entry_activity)
-
-      instance.update_by!(user,  time_entry: { 'hours' => '5',
-                                               'activity_id' => activity.id.to_s,
-                                               'comments' => 'blubs' })
-
-      expect(instance.time_entries.size).to eq(1)
-
-      entry = instance.time_entries.first
-
-      expect(entry).to be_persisted
-      expect(entry.work_package).to eq(instance)
-      expect(entry.user).to eq(user)
-      expect(entry.project).to eq(instance.project)
-      expect(entry.spent_on).to eq(Date.today)
-    end
-
-    it 'should not persist the time entry if the work package update fails' do
-      activity = FactoryGirl.create(:time_entry_activity)
-
-      instance.update_by!(user,  subject: '',
-                                 time_entry: { 'hours' => '5',
-                                               'activity_id' => activity.id.to_s,
-                                               'comments' => 'blubs' })
-
-      expect(instance.time_entries.size).to eq(1)
-
-      entry = instance.time_entries.first
-
-      expect(entry).not_to be_persisted
-    end
-
-    it 'should not add a time entry if the time entry attributes are empty' do
-      time_attributes = { 'hours' => '',
-                          'activity_id' => '',
-                          'comments' => '' }
-
-      instance.update_by!(user, time_entry: time_attributes)
-
-      expect(instance.time_entries.size).to eq(0)
+      expect(time_entry.project).to eql(target_project)
     end
   end
 
-  describe '#allowed_target_projects_on_move' do
-    let(:project) { FactoryGirl.create :project }
+  describe '.allowed_target_project_on_move' do
+    let(:project) { FactoryGirl.create(:project) }
+    let(:role) { FactoryGirl.create(:role, permissions: [:move_work_packages]) }
+    let(:user) {
+      FactoryGirl.create(:user, member_in_project: project, member_through_role: role)
+    }
 
-    subject { WorkPackage.allowed_target_projects_on_move(user) }
-
-    before do
-      allow(User).to receive(:current).and_return user
-      project
-    end
-
-    shared_examples_for 'has the permission to see projects' do
-      it 'sees the project' do
-        is_expected.to match_array [project]
-      end
-
-      it 'does not see the archived project' do
-        project.update_attribute(:status, Project::STATUS_ARCHIVED)
-
-        is_expected.to match_array []
-      end
-
-      it 'does not see the project having the work package module disabled' do
-        enabled_modules = project.enabled_module_names.delete(:work_package_tracking)
-        project.enabled_module_names = enabled_modules
-        project.save!
-
-        is_expected.to match_array []
+    context 'when having the move_work_packages permission' do
+      it 'returns the project' do
+        expect(WorkPackage.allowed_target_projects_on_move(user))
+          .to match_array [project]
       end
     end
 
-    shared_examples_for 'lacks the permission to see projects' do
-      it 'does not see the project' do
-        is_expected.to match_array []
+    context 'when lacking the move_work_packages permission' do
+      let(:role) { FactoryGirl.create(:role, permissions: []) }
+
+      it 'does not return the project' do
+        expect(WorkPackage.allowed_target_projects_on_move(user))
+          .to be_empty
+      end
+    end
+  end
+
+  describe '.allowed_target_project_on_create' do
+    let(:project) { FactoryGirl.create(:project) }
+    let(:role) { FactoryGirl.create(:role, permissions: [:add_work_packages]) }
+    let(:user) {
+      FactoryGirl.create(:user, member_in_project: project, member_through_role: role)
+    }
+
+    context 'when having the add_work_packages permission' do
+      it 'returns the project' do
+        expect(WorkPackage.allowed_target_projects_on_create(user))
+          .to match_array [project]
       end
     end
 
-    context 'admin user' do
-      let(:admin_user) { FactoryGirl.create :admin }
+    context 'when lacking the add_work_packages permission' do
+      let(:role) { FactoryGirl.create(:role, permissions: []) }
 
-      it_behaves_like 'has the permission to see projects' do
-        let(:user) { admin_user }
-      end
-    end
-
-    context 'non admin user' do
-      let(:role) { FactoryGirl.build(:role, permissions: user_in_project_permissions) }
-      let(:user_in_project_permissions) { [:move_work_packages] }
-      let(:user_in_project) {
-        FactoryGirl.build :user,
-                          member_in_project: project,
-                          member_through_role: role
-      }
-
-      it_behaves_like 'has the permission to see projects' do
-        before do
-          user_in_project.save!
-        end
-
-        let(:user) { user_in_project }
-      end
-
-      it_behaves_like 'lacks the permission to see projects' do
-        let(:user_in_project_permissions) { [] }
-
-        before do
-          user_in_project.save!
-        end
-
-        let(:user) { user_in_project }
-      end
-    end
-
-    context 'non member user' do
-      it_behaves_like 'lacks the permission to see projects' do
-        before do
-          project.update_attribute(:is_public, true)
-          FactoryGirl.create(:non_member, permissions: [])
-        end
-
-        let(:user) { FactoryGirl.create(:user) }
-      end
-
-      it_behaves_like 'has the permission to see projects' do
-        before do
-          project.update_attribute(:is_public, true)
-          FactoryGirl.create(:non_member, permissions: [:move_work_packages])
-        end
-
-        let(:user) { FactoryGirl.create(:user) }
-      end
-    end
-
-    context 'anonymous user' do
-      it_behaves_like 'lacks the permission to see projects' do
-        before do
-          project.update_attribute(:is_public, true)
-        end
-
-        let(:user) { FactoryGirl.create(:anonymous) }
+      it 'does not return the project' do
+        expect(WorkPackage.allowed_target_projects_on_create(user))
+          .to be_empty
       end
     end
   end
@@ -1382,112 +1135,6 @@ describe WorkPackage, type: :model do
             expect(instance.errors[:due_date].size).to eq(1)
           end
         end
-      end
-    end
-  end
-
-  describe 'Acts as journalized' do
-    before(:each) do
-      Status.delete_all
-      IssuePriority.delete_all
-
-      @type ||= FactoryGirl.create(:type_feature)
-
-      @status_resolved ||= FactoryGirl.create(:status, name: 'Resolved', is_default: false)
-      @status_open ||= FactoryGirl.create(:status, name: 'Open', is_default: true)
-      @status_rejected ||= FactoryGirl.create(:status, name: 'Rejected', is_default: false)
-
-      role = FactoryGirl.create(:role)
-      FactoryGirl.create(:workflow,
-                         old_status: @status_open,
-                         new_status: @status_resolved,
-                         role: role,
-                         type_id: @type.id)
-      FactoryGirl.create(:workflow,
-                         old_status: @status_resolved,
-                         new_status: @status_rejected,
-                         role: role,
-                         type_id: @type.id)
-
-      @priority_low ||= FactoryGirl.create(:priority_low, is_default: true)
-      @priority_high ||= FactoryGirl.create(:priority_high)
-      @project ||= FactoryGirl.create(:project_with_types)
-
-      @current = FactoryGirl.create(:user, login: 'user1', mail: 'user1@users.com')
-      allow(User).to receive(:current).and_return(@current)
-      @project.add_member!(@current, role)
-
-      @user2 = FactoryGirl.create(:user, login: 'user2', mail: 'user2@users.com')
-
-      @issue ||= FactoryGirl.create(:work_package,
-                                    project: @project,
-                                    status: @status_open,
-                                    type: @type,
-                                    author: @current)
-    end
-
-    describe 'ignore blank to blank transitions' do
-      it 'should not include the "nil to empty string"-transition' do
-        @issue.description = nil
-        @issue.save!
-
-        @issue.description = ''
-        expect(@issue.send(:incremental_journal_changes)).to be_empty
-      end
-    end
-
-    describe 'Acts as journalized recreate initial journal' do
-      it 'should not include certain attributes' do
-        recreated_journal = @issue.recreate_initial_journal!
-
-        expect(recreated_journal.details.include?('rgt')).to eq(false)
-        expect(recreated_journal.details.include?('lft')).to eq(false)
-        expect(recreated_journal.details.include?('lock_version')).to eq(false)
-        expect(recreated_journal.details.include?('updated_at')).to eq(false)
-        expect(recreated_journal.details.include?('updated_on')).to eq(false)
-        expect(recreated_journal.details.include?('id')).to eq(false)
-        expect(recreated_journal.details.include?('type')).to eq(false)
-        expect(recreated_journal.details.include?('root_id')).to eq(false)
-      end
-
-      it 'should not include useless transitions' do
-        recreated_journal = @issue.recreate_initial_journal!
-
-        recreated_journal.details.values.each do |change|
-          expect(change.first).not_to eq(change.last)
-        end
-      end
-
-      it 'should not be different from the initially created journal by aaj' do
-        # Creating four journals total
-        @issue.status = @status_resolved
-        @issue.assigned_to = @user2
-        @issue.save!
-        @issue.reload
-
-        @issue.priority = @priority_high
-        @issue.save!
-        @issue.reload
-
-        @issue.status = @status_rejected
-        @issue.priority = @priority_low
-        @issue.estimated_hours = 3
-        @issue.save!
-
-        initial_journal = @issue.journals.first
-        recreated_journal = @issue.recreate_initial_journal!
-
-        expect(initial_journal).to be_identical(recreated_journal)
-      end
-
-      it 'should not validate with oddly set estimated_hours' do
-        @issue.estimated_hours = 'this should not work'
-        expect(@issue).not_to be_valid
-      end
-
-      it 'should validate with sane estimated_hours' do
-        @issue.estimated_hours = '13h'
-        expect(@issue).to be_valid
       end
     end
   end
@@ -1625,89 +1272,6 @@ describe WorkPackage, type: :model do
       subject { WorkPackage.changed_since(work_package.updated_at) }
 
       it { expect(subject).to match_array([work_package]) }
-    end
-  end
-
-  describe 'spent_hours' do
-    let(:project) { FactoryGirl.create(:project) }
-    let(:work_package) { FactoryGirl.create(:work_package, project: project) }
-    let!(:time_entry1) {
-      FactoryGirl.create(:time_entry,
-                         project: project,
-                         work_package: work_package,
-                         hours: 2.0)
-    }
-    let!(:time_entry2) {
-      FactoryGirl.create(:time_entry,
-                         project: project,
-                         work_package: work_package,
-                         hours: 42.0)
-    }
-
-    shared_examples_for 'returns spent hours' do |hours|
-      subject { work_package.spent_hours }
-
-      it { expect(subject).to eql(hours) }
-    end
-
-    context 'user with permission to view time entries' do
-      let(:permissions) { [:view_work_packages, :view_time_entries] }
-      let(:role) { FactoryGirl.create(:role, permissions: permissions) }
-      let(:user) {
-        FactoryGirl.create(:user,
-                           member_in_project: project,
-                           member_through_role: role)
-      }
-
-      before do
-        login_as(user)
-      end
-
-      it_behaves_like 'returns spent hours', 44.0
-
-      context 'cross project work packages allowed' do
-        let(:other_work_package) { FactoryGirl.create(:work_package) }
-        let(:other_visible_work_package) { FactoryGirl.create(:work_package) }
-        let(:other_role) { FactoryGirl.create(:role, permissions: [:view_work_packages]) }
-        let!(:member) {
-          FactoryGirl.create(:member,
-                             user: user,
-                             project: other_visible_work_package.project,
-                             roles: [other_role])
-        }
-        let!(:time_entry3) {
-          FactoryGirl.create(:time_entry,
-                             project: other_work_package.project,
-                             work_package: other_work_package,
-                             hours: 99.0)
-        }
-        let!(:time_entry4) {
-          FactoryGirl.create(:time_entry,
-                             project: other_visible_work_package.project,
-                             work_package: other_visible_work_package,
-                             hours: 100.0)
-        }
-
-        before do
-          allow(Setting).to receive(:cross_project_work_package_relations?).and_return(true)
-
-          other_work_package.parent = work_package
-          other_work_package.save!
-
-          other_visible_work_package.parent = other_work_package
-          other_visible_work_package.save!
-
-          work_package.reload
-        end
-
-        it_behaves_like 'returns spent hours', 44.0
-      end
-    end
-
-    context 'user w/o permission to view time entries' do
-      let(:user) { FactoryGirl.create(:user, member_in_project: project) }
-
-      it_behaves_like 'returns spent hours', 0.0
     end
   end
 end

@@ -72,6 +72,22 @@ describe Repository::Subversion, type: :model do
         expect(instance.class.available_types).to be_empty
       end
     end
+
+    context 'with string disabled types' do
+      before do
+        allow(OpenProject::Configuration).to receive(:default_override_source)
+          .and_return('OPENPROJECT_SCM_SUBVERSION_DISABLED__TYPES' => '[managed,unknowntype]')
+
+        OpenProject::Configuration.load
+        allow(instance.class).to receive(:scm_config).and_call_original
+      end
+
+      it 'is no longer manageable' do
+        expect(instance.class.available_types).to eq([:existing])
+        expect(instance.class.disabled_types).to eq([:managed, :unknowntype])
+        expect(instance.manageable?).to be false
+      end
+    end
   end
 
   describe 'managed Subversion' do
@@ -130,7 +146,7 @@ describe Repository::Subversion, type: :model do
     let(:instance) {
       FactoryGirl.build(:repository_subversion,
                         url: 'https://somewhere.example.org/svn/foo'
-      )
+                       )
     }
 
     it_behaves_like 'is not a countable repository' do
@@ -151,8 +167,8 @@ describe Repository::Subversion, type: :model do
         instance.fetch_changesets
         instance.reload
 
-        expect(instance.changesets.count).to eq(12)
-        expect(instance.file_changes.count).to eq(21)
+        expect(instance.changesets.count).to eq(13)
+        expect(instance.file_changes.count).to eq(25)
         expect(instance.changesets.find_by(revision: '1').comments).to eq('Initial import.')
       end
 
@@ -165,7 +181,7 @@ describe Repository::Subversion, type: :model do
         expect(instance.changesets.count).to eq(5)
 
         instance.fetch_changesets
-        expect(instance.changesets.count).to eq(12)
+        expect(instance.changesets.count).to eq(13)
       end
 
       it 'should latest changesets' do
@@ -246,8 +262,9 @@ describe Repository::Subversion, type: :model do
         expect(c.format_identifier).to eq(c.revision)
       end
 
-      it 'should log encoding ignore setting' do
-        with_settings commit_logs_encoding: 'windows-1252' do
+      context 'with windows-1252 encoding',
+              with_settings: { commit_logs_encoding: %w(windows-1252) } do
+        it 'should log encoding ignore setting' do
           s1 = "\xC2\x80"
           s2 = "\xc3\x82\xc2\x80"
           if s1.respond_to?(:force_encoding)
@@ -279,7 +296,7 @@ describe Repository::Subversion, type: :model do
         changeset = instance.find_changeset_by_name('1')
         expect(changeset.previous).to be_nil
 
-        changeset = instance.find_changeset_by_name('12')
+        changeset = instance.find_changeset_by_name('13')
         expect(changeset.next).to be_nil
       end
 

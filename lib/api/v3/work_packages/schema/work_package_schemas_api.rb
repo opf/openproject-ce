@@ -27,7 +27,9 @@
 #++
 
 require 'api/v3/work_packages/schema/typed_work_package_schema'
+require 'api/v3/work_packages/schema/work_package_sums_schema'
 require 'api/v3/work_packages/schema/work_package_schema_representer'
+require 'api/v3/work_packages/schema/work_package_sums_schema_representer'
 
 module API
   module V3
@@ -46,33 +48,49 @@ module API
               end
             end
 
-            # The schema identifier is an artificial identifier that is composed of a work packages
-            # project and its type (separated by a dash)
+            # The schema identifier is an artificial identifier that is composed of a work package's
+            # project and its type (separated by a dash).
             # This allows to have a separate schema URL for each kind of different work packages
             # but with better caching capabilities than simply using the work package id as
-            # identifier for the schema
+            # identifier for the schema.
             namespace ':project-:type' do
               before do
                 begin
-                  project = Project.find(params[:project])
-                  type = Type.find(params[:type])
+                  @project = Project.find(params[:project])
+                  @type = Type.find(params[:type])
                 rescue ActiveRecord::RecordNotFound
                   raise404
                 end
 
-                authorize(:view_work_packages, context: project) do
+                authorize(:view_work_packages, context: @project) do
                   raise404
                 end
-
-                schema = TypedWorkPackageSchema.new(project: project, type: type)
-                self_link = api_v3_paths.work_package_schema(project.id, type.id)
-                @representer = WorkPackageSchemaRepresenter.create(schema,
-                                                                   self_link: self_link,
-                                                                   current_user: current_user)
               end
 
               get do
-                @representer
+                schema = TypedWorkPackageSchema.new(project: @project, type: @type)
+                self_link = api_v3_paths.work_package_schema(@project.id, @type.id)
+                represented_schema = WorkPackageSchemaRepresenter.create(schema,
+                                                                         self_link: self_link,
+                                                                         current_user: nil)
+
+                with_etag! represented_schema.cache_key
+
+                cache(represented_schema.cache_key) do
+                  represented_schema
+                end
+              end
+            end
+
+            namespace 'sums' do
+              get do
+                authorize(:view_work_packages, global: true) do
+                  raise404
+                end
+
+                schema = WorkPackageSumsSchema.new
+                @representer = WorkPackageSumsSchemaRepresenter.create(schema,
+                                                                       current_user: current_user)
               end
             end
 

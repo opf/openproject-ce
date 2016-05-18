@@ -102,7 +102,8 @@
     position: relative
     top: 0
     z-index: 21
-  li.last-child > ul
+  li.last-child > ul,
+  ul.drop-down--help
     left: auto
     right: 0
 
@@ -113,8 +114,9 @@
     > a
       &:after
         @include icon-common
+        font-size: 10px
         padding: 0 2px 0 9px
-        content: "\e0d2"
+        @extend .icon-pulldown:before
     &:hover
       background-color: $header-item-bg-hover-color
     &.open > a
@@ -122,8 +124,9 @@
       color: $header-item-font-hover-color
       &:after
         @include icon-common
+        font-size: 10px
         padding: 0 2px 0 9px
-        content: "\e0d4"
+        @extend .icon-pulldown-up:before
 
     li
       > a
@@ -133,10 +136,21 @@
           background: $header-item-bg-hover-color
           color: $header-drop-down-item-font-hover-color
 
-      &:first-child
-        margin-top: 6px
+    > ul
+      padding: 6px 0
+
+  .drop-down--projects
+    > li
       &:nth-last-child(2)
         margin-bottom: 6px
+
+  .drop-down--help
+    .form--separator
+      margin-bottom: 5px
+    .drop-down--help-headline
+      padding-left: 15px
+      color: $gray-dark
+      text-transform: uppercase
 
   #loggedas
     float: right
@@ -230,19 +244,19 @@ input.top-menu-search--input
     font-size: 15px
 
   .select2-search
-    margin: 0
+    margin: 1px 0 0 0
     color: #b3b3b3
     border-top: 1px solid #D9D9D9
     border-bottom: 1px solid #D9D9D9
 
     &:before
       color: #b3b3b3
-      top: 19px
-      right: 26px
+      top: 21px
+      right: 25px
       font-size: 14px
 
   .select2-search input.select2-input
-    margin: 9px 10px
+    margin: 12px 10px
     padding: 0px 32px 0px 10px
     border: 1px solid #D9D9D9
     box-shadow: inset 0px 1px 3px 0px rgba(0,0,0,0.1)
@@ -250,7 +264,7 @@ input.top-menu-search--input
     background: $header-drop-down-projects-search-input-bg-color
 
   .select2-results
-    margin: 8px 0
+    margin: 6px 0
     padding: 0
 
     .select2-highlighted
@@ -261,7 +275,7 @@ input.top-menu-search--input
 
 #header
   height: $header-height
-  min-width: 1100px
+  min-width: 840px
   .chzn-container .chzn-results .highlighted
     background-color:  #24b3e7
 
@@ -273,3 +287,16 @@ input.top-menu-search--input
       padding: 0 9px 0
     > ul > li
       max-width: 350px
+
+// Temporary overwrite searchfield styles for mobile view
+// until we have a full responsive layout
+input.top-menu-search--input
+  margin: 0 0 0 20px
+  position: absolute
+  right: 0
+  top: 6px
+  z-index: 10
+
+.top-menu-search:not(.-collapsed) .top-menu-search--button
+  top: -3px
+  z-index: 10

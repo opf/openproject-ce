@@ -26,16 +26,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 See doc/COPYRIGHT.rdoc for more details.
 
 ++#%>
+
+<% html_title l(:label_bulk_edit_selected_work_packages) %>
 <h2><%= l(:label_bulk_edit_selected_work_packages) %></h2>
 <ul><%= @work_packages.collect {|i| content_tag('li', link_to(h("#{i.type} ##{i.id}"), work_package_path(i)) + h(": #{i.subject}")) }.join("\n").html_safe %></ul>
 <%= styled_form_tag(url_for(controller: '/work_packages/bulk', action: :update),
-             method: :put) do %>
+             method: :put, class: '-wide-labels') do %>
   <%= @work_packages.collect {|i| hidden_field_tag('ids[]', i.id)}.join.html_safe %>
+  <%= back_url_hidden_field_tag %>
   <section class="form--section">
     <fieldset class="form--fieldset">
       <legend class="form--fieldset-legend"><%= l(:label_change_properties) %></legend>
       <div class="grid-block">
-        <div class="grid-content">
+        <div class="grid-content medium-6">
           <div class="form--field">
             <label class="form--label" for="work_package_type_id"><%= WorkPackage.human_attribute_name(:type) %></label>
             <div class="form--field-container">
@@ -97,13 +100,13 @@ See doc/COPYRIGHT.rdoc for more details.
             <div class="form--field">
               <%= blank_custom_field_label_tag('work_package', custom_field) %>
               <div class="form--field-container">
-                <%= custom_field_tag_for_bulk_edit('work_package', custom_field) %>
+                <%= custom_field_tag_for_bulk_edit('work_package', custom_field, @project) %>
               </div>
             </div>
           <% end %>
           <%= call_hook(:view_work_packages_bulk_edit_details_bottom, { work_packages: @work_packages }) %>
         </div>
-        <div class="grid-content">
+        <div class="grid-content medium-6">
           <% if @project && User.current.allowed_to?(:manage_subtasks, @project) %>
             <div class="form--field">
               <label class="form--label" for='work_package_parent_id'><%= WorkPackage.human_attribute_name(:parent) %></label>
@@ -145,5 +148,5 @@ See doc/COPYRIGHT.rdoc for more details.
       <p><%= send_notification_option %></p>
     </fieldset>
   </section>
-  <p><%= styled_button_tag l(:button_submit), class: '-highlight -with-icon icon-yes' %></p>
+  <p><%= styled_button_tag l(:button_submit), class: '-highlight -with-icon icon-checkmark' %></p>
 <% end %>

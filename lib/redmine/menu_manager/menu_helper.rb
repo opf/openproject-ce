@@ -58,21 +58,6 @@ module Redmine::MenuManager::MenuHelper
                   after: :repository,
                   html: { class: 'icon2 icon-wiki' }
 
-        menu.push :"#{main_item.item_class}_new_page",
-                  { action: 'new_child', controller: '/wiki', id: CGI.escape(main_item.title) },
-                  param:   :project_id,
-                  caption: :create_child_page,
-                  html:    { class: 'icon2 icon-add' },
-                  parent:  "#{main_item.item_class}".to_sym if main_item.new_wiki_page and
-                                                               WikiPage.find_by(wiki_id: project_wiki.id, title: main_item.title)
-
-        menu.push :"#{main_item.item_class}_toc",
-                  { action: 'index', controller: '/wiki', id: CGI.escape(main_item.title) },
-                  param:   :project_id,
-                  caption: :label_table_of_contents,
-                  html:    { class: 'icon2 icon-list-view1' },
-                  parent:  "#{main_item.item_class}".to_sym if main_item.index_page
-
         main_item.children.each do |child|
           menu.push "#{child.item_class}".to_sym,
                     { controller: '/wiki', action: 'show', id: CGI.escape(child.title) },
@@ -87,7 +72,10 @@ module Redmine::MenuManager::MenuHelper
   end
 
   def build_work_packages_menu(_project)
-    query_menu_items = visible_queries.map(&:query_menu_item).compact
+    query_menu_items = visible_queries
+                       .includes(:query_menu_item)
+                       .map(&:query_menu_item)
+                       .compact
 
     Redmine::MenuManager.loose :project_menu do |menu|
       query_menu_items.each do |query_menu_item|

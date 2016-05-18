@@ -26,8 +26,6 @@
 // See doc/COPYRIGHT.rdoc for more details.
 //++
 
-var I18n = require('./vendor/i18n');
-
 // standard locales
 I18n.translations.en = require("locales/js-en.yml").en;
 
@@ -45,14 +43,13 @@ require('angular-aria');
 require('angular-modal');
 
 // depends on the html element having a 'lang' attribute
-var documentLang = angular.element('html').attr('lang') || 'en';
+var documentLang = (angular.element('html').attr('lang') || 'en').toLowerCase();
 require('angular-i18n/angular-locale_' + documentLang + '.js');
 
 require('angular-ui-router');
 
 require('angular-ui-date');
 require('angular-truncate');
-require('angular-feature-flags');
 
 require('angular-busy/dist/angular-busy');
 require('angular-busy/dist/angular-busy.css');
@@ -63,146 +60,11 @@ require('angular-cache');
 require('mousetrap');
 require('ngFileUpload');
 
-// global
-angular.module('openproject.uiComponents', ['ui.select', 'ngSanitize'])
-.run(['$rootScope', function($rootScope){
-  $rootScope.I18n = I18n;
-}]);
-angular.module('openproject.config', []);
-angular.module(
-  'openproject.services', [
-    'openproject.uiComponents',
-    'openproject.helpers',
-    'openproject.workPackages.config',
-    'openproject.workPackages.helpers',
-    'angular-cache'
-  ]);
-angular.module('openproject.helpers', ['openproject.services']);
-angular
-  .module('openproject.models', [
-    'openproject.workPackages.config',
-    'openproject.services'
-  ]);
-angular.module('openproject.viewModels', ['openproject.services']);
+var opApp = require('./angular-modules.ts').default;
 
-// timelines
-angular.module('openproject.timelines', [
-  'openproject.timelines.controllers',
-  'openproject.timelines.directives',
-  'openproject.uiComponents'
-]);
-angular.module('openproject.timelines.models', ['openproject.helpers']);
-angular
-  .module('openproject.timelines.helpers', []);
-angular.module(
-  'openproject.timelines.controllers', [
-    'openproject.timelines.models'
-  ]);
-angular.module('openproject.timelines.services', [
-  'openproject.timelines.models',
-  'openproject.timelines.helpers'
-]);
-angular.module('openproject.timelines.directives', [
-  'openproject.timelines.models',
-  'openproject.timelines.services',
-  'openproject.uiComponents',
-  'openproject.helpers'
-]);
+window.appBasePath = jQuery('meta[name=app_base_path]').attr('content') || '';
 
-// work packages
-angular.module('openproject.workPackages', [
-  'openproject.workPackages.activities',
-  'openproject.workPackages.controllers',
-  'openproject.workPackages.filters',
-  'openproject.workPackages.directives',
-  'openproject.workPackages.tabs',
-  'openproject.uiComponents',
-  'ng-context-menu',
-  'ngFileUpload'
-]);
-angular.module('openproject.workPackages.services', ['openproject.inplace-edit']);
-angular.module(
-  'openproject.workPackages.helpers', [
-    'openproject.helpers',
-    'openproject.workPackages.services'
-  ]);
-angular.module('openproject.workPackages.filters', [
-  'openproject.workPackages.helpers'
-]);
-angular.module('openproject.workPackages.config', []);
-angular.module(
-  'openproject.workPackages.controllers', [
-    'openproject.models',
-    'openproject.viewModels',
-    'openproject.workPackages.helpers',
-    'openproject.services',
-    'openproject.workPackages.config',
-    'openproject.layout',
-    'btford.modal'
-  ]);
-angular.module('openproject.workPackages.models', []);
-angular.module(
-  'openproject.workPackages.directives', [
-    'openproject.uiComponents',
-    'openproject.services',
-    'openproject.workPackages.services',
-    'openproject.workPackages.models'
-  ]);
-angular.module('openproject.workPackages.tabs', []);
-angular.module('openproject.workPackages.activities', []);
-
-// messages
-angular.module('openproject.messages', [
-  'openproject.messages.controllers'
-]);
-angular.module('openproject.messages.controllers', []);
-
-// time entries
-angular.module('openproject.timeEntries', [
-  'openproject.timeEntries.controllers'
-]);
-angular.module('openproject.timeEntries.controllers', []);
-
-angular.module('openproject.layout', [
-  'openproject.layout.controllers',
-  'ui.router'
-]);
-angular.module('openproject.layout.controllers', []);
-
-angular.module('openproject.api', []);
-
-angular.module('openproject.templates', []);
-
-// refactoring
-angular.module('openproject.inplace-edit', []);
-
-// main app
-var openprojectApp = angular.module('openproject', [
-  'ui.date',
-  'ui.router',
-  'openproject.config',
-  'openproject.uiComponents',
-  'openproject.timelines',
-  'openproject.workPackages',
-  'openproject.messages',
-  'openproject.timeEntries',
-  'ngAnimate',
-  'ngAria',
-  'ngSanitize',
-  'truncate',
-  'feature-flags',
-  'openproject.layout',
-  'cgBusy',
-  'openproject.api',
-  'openproject.templates',
-  'monospaced.elastic',
-  'openproject.inplace-edit'
-]);
-
-window.appBasePath = jQuery('meta[name=app_base_path]').attr('content') ||
-  '';
-
-openprojectApp
+opApp
   .config([
     '$locationProvider',
     '$httpProvider',
@@ -237,14 +99,12 @@ openprojectApp
     '$http',
     '$rootScope',
     '$window',
-    'featureFlags',
     'TimezoneService',
     'CacheService',
     'KeyboardShortcutService',
     function($http,
              $rootScope,
              $window,
-             flags,
              TimezoneService,
              CacheService,
              KeyboardShortcutService) {
@@ -254,7 +114,6 @@ openprojectApp
         $window.sessionStorage.getItem('openproject:navigation-toggle') !==
         'collapsed';
 
-      flags.set($http.get('/javascripts/feature-flags.json'));
       TimezoneService.setupLocale();
       KeyboardShortcutService.activate();
 
@@ -282,19 +141,10 @@ openprojectApp
     }
   ]);
 
-angular.module('openproject.config')
-  .service('ConfigurationService', [
-    'PathHelper',
-    '$q',
-    '$http',
-    require('./config/configuration-service')
-  ]);
-
 require('./helpers');
 require('./layout');
 require('./messages');
 require('./models');
-require('./routing');
 require('./services');
 require('./time_entries');
 require('./timelines');
@@ -306,5 +156,5 @@ requireTemplate.keys().forEach(requireTemplate);
 
 require('!ngtemplate?module=openproject.templates!html!angular-busy/angular-busy.html');
 
-var requireComponent = require.context('./components/', true, /^((?!\.(test|spec)).)*\.(js|html)$/);
+var requireComponent = require.context('./components/', true, /^((?!\.(test|spec)).)*\.(js|ts|html)$/);
 requireComponent.keys().forEach(requireComponent);

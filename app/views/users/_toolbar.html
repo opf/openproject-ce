@@ -26,24 +26,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 See doc/COPYRIGHT.rdoc for more details.
 
 ++#%>
-<%= toolbar(title: "#{link_to l(:label_user_plural), users_path} &raquo; #{@user.new_record? ? l(:label_user_new) : h(@user.name)}") do %>
+<%= breadcrumb_toolbar(@user.new_record? ? l(:label_user_new) : @user.name) do %>
   <% unless @user.new_record? %>
+    <% if @user.invited? and current_user.admin? %>
+      <li class="toolbar-item">
+        <%= form_for(@user, html: { class: 'toolbar-item'},
+                            url: { action: :resend_invitation },
+                            method: :post) do |_form| %>
+          <button class="button" title="<%= t(:tooltip_resend_invitation) %>">
+            <i class="button--icon icon-mail1"></i>
+            <span class="button--text"><%= t(:label_resend_invitation) %></span>
+          </button>
+        <% end %>
+      </li>
+    <% end %>
     <li class="toolbar-item">
       <%= link_to user_path(@user), class: 'button' do %>
-        <i class="button--icon icon-user1"></i>
+        <i class="button--icon icon-user"></i>
         <span class="button--text"><%= l(:label_profile) %></span>
       <% end %>
     </li>
     <% unless current_user.id == @user.id %>
-      <%= form_for @user, :url => {:action => :change_status},
+      <%= form_for @user, html: { class: 'toolbar-item' }, :url => {:action => :change_status},
                 :method => :post do %>
-        <li class="toolbar-item">
+        <li>
           <%= change_user_status_buttons(@user) %>
         </li>
       <% end %>
     <% end %>
     <% if Setting.users_deletable_by_admins? %>
-      <li class="toolbar-items">
+      <li class="toolbar-item">
         <%= link_to deletion_info_user_path(@user), class: 'button' do %>
           <i class="button--icon icon-delete"></i>
           <span class="button--text"><%= l(:button_delete) %></span>

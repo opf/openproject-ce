@@ -69,7 +69,7 @@ module.exports = function($uiViewScroll,
       });
 
       scope.I18n = I18n;
-      scope.userPath = PathHelper.staticUserPath;
+      scope.userPath = PathHelper.userPath;
       scope.inEdit = false;
       scope.inPreview = false;
       scope.userCanEdit = !!scope.activity.links.update;
@@ -127,18 +127,16 @@ module.exports = function($uiViewScroll,
       };
 
       scope.toggleCommentPreview = function() {
-        scope.inPreview = !scope.inPreview;
+        scope.isPreview = !scope.isPreview;
         scope.previewHtml = '';
-        if (scope.inPreview) {
+        if (scope.isPreview) {
           TextileService.renderWithWorkPackageContext(
             EditableFieldsState.workPackage.form,
             scope.activity.editedComment
           ).then(function(r) {
             scope.previewHtml = $sce.trustAsHtml(r.data);
-
-
           }, function() {
-            this.inPreview = false;
+            scope.isPreview = false;
           });
         }
       };

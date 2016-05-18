@@ -30,12 +30,34 @@
 module API
   module Decorators
     class Schema < Single
+      module InstanceMethods
+        module_function
+
+        def call_or_use(object)
+          if object.respond_to? :call
+            instance_exec(&object)
+          else
+            object
+          end
+        end
+
+        def call_or_translate(object, rep_class = self.class.represented_class)
+          if object.respond_to? :call
+            instance_exec(&object)
+          else
+            rep_class.human_attribute_name(object)
+          end
+        end
+      end
+
       class << self
         def schema(property,
                    type:,
                    name_source: property,
                    required: true,
+                   has_default: false,
                    writable: -> { represented.writable?(property) },
+                   visibility: nil,
                    min_length: nil,
                    max_length: nil,
                    regular_expression: nil,
@@ -50,7 +72,9 @@ module API
                        type: type,
                        name: name,
                        required: call_or_use(required),
-                       writable: call_or_use(writable))
+                       has_default: call_or_use(has_default),
+                       writable: call_or_use(writable),
+                       visibility: call_or_use(visibility))
                      schema.min_length = min_length
                      schema.max_length = max_length
                      schema.regular_expression = regular_expression
@@ -58,7 +82,14 @@ module API
                      schema
                    },
                    writeable: false,
-                   if: show_if
+                   if: show_if,
+                   required: required,
+                   has_default: has_default,
+                   name_source: lambda {
+                     API::Decorators::Schema::InstanceMethods
+                       .call_or_translate name_source,
+                                          self.represented_class
+                   }
         end
 
         def schema_with_allowed_link(property,
@@ -66,7 +97,9 @@ module API
                                      name_source: property,
                                      href_callback:,
                                      required: true,
+                                     has_default: false,
                                      writable: -> { represented.writable?(property) },
+                                     visibility: nil,
                                      show_if: true)
           raise ArgumentError if property.nil?
 
@@ -77,7 +110,9 @@ module API
                        type: type,
                        name: call_or_translate(name_source),
                        required: call_or_use(required),
-                       writable: call_or_use(writable))
+                       has_default: call_or_use(has_default),
+                       writable: call_or_use(writable),
+                       visibility: call_or_use(visibility))
 
                      if form_embedded
                        representer.allowed_values_href = instance_eval(&href_callback)
@@ -85,7 +120,14 @@ module API
 
                      representer
                    },
-                   if: show_if
+                   if: show_if,
+                   required: required,
+                   has_default: has_default,
+                   name_source: lambda {
+                     API::Decorators::Schema::InstanceMethods
+                       .call_or_translate name_source,
+                                          self.represented_class
+                   }
         end
 
         def schema_with_allowed_collection(property,
@@ -97,7 +139,9 @@ module API
                                            value_representer:,
                                            link_factory:,
                                            required: true,
+                                           has_default: false,
                                            writable: -> { represented.writable?(property) },
+                                           visibility: nil,
                                            show_if: true)
           raise ArgumentError unless property
 
@@ -111,13 +155,22 @@ module API
                        value_representer: value_representer,
                        link_factory: -> (value) { instance_exec(value, &link_factory) },
                        required: call_or_use(required),
-                       writable: call_or_use(writable))
+                       has_default: call_or_use(has_default),
+                       writable: call_or_use(writable),
+                       visibility: call_or_use(visibility))
 
                      representer.allowed_values = instance_exec(&values_callback)
 
                      representer
                    },
-                   if: show_if
+                   if: show_if,
+                   required: required,
+                   has_default: has_default,
+                   name_source: lambda {
+                     API::Decorators::Schema::InstanceMethods
+                       .call_or_translate name_source,
+                                          self.represented_class
+                   }
         end
 
         def represented_class
@@ -130,29 +183,17 @@ module API
         end
       end
 
+      include InstanceMethods
+
       attr_reader :form_embedded
+
+
       def initialize(represented, current_user:, form_embedded: false)
         @form_embedded = form_embedded
         super(represented, current_user: current_user)
       end
 
       private
-
-      def call_or_use(object)
-        if object.respond_to? :call
-          instance_exec(&object)
-        else
-          object
-        end
-      end
-
-      def call_or_translate(object)
-        if object.respond_to? :call
-          instance_exec(&object)
-        else
-          self.class.represented_class.human_attribute_name(object)
-        end
-      end
 
       def _type
         'Schema'

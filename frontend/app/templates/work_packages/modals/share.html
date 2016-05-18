@@ -1,6 +1,6 @@
 <div class="ng-modal-window">
   <div class="ng-modal-inner">
-    <div class="modal-header"><i class="icon-close" ng-click="modal.closeMe()" title="{{ ::I18n.t('js.close_popup_title') }}"></i></div>
+    <div class="modal-header"><a><i class="icon-close" ng-click="modal.closeMe()" title="{{ ::I18n.t('js.close_popup_title') }}"></i></a></div>
 
     <h3>{{ ::I18n.t('js.label_share') }}</h3>
 
@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <button class="button -highlight -with-icon icon-yes" ng-click="saveQuery()">
+    <button class="button -highlight -with-icon icon-checkmark" ng-click="saveQuery()">
       {{ ::I18n.t('js.modals.button_save') }}
     </button>
     <button class="button" ng-click="modal.closeMe()">

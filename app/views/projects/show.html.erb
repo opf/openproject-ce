@@ -49,11 +49,11 @@ See doc/COPYRIGHT.rdoc for more details.
 </ul>
 
 <div class="grid-block medium-up-2 project-overview">
-  <div class="grid-content widget-boxes">
+  <div class="grid-content widget-boxes medium-6">
     <% if User.current.allowed_to?(:view_work_packages, @project) %>
       <div class="issues widget-box">
         <h3 class="widget-box--header">
-          <span class="icon-context icon-tracker"></span>
+          <span class="icon-context icon-types"></span>
           <span class="widget-box--header-title"><%=l(:label_work_package_tracking)%></span>
         </h3>
         <ul>
@@ -65,18 +65,19 @@ See doc/COPYRIGHT.rdoc for more details.
             </li>
           <% end %>
         </ul>
-        <p>
+        <div>
           <%= link_to l(:label_work_package_view_all), {controller: :work_packages, action: :index, project_id: @project}, class: 'button -highlight' %>
-          <% if User.current.allowed_to?(:view_calendar, @project, global: true) %>
-            <%= link_to(l(:label_calendar), {controller: '/work_packages/calendars', action: 'index', project_id: @project}, class: 'button -highlight') %>
+          <%= link_to new_project_work_packages_path(@project), class: 'button -alt-highlight' do %>
+            <i class="button--icon icon-add"></i>
+            <span class="button--text"><%= l('activerecord.models.work_package') %></span>
           <% end %>
-        </p>
+        </div>
       </div>
     <% end %>
     <%= call_hook(:view_projects_show_left, project: @project) %>
   </div>
 
-  <div class="grid-content widget-boxes">
+  <div class="grid-content widget-boxes medium-6">
     <%= render partial: 'members_box' %>
 
     <% if @news.any? && authorize_for('news', 'index') %>
@@ -86,7 +87,13 @@ See doc/COPYRIGHT.rdoc for more details.
           <span class="widget-box--header-title"><%=l(:label_news_latest)%></span>
         </h3>
         <%= render partial: 'news/news', collection: @news %>
-        <p><%= link_to l(:label_news_view_all), {controller: '/news', action: 'index', project_id: @project}, class: 'button -highlight' %></p>
+        <div>
+          <%= link_to l(:label_news_view_all), {controller: '/news', action: 'index', project_id: @project}, class: 'button -highlight' %>
+          <%= link_to new_project_news_path(@project), class: 'button -alt-highlight' do %>
+            <i class="button--icon icon-add"></i>
+            <span class="button--text"><%= l('activerecord.models.news') %></span>
+          <% end %>
+        </div>
       </div>
     <% end %>
     <%= call_hook(:view_projects_show_right, project: @project) %>

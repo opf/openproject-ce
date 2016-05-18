@@ -241,7 +241,7 @@ module OpenProject
                   when :local; "#{title}.html"
                   when :anchor; "##{title}"   # used for single-file wiki export
                   else
-                    wiki_page_id = page.present? ? Wiki.titleize(page) : nil
+                    wiki_page_id = page.present? ? page : nil
                     url_for(only_path: only_path, controller: '/wiki', action: 'show', project_id: link_project, id: wiki_page_id, anchor: anchor)
               end
             link_to(h(title || page), url, class: ('wiki-page' + (wiki_page ? '' : ' new')))
@@ -341,7 +341,7 @@ module OpenProject
                               .includes(:status)
                               .references(:statuses)
                               .find_by(id: oid)
-              link = work_package_quick_info(work_package)
+              link = work_package_quick_info(work_package, only_path: only_path)
             end
           elsif sep == '###'
             oid = identifier.to_i
@@ -350,7 +350,7 @@ module OpenProject
                            .references(:statuses)
                            .find_by(id: oid)
             if work_package && obj && !(attr == :description && obj.id == work_package.id)
-              link = work_package_quick_info_with_description(work_package)
+              link = work_package_quick_info_with_description(work_package, only_path: only_path)
             end
           elsif sep == ':'
             # removes the double quotes if any
@@ -431,7 +431,7 @@ module OpenProject
           out << "<legend class='form--fieldset-legend' title='" +
             l(:description_toc_toggle) +
             "' onclick='toggleFieldset(this);'>
-            <a class='icon-context icon-pulldown-arrow1' href='javascript:'>
+            <a href='javascript:'>
               #{l(:label_table_of_contents)}
             </a>
             </legend><div>"

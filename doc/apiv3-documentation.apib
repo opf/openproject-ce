@@ -91,6 +91,12 @@ For the future we plan to add authentication modes based on OAuth2 and OpenID Co
 - `PATCH` - Update a resource
 - `DELETE` - Delete a resource
 
+# Compression
+
+Responses are compressed if requested by the client. Currently [gzip](http://www.gzip.org/) and [deflate](https://tools.ietf.org/html/rfc1951)
+are supported. The client signals the desired compression by setting the [`Accept-Encoding` header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3).
+If no `Accept-Encoding` header is send, `Accept-Encoding: identity` is assumed which will result in the API responding uncompressed.
+
 # Group Basic Objects
 
 # Links
@@ -3478,7 +3484,7 @@ Note that due to sharing this might be more than the versions *defined* by that 
 | availableWatchers  | All users that can be added to the work package as watchers.                                                                                          | User         |              | READ                  | **Permission** add work package watchers  |
 | category           | The category of the work package                                                                                                                      | Category     |              | READ / WRITE          |                                           |
 | priority           | The priority of the work package                                                                                                                      | Priority     | not null     | READ / WRITE          |                                           |
-| project            | The project to which the work package belongs                                                                                                         | Project      | not null     | READ                  |                                           |
+| project            | The project to which the work package belongs                                                                                                         | Project      | not null     | READ / WRITE          |                                           |
 | responsible        | The person that is responsible for the overall outcome                                                                                                | User         |              | READ / WRITE          |                                           |
 | revisions          | Revisions that are referencing the work package                                                                                                       | Revision     |              | READ                  | **Permission** view changesets            |
 | status             | The current status of the work package                                                                                                                | Status       | not null     | READ / WRITE          |                                           |
@@ -3926,7 +3932,7 @@ For more details and all possible responses see the general specification of [Fo
                 "message": "The specified work package does not exist."
             }
 
-## Work Packages [/api/v3/work_packages{?offset,pageSize,filters,sortBy,groupBy,showSums}]
+## Work Packages [/api/v3/work_packages{?notify,offset,pageSize,filters,sortBy,groupBy,showSums}]
 
 + Model
     + Body
@@ -4011,6 +4017,104 @@ For more details and all possible responses see the general specification of [Fo
                 "errorIdentifier": "urn:openproject-org:api:v3:errors:MissingPermission",
                 "message": "You are not allowed to see work packages."
             }
+
+## Create Work Package [POST]
+
+When calling this endpoint the client provides a single object, containing at least the properties and links that are required, in the body.
+The required fields of a WorkPackage can be found in its schema, which is embedded in the respective form.
+Note that it is only allowed to provide properties or links supporting the write operation.
+
+A project link must be set when creating work packages through this route.
+
++ Parameters
+    + notify = `true` (optional, boolean, `false`) ... Indicates whether change notifications (e.g. via E-Mail) should be sent.
+    Note that this controls notifications for all users interested in changes to the work package (e.g. watchers, author and assignee),
+    not just the current user.
+
++ Response 200 (application/hal+json)
+
+    [Work Package][]
+
++ Response 400 (application/hal+json)
+
+    Occurs when the client did not send a valid JSON object in the request body.
+
+    + Body
+
+            {
+                "_type": "Error",
+                "errorIdentifier": "urn:openproject-org:api:v3:errors:InvalidRequestBody",
+                "message": "The request body was not a single JSON object."
+            }
+
++ Response 403 (application/hal+json)
+
+    Returned if the client does not have sufficient permissions.
+
+    **Required permission:** add work packages
+
+    *Note that you will only receive this error, if you are at least allowed to see the corresponding project.*
+
+    + Body
+
+            {
+                "_type": "Error",
+                "errorIdentifier": "urn:openproject-org:api:v3:errors:MissingPermission",
+                "message": "You are not allowed to add work packages to this project."
+            }
+
++ Response 404 (application/hal+json)
+
+    Returned if the project does not exist or the client does not have sufficient permissions
+    to see it.
+
+    **Required permissions:** view project
+
+    *Note: A client without sufficient permissions shall not be able to test for the existence of a project.
+    That's why a 404 is returned here, even if a 403 might be more appropriate.*
+
+    + Body
+
+            {
+                "_type": "Error",
+                "errorIdentifier": "urn:openproject-org:api:v3:errors:NotFound",
+                "message": "The specified project does not exist."
+            }
+
++ Response 422 (application/hal+json)
+
+    Returned if:
+    * the client tries to write a read-only property
+    * a constraint for a property was violated
+    * a property was provided in an unreadable format
+
+    + Body
+
+            {
+                "_type": "Error",
+                "errorIdentifier": "urn:openproject-org:api:v3:errors:PropertyConstraintViolation",
+                "message": "The subject might not be blank.",
+                "_embedded": {
+                    "details": {
+                        "attribute": "Subject"
+                    }
+                }
+            }
+
+## Work Package Create Form [/api/v3/work_packages/form]
+
+This endpoint returns a form to allow a guided creation of a new work package.
+The returned form will be pre-filled with default values for every property, if available.
+
+For more details and all possible responses see the general specification of [Forms](#forms).
+A project link must be set when creating work packages through this route.
+
+## Work Package Create Form [POST]
+
++ Response 200 (application/hal+json)
+
+    [Example Form][]
+
 
 ## Work Packages by Project [/api/v3/projects/{id}/work_packages{?offset,pageSize,filters,sortBy,groupBy,showSums,notify}]
 
@@ -4589,6 +4693,131 @@ Gets a list of users that are able to be watchers of the specified work package.
                 "errorIdentifier": "urn:openproject-org:api:v3:errors:NotFound",
                 "message": "The specified work package does not exist."
             }
+
+## Available Projects [/api/v3/work_packages/{id}/available_projects]
+
++ Model
+    + Body
+
+            {
+              "_links": {
+                "self": {
+                  "href": "/api/v3/work_packages/5/available_projects"
+                }
+              },
+              "_type": "Collection",
+              "total": 2,
+              "count": 2,
+              "_embedded": {
+                "elements": [
+                  {
+                    "_type": "Project",
+                    "_links": {
+                      "self": {
+                        "href": "/api/v3/projects/6",
+                        "title": "A project"
+                      },
+                      "createWorkPackage": {
+                        "href": "/api/v3/projects/6/work_packages/form",
+                        "method": "post"
+                      },
+                      "createWorkPackageImmediate": {
+                        "href": "/api/v3/projects/6/work_packages",
+                        "method": "post"
+                      },
+                      "categories": {
+                        "href": "/api/v3/projects/6/categories"
+                      },
+                      "versions": {
+                        "href": "/api/v3/projects/6/versions"
+                      }
+                    },
+                    "id": 6,
+                    "identifier": "a_project",
+                    "name": "A project",
+                    "description": "Eveniet molestias omnis quis aut qui eum adipisci. Atque aut aut in exercitationem adipisci amet. Nisi asperiores quia ratione veritatis enim exercitationem magnam. Aut fuga architecto adipisci nihil. Et repellat pariatur. Aliquam et sed perferendis nostrum quaerat. Fugit doloremque voluptatem.",
+                    "createdAt": "2015-07-06T13:28:14+00:00",
+                    "updatedAt": "2015-10-01T09:55:02+00:00",
+                    "type": "Customer Project"
+                  },
+                  {
+                    "_type": "Project",
+                    "_links": {
+                      "self": {
+                        "href": "/api/v3/projects/14",
+                        "title": "Another project"
+                      },
+                      "createWorkPackage": {
+                        "href": "/api/v3/projects/14/work_packages/form",
+                        "method": "post"
+                      },
+                      "createWorkPackageImmediate": {
+                        "href": "/api/v3/projects/14/work_packages",
+                        "method": "post"
+                      },
+                      "categories": {
+                        "href": "/api/v3/projects/14/categories"
+                      },
+                      "versions": {
+                        "href": "/api/v3/projects/14/versions"
+                      }
+                    },
+                    "id": 14,
+                    "identifier": "another_project",
+                    "name": "Another project",
+                    "description": "",
+                    "createdAt": "2016-02-29T12:50:20+00:00",
+                    "updatedAt": "2016-02-29T12:50:20+00:00",
+                    "type": null
+                  }]
+                }
+              }
+            }
+
+## Available projects [GET]
+
+Gets a list of projects that are available as projects to which the work package can be moved.
+
++ Parameters
+    + id (required, integer, `1`) ... work package id
+
++ Response 200 (application/hal+json)
+
+    [Available Projects][]
+
++ Response 403 (application/hal+json)
+
+    Returned if the client does not have sufficient permissions.
+
+    **Required permission:** edit work package
+
+    *Note that you will only receive this error, if you are at least allowed to see the corresponding work package.*
+
+    + Body
+
+            {
+                "_type": "Error",
+                "errorIdentifier": "urn:openproject-org:api:v3:errors:MissingPermission",
+                "message": "You are not authorized to access this resource."
+            }
+
++ Response 404 (application/hal+json)
+
+    Returned if the work package does not exist or the client does not have sufficient permissions to see it.
+
+    **Required permission:** view work package
+
+    + Body
+
+            {
+                "_type": "Error",
+                "errorIdentifier": "urn:openproject-org:api:v3:errors:NotFound",
+                "message": "The specified work package does not exist."
+            }
+
+
+
+
 
 ## Revisions [/api/v3/work_packages/{id}/revisions]
 

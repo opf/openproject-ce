@@ -44,6 +44,10 @@ describe ::API::V3::Utilities::PathHelper do
     end
   end
 
+  before(:each) do
+    RequestStore.store[:cached_root_path] = nil
+  end
+
   shared_examples_for 'api v3 path' do |url|
     it_behaves_like 'path', "/api/v3#{url}"
   end
@@ -66,10 +70,16 @@ describe ::API::V3::Utilities::PathHelper do
     it_behaves_like 'api v3 path', '/attachments/1'
   end
 
-  describe '#attachment_download' do
+  describe '#attachment_download without file name' do
     subject { helper.attachment_download 1 }
 
-    it_behaves_like 'path', '/attachments/1/download'
+    it_behaves_like 'path', '/attachments/1'
+  end
+
+  describe '#attachment_download with file name' do
+    subject { helper.attachment_download 1, 'file.png' }
+
+    it_behaves_like 'path', '/attachments/1/file.png'
   end
 
   describe '#attachments_by_work_package' do
@@ -96,6 +106,18 @@ describe ::API::V3::Utilities::PathHelper do
     it_behaves_like 'api v3 path', '/work_packages/42/available_watchers'
   end
 
+  describe '#available_projects_on_edit' do
+    subject { helper.available_projects_on_edit 42 }
+
+    it_behaves_like 'api v3 path', '/work_packages/42/available_projects'
+  end
+
+  describe '#available_projects_on_create' do
+    subject { helper.available_projects_on_create }
+
+    it_behaves_like 'api v3 path', '/work_packages/available_projects'
+  end
+
   describe '#categories' do
     subject { helper.categories 42 }
 
@@ -115,7 +137,13 @@ describe ::API::V3::Utilities::PathHelper do
   end
 
   describe '#create_work_package_form' do
-    subject { helper.create_work_package_form 42 }
+    subject { helper.create_work_package_form }
+
+    it_behaves_like 'api v3 path', '/work_packages/form'
+  end
+
+  describe '#create_project_work_package_form' do
+    subject { helper.create_project_work_package_form 42 }
 
     it_behaves_like 'api v3 path', '/projects/42/work_packages/form'
   end
@@ -237,6 +265,12 @@ describe ::API::V3::Utilities::PathHelper do
       subject { helper.work_package_schema 1, 2 }
 
       it_behaves_like 'api v3 path', '/work_packages/schemas/1-2'
+    end
+
+    describe '#work_package_sums_schema' do
+      subject { helper.work_package_sums_schema }
+
+      it_behaves_like 'api v3 path', '/work_packages/schemas/sums'
     end
   end
 

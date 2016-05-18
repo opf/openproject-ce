@@ -72,7 +72,7 @@ OpenProject::Application.configure do
   config.force_ssl = OpenProject::Configuration['rails_force_ssl']
 
   # Set to :debug to see everything in the log.
-  config.log_level = :info
+  config.log_level = :warn
 
   # Prepend all log lines with the following tags.
   # config.log_tags = [ :subdomain, :uuid ]
@@ -82,9 +82,6 @@ OpenProject::Application.configure do
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
-
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.action_controller.asset_host = "http://assets.example.com"
 
   # Precompile additional assets.
   # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.

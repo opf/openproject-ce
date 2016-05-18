@@ -34,6 +34,8 @@
 // See: https://github.com/webpack/style-loader/issues/31
 require('polyfill-function-prototype-bind');
 
+require('i18n');
+
 require('jquery');
 require('jquery-migrate/jquery-migrate');
 require('jquery-ujs');
@@ -69,3 +71,11 @@ require('angular-sanitize');
 
 require('angular-ui-select/dist/select');
 require('angular-ui-select/dist/select.css');
+
+require('restangular');
+
+require('rxjs');
+
+// 'includes' is not a function in older versions of lodash, so we need to substitute
+// due to the update related to https://github.com/mgonto/restangular/issues/1314
+_.includes = _.includes || _.include || _.contains;

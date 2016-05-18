@@ -33,6 +33,7 @@ require 'cgi'
 module ApplicationHelper
   include OpenProject::TextFormatting
   include OpenProject::ObjectLinking
+  include I18n
   include Redmine::I18n
 
   extend Forwardable
@@ -109,7 +110,8 @@ module ApplicationHelper
     html_options.symbolize_keys!
     tag(:input, html_options.merge(
                   type: 'image', src: image_path(name),
-                  onclick: (html_options[:onclick] ? "#{html_options[:onclick]}; " : '') + "#{function};"
+                  onclick: (html_options[:onclick] ? "#{html_options[:onclick]}; " : '') +
+                            "#{function};"
     ))
   end
 
@@ -123,11 +125,13 @@ module ApplicationHelper
   end
 
   def format_activity_day(date)
-    date == Date.today ? l(:label_today).titleize : format_date(date)
+    date == User.current.today ? l(:label_today).titleize : format_date(date)
   end
 
   def format_activity_description(text)
-    html_escape_once(truncate(text.to_s, length: 120).gsub(%r{[\r\n]*<(pre|code)>.*$}m, '...')).gsub(/[\r\n]+/, '<br />').html_safe
+    html_escape_once(truncate(text.to_s, length: 120).gsub(%r{[\r\n]*<(pre|code)>.*$}m, '...'))
+      .gsub(/[\r\n]+/, '<br />')
+      .html_safe
   end
 
   def format_version_name(version)
@@ -136,7 +140,8 @@ module ApplicationHelper
 
   def due_date_distance_in_words(date)
     if date
-      l((date < Date.today ? :label_roadmap_overdue : :label_roadmap_due_in), distance_of_date_in_words(Date.today, date))
+      label = date < Date.today ? :label_roadmap_overdue : :label_roadmap_due_in
+      l(label, distance_of_date_in_words(Date.today, date))
     end
   end
 
@@ -146,8 +151,11 @@ module ApplicationHelper
     content_tag :ul, class: 'pages-hierarchy' do
       pages[node].map { |page|
         content_tag :li do
+          title = if options[:timestamp] && page.updated_on
+                    l(:label_updated_time, distance_of_time_in_words(Time.now, page.updated_on))
+                  end
           concat link_to(page.pretty_title, project_wiki_path(page.project, page),
-                         title: (options[:timestamp] && page.updated_on ? l(:label_updated_time, distance_of_time_in_words(Time.now, page.updated_on)) : nil))
+                         title: title)
           concat render_page_hierarchy(pages, page.id, options) if pages[page.id]
         end
       }.join.html_safe
@@ -160,8 +168,9 @@ module ApplicationHelper
     error_messages = objects.map { |o| o.errors.full_messages }.flatten
 
     unless error_messages.empty?
-      render partial: 'common/validation_error', locals: { error_messages: error_messages,
-                                                           object_name: options[:object_name].to_s.gsub('_', '') }
+      render partial: 'common/validation_error',
+             locals: { error_messages: error_messages,
+                       object_name: options[:object_name].to_s.gsub('_', '') }
     end
   end
 
@@ -204,11 +213,19 @@ module ApplicationHelper
 
     content_tag :div, html_options do
       if User.current.impaired?
-        concat(content_tag('a', join_flash_messages(message), href: 'javascript:;', class: 'impaired--empty-link'))
-        concat(content_tag(:i, '', class: 'icon-close close-handler', tabindex: '0', role: 'button', aria: { label: ::I18n.t('js.close_popup_title') }))
+        concat(content_tag('a', join_flash_messages(message),
+                           href: 'javascript:;',
+                           class: 'impaired--empty-link'))
+        concat(content_tag(:i, '', class: 'icon-close close-handler',
+                                   tabindex: '0',
+                                   role: 'button',
+                                   aria: { label: ::I18n.t('js.close_popup_title') }))
       else
         concat(join_flash_messages(message))
-        concat(content_tag(:i, '', class: 'icon-close close-handler', tabindex: '0', role: 'button', aria: { label: ::I18n.t('js.close_popup_title') }))
+        concat(content_tag(:i, '', class: 'icon-close close-handler',
+                                   tabindex: '0',
+                                   role: 'button',
+                                   aria: { label: ::I18n.t('js.close_popup_title') }))
       end
     end
   end
@@ -222,27 +239,29 @@ module ApplicationHelper
     end
   end
 
-  def project_tree_options_for_select(projects, options = {}, &_block)
-    Project.project_level_list(projects).map { |element|
+  def project_tree_options_for_select(projects, selected: nil, disabled: {}, &_block)
+    options = ''.html_safe
+    Project.project_level_list(projects).each do |element|
+      identifier = element[:project].id
       tag_options = {
-        value: h(element[:project].id),
+        value: h(identifier),
         title: h(element[:project].name),
       }
 
-      if options[:selected] == element[:project] ||
-         (options[:selected].respond_to?(:include?) &&
-          options[:selected].include?(element[:project]))
-
-        tag_options[:selected] = 'selected'
+      if !selected.nil? && selected.id == identifier
+        tag_options[:selected] = true
       end
 
-      level_prefix = ''
-      level_prefix = ('&nbsp;' * 3 * element[:level] + '&#187; ').html_safe if element[:level] > 0
+      tag_options[:disabled] = true if disabled.include? identifier
 
-      tag_options.merge!(yield(element[:project])) if block_given?
+      content = ''.html_safe
+      content << ('&nbsp;' * 3 * element[:level] + '&#187; ').html_safe if element[:level] > 0
+      content << element[:project].name
 
-      content_tag('option', level_prefix + h(element[:project].name), tag_options)
-    }.join('').html_safe
+      options << content_tag('option', content, tag_options)
+    end
+
+    options
   end
 
   # Yields the given block for each project with its level in the tree
@@ -299,10 +318,7 @@ module ApplicationHelper
       id = name.gsub(/[\[\]]+/, '_') + object.id.to_s
 
       object_options = options.inject({}) { |h, (k, v)|
-        h[k] = v.is_a?(Symbol) ?
-                 send(v, object) :
-                 v
-
+        h[k] = v.is_a?(Symbol) ? send(v, object) : v
         h
       }
 
@@ -317,17 +333,24 @@ module ApplicationHelper
   end
 
   def html_hours(text)
-    text.gsub(%r{(\d+)\.(\d+)}, '<span class="hours hours-int">\1</span><span class="hours hours-dec">.\2</span>').html_safe
+    text.gsub(%r{(\d+)\.(\d+)},
+              '<span class="hours hours-int">\1</span><span class="hours hours-dec">.\2</span>')
+      .html_safe
   end
 
   def authoring(created, author, options = {})
-    l(options[:label] || :label_added_time_by, author: link_to_user(author), age: time_tag(created)).html_safe
+    label = options[:label] || :label_added_time_by
+    l(label, author: link_to_user(author), age: time_tag(created)).html_safe
   end
 
   def time_tag(time)
     text = distance_of_time_in_words(Time.now, time)
     if @project and @project.module_enabled?('activity')
-      link_to(text, { controller: '/activities', action: 'index', project_id: @project, from: time.to_date }, title: format_time(time))
+      link_to(text, { controller: '/activities',
+                      action: 'index',
+                      project_id: @project,
+                      from: time.to_date },
+              title: format_time(time))
     else
       datetime = time.acts_like?(:time) ? time.xmlschema : time.iso8601
       content_tag(:time, text, datetime: datetime,
@@ -351,25 +374,25 @@ module ApplicationHelper
 
     content_tag(:span,
                 link_to(content_tag(:span, '',
-                                    class: 'icon-context icon-sort-up',
+                                    class: 'icon-context icon-sort-up icon-small',
                                     title: l(:label_sort_highest)),
                         url.merge("#{name}[move_to]" => 'highest'),
                         method: method,
                         title: l(:label_sort_highest)) +
                 link_to(content_tag(:span, '',
-                                    class: 'icon-context icon-arrow-right6-1',
+                                    class: 'icon-context icon-arrow-up2 icon-small',
                                     title: l(:label_sort_higher)),
                         url.merge("#{name}[move_to]" => 'higher'),
                         method: method,
                         title: l(:label_sort_higher)) +
                 link_to(content_tag(:span, '',
-                                    class: 'icon-context icon-arrow-right6-3',
+                                    class: 'icon-context icon-arrow-down2 icon-small',
                                     title: l(:label_sort_lower)),
                         url.merge("#{name}[move_to]" => 'lower'),
                         method: method,
                         title: l(:label_sort_lower)) +
                 link_to(content_tag(:span, '',
-                                    class: 'icon-context icon-sort-down',
+                                    class: 'icon-context icon-sort-down icon-small',
                                     title: l(:label_sort_lowest)),
                         url.merge("#{name}[move_to]" => 'lowest'),
                         method: method,
@@ -399,11 +422,15 @@ module ApplicationHelper
       if ancestors.any?
         root = ancestors.shift
         b << link_to_project(root, { jump: current_menu_item }, class: 'root')
+
         if ancestors.size > 2
           b << '&#8230;'
           ancestors = ancestors[-2, 2]
         end
-        b += ancestors.map { |p| link_to_project(p, { jump: current_menu_item }, class: 'ancestor') }
+
+        b += ancestors.map { |p|
+          link_to_project(p, { jump: current_menu_item }, class: 'ancestor')
+        }
       end
       b << h(@project)
       b.join(' &#187; ')
@@ -455,13 +482,23 @@ module ApplicationHelper
              [['(auto)', '']]
            else
              []
-          end
-    auto + valid_languages.map { |lang| [ll(lang.to_s, :general_lang_name), lang.to_s] }.sort { |x, y| x.last <=> y.last }
+           end
+
+    mapped_languages = valid_languages.map { |lang|
+      [ll(lang.to_s, :general_lang_name), lang.to_s]
+    }
+
+    auto + mapped_languages.sort { |x, y| x.last <=> y.last }
   end
 
   def all_lang_options_for_select(blank = true)
-    (blank ? [['(auto)', '']] : []) +
-      all_languages.map { |lang| [ll(lang.to_s, :general_lang_name), lang.to_s] }.sort { |x, y| x.last <=> y.last }
+    initial_lang_options = blank ? [['(auto)', '']] : []
+
+    mapped_languages = all_languages.map { |lang|
+      [ll(lang.to_s, :general_lang_name), lang.to_s]
+    }
+
+    initial_lang_options + mapped_languages.sort { |x, y| x.last <=> y.last }
   end
 
   def labelled_tabular_form_for(record, options = {}, &block)
@@ -511,16 +548,17 @@ module ApplicationHelper
     legend = options[:legend] || ''
 
     content_tag :span do
-      content_tag :span, class: 'progress-bar', style: "width: #{width}" do
-        content_tag(:span, '', class: 'inner-progress closed', style: "width: #{closed}%") +
-          content_tag(:span, '', class: 'inner-progress done',   style: "width: #{done}%")
-      end.<<(content_tag :span, "#{legend}% #{l(:total_progress)}", class: 'progress-bar-legend')
+      progress = content_tag :span, class: 'progress-bar', style: "width: #{width}" do
+        concat content_tag(:span, '', class: 'inner-progress closed', style: "width: #{closed}%")
+        concat content_tag(:span, '', class: 'inner-progress done',   style: "width: #{done}%")
+      end
+      progress + content_tag(:span, "#{legend}% #{l(:total_progress)}", class: 'progress-bar-legend')
     end
   end
 
   def checked_image(checked = true)
     if checked
-      icon_wrapper('icon-context icon-yes', l(:label_checked))
+      icon_wrapper('icon-context icon-checkmark', l(:label_checked))
     end
   end
 
@@ -581,6 +619,20 @@ module ApplicationHelper
     end
 
     tags.html_safe
+  end
+
+  # To avoid the menu flickering, disable it
+  # by default unless we're in test mode
+  def initial_menu_styles
+    Rails.env.test? ? '' : 'display:none'
+  end
+
+  def initial_menu_classes(side_displayed, show_decoration)
+    classes = 'can-hide-navigation'
+    classes << ' nosidebar' unless side_displayed
+    classes << ' nomenus' unless show_decoration
+
+    classes
   end
 
   # Add a HTML meta tag to control robots (web spiders)
@@ -671,7 +723,8 @@ module ApplicationHelper
   end
 
   def icon_wrapper(icon_class, label)
-    content =  content_tag(:span, '', class: icon_class)
+    content  = content_tag(:span, '', class: icon_class)
     content += content_tag(:span, label, class: 'hidden-for-sighted')
+    content
   end
 end

@@ -44,7 +44,7 @@ module.exports = function(TimezoneService, currencyFilter, CustomFieldHelper) {
       switch(typeof(content)) {
         case 'object':
           if (content === null) { return ''; }
-          return content.name || content.subject || '';
+          return content.name || content.subject || content.title || '';
         case 'number':
           return content;
         default:
@@ -149,6 +149,14 @@ module.exports = function(TimezoneService, currencyFilter, CustomFieldHelper) {
           return value ? TimezoneService.formattedDate(value) : '';
         case 'currency':
           return currencyFilter(value, 'EUR ');
+        case 'Duration':
+          return TimezoneService.formattedDuration(value);
+        case 'DateTime':
+          return TimezoneService.formattedDatetime(value);
+        case('Boolean'):
+          return value ? I18n.t('js.general_text_yes') : I18n.t('js.general_text_no');
+        case 'Date':
+          return TimezoneService.formattedDate(value);
         default:
           return value;
       }
@@ -214,11 +222,11 @@ module.exports = function(TimezoneService, currencyFilter, CustomFieldHelper) {
     },
 
     collapseStateIcon: function(collapsed) {
-      var iconClass = 'icon-arrow-right5-';
+      var iconClass = 'icon-arrow-';
       if (collapsed) {
-        iconClass += '3';
+        iconClass += 'up1';
       } else {
-        iconClass += '2';
+        iconClass += 'down1';
       }
 
       return iconClass;

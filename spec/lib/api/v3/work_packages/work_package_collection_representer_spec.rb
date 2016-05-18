@@ -29,6 +29,8 @@
 require 'spec_helper'
 
 describe ::API::V3::WorkPackages::WorkPackageCollectionRepresenter do
+  include API::V3::Utilities::PathHelper
+
   let(:self_base_link) { '/api/v3/example' }
   let(:work_packages) { WorkPackage.all }
   let(:user) { FactoryGirl.build_stubbed(:user) }
@@ -68,6 +70,61 @@ describe ::API::V3::WorkPackages::WorkPackageCollectionRepresenter do
 
     it 'does not render sums' do
       is_expected.not_to have_json_path('totalSums')
+    end
+
+    context 'when the user has the add_work_package permission in any project' do
+      before do
+        allow(user)
+          .to receive(:allowed_to?)
+          .and_return(false)
+
+        allow(user)
+          .to receive(:allowed_to?)
+          .with(:add_work_packages, nil, global: true)
+          .and_return(true)
+      end
+
+      it 'has a link to create work_packages' do
+        is_expected
+          .to be_json_eql(api_v3_paths.create_work_package_form.to_json)
+          .at_path('_links/createWorkPackage/href')
+      end
+
+      it 'declares to use POST to create work_packages' do
+        is_expected
+          .to be_json_eql(:post.to_json)
+          .at_path('_links/createWorkPackage/method')
+      end
+
+      it 'has a link to create work_packages immediately' do
+        is_expected
+          .to be_json_eql(api_v3_paths.work_packages.to_json)
+          .at_path('_links/createWorkPackageImmediate/href')
+      end
+
+      it 'declares to use POST to create work_packages immediately' do
+        is_expected
+          .to be_json_eql(:post.to_json)
+          .at_path('_links/createWorkPackageImmediate/method')
+      end
+    end
+
+    context 'when the user lacks the add_work_package permission' do
+      before do
+        allow(user)
+          .to receive(:allowed_to?)
+          .and_return(false)
+      end
+
+      it 'has no link to create work_packages' do
+        is_expected
+          .to_not have_json_path('_links/createWorkPackage')
+      end
+
+      it 'has no link to create work_packages immediately' do
+        is_expected
+          .to_not have_json_path('_links/createWorkPackageImmediate')
+      end
     end
 
     context 'limited page size' do
@@ -114,10 +171,34 @@ describe ::API::V3::WorkPackages::WorkPackageCollectionRepresenter do
     end
 
     context 'passing groups' do
-      let(:groups) { { custom: 'object' } }
+      let(:groups) {
+        group = { 'custom': 'object' }
+        allow(group).to receive(:has_sums?).and_return false
+        [group]
+      }
 
       it 'renders the groups object as json' do
         is_expected.to be_json_eql(groups.to_json).at_path('groups')
+      end
+    end
+
+    context 'passing groups with sums' do
+      let(:groups) {
+        group = { 'sums': {} }
+        allow(group).to receive(:has_sums?).and_return true
+        [group]
+      }
+
+      it 'renders the groups object as json' do
+        is_expected.to be_json_eql(groups.to_json).at_path('groups')
+      end
+
+      it 'has a link to the sums schema' do
+        expected = {
+          href: api_v3_paths.work_package_sums_schema
+        }
+
+        is_expected.to be_json_eql(expected.to_json).at_path('_links/sumsSchema')
       end
     end
 
@@ -126,6 +207,14 @@ describe ::API::V3::WorkPackages::WorkPackageCollectionRepresenter do
 
       it 'renders the groups object as json' do
         is_expected.to be_json_eql(total_sums.to_json).at_path('totalSums')
+      end
+
+      it 'has a link to the sums schema' do
+        expected = {
+          href: api_v3_paths.work_package_sums_schema
+        }
+
+        is_expected.to be_json_eql(expected.to_json).at_path('_links/sumsSchema')
       end
     end
   end

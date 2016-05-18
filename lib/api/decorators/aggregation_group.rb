@@ -52,13 +52,27 @@ module API
 
       property :count,
                exec_context: :decorator,
-               getter: -> (*) { @count },
+               getter: -> (*) { count },
                render_nil: true
 
       property :sums,
                exec_context: :decorator,
-               getter: -> (*) { @sums },
+               getter: -> (*) { sums },
                render_nil: false
+
+      def has_sums?
+        sums.present?
+      end
+
+      def model_required?
+        false
+      end
+
+      private
+
+      attr_reader :sums,
+                  :count
+
     end
   end
 end

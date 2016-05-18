@@ -32,7 +32,7 @@ See doc/COPYRIGHT.rdoc for more details.
     <% if @group.users.any? %>
       <div class="generic-table--container">
         <div class="generic-table--results-container">
-          <table interactive-table role="grid" class="generic-table users">
+          <table interactive-table class="generic-table users">
             <colgroup>
               <col highlight-col>
               <col>
@@ -95,7 +95,7 @@ See doc/COPYRIGHT.rdoc for more details.
               <%= principals_check_box_tags 'user_ids[]', users %>
             </div>
           </div>
-          <div><%= styled_button_tag l(:button_add), class: '-highlight -with-icon icon-yes' %></div>
+          <div><%= styled_button_tag l(:button_add), class: '-highlight -with-icon icon-checkmark' %></div>
         </fieldset>
       <% end %>
     <% end %>

@@ -97,6 +97,16 @@ body.controller-work_packages.action-show {
     }
   }
 
+  &.edit-all-mode {
+    .work-packages--left-panel {
+      height: calc(100% - 55px);
+    }
+  }
+
+  .work-packages--split-view {
+    overflow: visible !important;
+  }
+
   .work-packages--right-panel {
     min-width: 420px;
     overflow-y: auto;
@@ -185,7 +195,7 @@ body.controller-work_packages.action-show {
 @media only screen and (max-width: 1280px) {
   .work-packages--details {
     @at-root {
-      li[feature-flag=detailsView] {
+      .detailsViewMenuItem {
         display: block;
       }
     }
@@ -216,31 +226,20 @@ body.controller-work_packages.action-show {
 
     li .inline-edit { width: 100%; }
 
-    .work-package-field.work-packages--details--subject {
-      .inplace-edit {
-        .inplace-edit--read {
-          display: block;
-          white-space: nowrap;
-          width: 100%;
-        }
-      }
-    }
-
     .inplace-edit--read-value {
       margin: 0;
-      padding: 0;
-
-      span { width: 100%; }
+      padding-top: 0;
+      padding-bottom: 0;
     }
 
     .work-packages--details--subject,
-    .work-packages--details--subject .inplace-edit--text-field {
+    .work-packages--details--subject .wp-inline-edit--field {
       font-size: 1.5rem;
       font-weight: bold;
       line-height: 34px;
     }
 
-    .work-packages--details--subject .inplace-edit--text-field {
+    .work-packages--details--subject .wp-inline-edit--field {
       height: auto;
       padding: 0;
     }
@@ -249,7 +248,7 @@ body.controller-work_packages.action-show {
 
 .work-packages--split-view {
   .work-packages--details--subject,
-  .work-packages--details--subject .inplace-edit--text-field {
+  .work-packages--details--subject .wp-inline-edit--field {
     font-size: 1.125rem;
     font-weight: bold;
   }
@@ -257,7 +256,7 @@ body.controller-work_packages.action-show {
   .work-packages--details--subject {
     line-height: 24px;
 
-    .inplace-edit--text-field {
+    .wp-inline-edit--field {
       height: 38px;
       line-height: 36px;
       padding: 0 0.375rem;

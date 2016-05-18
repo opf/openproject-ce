@@ -128,12 +128,13 @@ Then /^the work package should be shown with the following values:$/ do |table|
   }
 
   table_attributes.each do |key, value|
-    label = find('dt.attributes-key-value--key', text: key)
-    should have_css("dd.#{label[:class].split(' ').last}", text: value)
+    label = find('div.attributes-key-value--key', text: key)
+    should have_css("div.#{label[:class].split(' ').last}", text: value)
   end
 
   if table.rows_hash['Subject']
-    should have_css('.subject-header', text: table.rows_hash['Subject'])
+    subject_field = find(".work-packages--details--subject input")
+    expect(subject_field.value).to eq(table.rows_hash['Subject'])
   end
 
   if table.rows_hash['Description']
@@ -159,6 +160,12 @@ When /^I click the edit work package button$/ do
   end
 end
 
+When /^I show all attributes$/ do
+  within '.panel-toggler' do
+    find('a', text: 'Show all attributes').click
+  end
+end
+
 When /^I click the watch work package button$/ do
   within('#toolbar-items') do
     find('#watch-button').click
@@ -172,8 +179,11 @@ When /^I click the unwatch work package button$/ do
 end
 
 When /^I fill in a comment with "(.+?)"$/ do |comment|
+  # Using the "I click on "..." step does not work for some reason
+
+  find('.work-packages--activity--add-comment .inplace-editing--trigger-link').click
+
   steps %{
-    And I click on "Click to add a comment"
     Then I fill in "value" with "#{comment}" within ".work-packages--activity--add-comment"
   }
 end
@@ -181,7 +191,7 @@ end
 When /^I preview the comment to be added and see "(.+?)"$/ do |comment|
   steps %{
     And I click on "Preview" within ".work-packages--activity--add-comment"
-    And I should see "#{comment}" within ".work-packages--activity--add-comment .-preview"
+    And I should see "#{comment}" within ".work-packages--activity--add-comment .inplace-edit--preview"
   }
 end
 
@@ -196,4 +206,8 @@ When /^I preview the "(.+?)" and see "(.+?)"$/ do |field_name, text|
     And I click on "Preview" within ".work-packages--details--#{field_name}"
     And I should see "#{text}" within ".work-packages--details--#{field_name} .-preview"
   }
+end
+
+When /^I click to see all work package attributes$/ do
+  find('a', text: I18n.t('js.label_show_attributes')).click
 end

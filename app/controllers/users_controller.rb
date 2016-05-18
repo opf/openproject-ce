@@ -39,8 +39,10 @@ class UsersController < ApplicationController
                                    :edit_membership,
                                    :destroy_membership,
                                    :destroy,
-                                   :deletion_info]
-  before_filter :require_login, only: [:deletion_info] # should also contain destroy but post data can not be redirected
+                                   :deletion_info,
+                                   :resend_invitation]
+  # should also contain destroy but post data can not be redirected
+  before_filter :require_login, only: [:deletion_info]
   before_filter :authorize_for_user, only: [:destroy]
   before_filter :check_if_deletion_allowed, only: [:deletion_info,
                                                    :destroy]
@@ -73,7 +75,8 @@ class UsersController < ApplicationController
 
     unless params[:name].blank?
       name = "%#{params[:name].strip.downcase}%"
-      c << ['LOWER(login) LIKE ? OR LOWER(firstname) LIKE ? OR LOWER(lastname) LIKE ? OR LOWER(mail) LIKE ?', name, name, name, name]
+      c << ['LOWER(login) LIKE ? OR LOWER(firstname) LIKE ? OR '\
+            'LOWER(lastname) LIKE ? OR LOWER(mail) LIKE ?', name, name, name, name]
     end
 
     @users = scope.order(sort_clause)
@@ -97,7 +100,9 @@ class UsersController < ApplicationController
     @events_by_day = events.group_by { |e| e.event_datetime.to_date }
 
     unless User.current.admin?
-      if !(@user.active? || @user.registered?) || (@user != User.current && @memberships.empty? && events.empty?)
+      if !(@user.active? ||
+         @user.registered?) ||
+         (@user != User.current && @memberships.empty? && events.empty?)
         render_404
         return
       end
@@ -109,13 +114,15 @@ class UsersController < ApplicationController
   end
 
   def new
-    @user = User.new(language: Setting.default_language, mail_notification: Setting.default_notification_option)
+    @user = User.new(language: Setting.default_language,
+                     mail_notification: Setting.default_notification_option)
     @auth_sources = AuthSource.all
   end
 
   verify method: :post, only: :create, render: { nothing: true, status: :method_not_allowed }
   def create
-    @user = User.new(language: Setting.default_language, mail_notification: Setting.default_notification_option)
+    @user = User.new(language: Setting.default_language,
+                     mail_notification: Setting.default_notification_option)
     @user.attributes = permitted_params.user_create_as_admin(false, @user.change_password_allowed?)
     @user.admin = params[:user][:admin] || false
     @user.login = params[:user][:login] || @user.mail
@@ -124,10 +131,7 @@ class UsersController < ApplicationController
       respond_to do |format|
         format.html do
           flash[:notice] = l(:notice_successful_create)
-          redirect_to(params[:continue] ?
-            new_user_path :
-            edit_user_path(@user)
-                     )
+          redirect_to(params[:continue] ? new_user_path : edit_user_path(@user))
         end
       end
     else
@@ -169,7 +173,6 @@ class UsersController < ApplicationController
       update_email_service.call(mail_notification: pref_params.delete(:mail_notification),
                                 self_notified: params[:self_notified] == '1',
                                 notified_project_ids: params[:notified_project_ids])
-
 
       @user.pref.attributes = pref_params
       @user.pref.save
@@ -248,11 +251,16 @@ class UsersController < ApplicationController
     @membership.save if request.post?
     respond_to do |format|
       if @membership.valid?
-        format.html do redirect_to controller: '/users', action: 'edit', id: @user, tab: 'memberships' end
+        format.html do
+          redirect_to controller: '/users', action: 'edit', id: @user, tab: 'memberships'
+        end
+
         format.js do
           render(:update) {|page|
             page.replace_html 'tab-content-memberships', partial: 'users/memberships'
-            page.insert_html :top, 'tab-content-memberships', partial: 'members/common_notice', locals: { message: l(:notice_successful_update) }
+            page.insert_html :top, 'tab-content-memberships',
+                             partial: 'members/common_notice',
+                             locals: { message: l(:notice_successful_update) }
             page.visual_effect(:highlight, "member-#{@membership.id}")
           }
         end
@@ -260,11 +268,26 @@ class UsersController < ApplicationController
         format.js do
           render(:update) {|page|
             page.replace_html 'tab-content-memberships', partial: 'users/memberships'
-            page.insert_html :top, 'tab-content-memberships', partial: 'members/member_errors', locals: { member: @membership }
+            page.insert_html :top, 'tab-content-memberships',
+                             partial: 'members/member_errors',
+                             locals: { member: @membership }
           }
         end
       end
     end
+  end
+
+  def resend_invitation
+    token = UserInvitation.reinvite_user @user.id
+
+    if token.persisted?
+      flash[:notice] = I18n.t(:notice_user_invitation_resent, email: @user.mail)
+    else
+      logger.error "could not re-invite #{@user.mail}: #{token.errors.full_messages.join(' ')}"
+      flash[:error] = I18n.t(:notice_internal_server_error, app_title: Setting.app_title)
+    end
+
+    redirect_to edit_user_path(@user)
   end
 
   def destroy
@@ -284,15 +307,22 @@ class UsersController < ApplicationController
 
   def destroy_membership
     @membership = Member.find(params.delete(:membership_id))
+
     if request.post? && @membership.deletable?
       @membership.destroy && @membership = nil
     end
+
     respond_to do |format|
-      format.html do redirect_to controller: '/users', action: 'edit', id: @user, tab: 'memberships' end
+      format.html do
+        redirect_to controller: '/users', action: 'edit', id: @user, tab: 'memberships'
+      end
+
       format.js do
         render(:update) { |page|
           page.replace_html 'tab-content-memberships', partial: 'users/memberships'
-          page.insert_html :top, 'tab-content-memberships', partial: 'members/common_notice', locals: { message: l(:notice_successful_delete) }
+          page.insert_html :top, 'tab-content-memberships',
+                           partial: 'members/common_notice',
+                           locals: { message: l(:notice_successful_delete) }
         }
       end
     end

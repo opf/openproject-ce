@@ -40,6 +40,7 @@ describe Scm::CheckoutInstructionsService do
   }
 
   let(:base_url) { 'http://example.org/svn/' }
+  let(:path) { nil }
   let(:text) { 'foo' }
   let(:checkout_hash) {
     {
@@ -51,7 +52,7 @@ describe Scm::CheckoutInstructionsService do
     }
   }
 
-  subject(:service) { Scm::CheckoutInstructionsService.new(repository, user: user) }
+  subject(:service) { Scm::CheckoutInstructionsService.new(repository, user: user, path: path) }
 
   before do
     allow(Setting).to receive(:repository_checkout_data).and_return(checkout_hash)
@@ -64,16 +65,27 @@ describe Scm::CheckoutInstructionsService do
           .to eq(URI("http://example.org/svn/#{project.identifier}"))
       end
 
-      it 'builds a subpath' do
-        expect(service.checkout_url('foo/bar'))
-          .to eq(URI("http://example.org/svn/#{project.identifier}/foo/bar"))
+      shared_examples 'valid checkout URL' do
+        it do
+          expect(service.checkout_url(path))
+            .to eq(URI("http://example.org/svn/#{project.identifier}/#{expected_path}"))
+        end
       end
-    end
 
-    it_behaves_like 'builds the correct URL'
+      it_behaves_like 'valid checkout URL' do
+        let(:path) { 'foo/bar' }
+        let(:expected_path) { path }
+      end
 
-    context 'with missing trailing slash' do
-      it_behaves_like 'builds the correct URL'
+      it_behaves_like 'valid checkout URL' do
+        let(:path) { 'foo/bar with spaces' }
+        let(:expected_path) { 'foo/bar%20with%20spaces' }
+      end
+
+      it_behaves_like 'valid checkout URL' do
+        let(:path) { 'foo/bar with §\"!??```' }
+        let(:expected_path) { 'foo/%C2%A7%22!??%60%60%60' }
+      end
     end
   end
 

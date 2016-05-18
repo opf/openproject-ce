@@ -47,9 +47,9 @@ Feature: Renaming a wiki page
   @javascript
   Scenario: Renaming a wiki page
     When I go to the wiki page "WikiPage" of the project called "project1"
-    And I click on "More functions"
+    And I click on "More"
     And I click on "Rename"
     And I fill in "New WikiPage" for "Title"
     And I press "Rename"
-    Then I should be on the wiki page "New_WikiPage" of the project called "project1"
+    Then I should be on the wiki page "New WikiPage" of the project called "project1"
     And I should see "Successful update." within ".notice"

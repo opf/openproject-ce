@@ -63,34 +63,34 @@ describe ApplicationHelper, type: :helper do
 
   it 'should auto links' do
     to_test = {
-      'http://foo.bar' => '<a class="external icon-context icon-copy2" href="http://foo.bar">http://foo.bar</a>',
-      'http://foo.bar/~user' => '<a class="external icon-context icon-copy2" href="http://foo.bar/~user">http://foo.bar/~user</a>',
-      'http://foo.bar.' => '<a class="external icon-context icon-copy2" href="http://foo.bar">http://foo.bar</a>.',
-      'https://foo.bar.' => '<a class="external icon-context icon-copy2" href="https://foo.bar">https://foo.bar</a>.',
-      'This is a link: http://foo.bar.' => 'This is a link: <a class="external icon-context icon-copy2" href="http://foo.bar">http://foo.bar</a>.',
-      'A link (eg. http://foo.bar).' => 'A link (eg. <a class="external icon-context icon-copy2" href="http://foo.bar">http://foo.bar</a>).',
-      'http://foo.bar/foo.bar#foo.bar.' => '<a class="external icon-context icon-copy2" href="http://foo.bar/foo.bar#foo.bar">http://foo.bar/foo.bar#foo.bar</a>.',
-      'http://www.foo.bar/Test_(foobar)' => '<a class="external icon-context icon-copy2" href="http://www.foo.bar/Test_(foobar)">http://www.foo.bar/Test_(foobar)</a>',
-      '(see inline link : http://www.foo.bar/Test_(foobar))' => '(see inline link : <a class="external icon-context icon-copy2" href="http://www.foo.bar/Test_(foobar)">http://www.foo.bar/Test_(foobar)</a>)',
-      '(see inline link : http://www.foo.bar/Test)' => '(see inline link : <a class="external icon-context icon-copy2" href="http://www.foo.bar/Test">http://www.foo.bar/Test</a>)',
-      '(see inline link : http://www.foo.bar/Test).' => '(see inline link : <a class="external icon-context icon-copy2" href="http://www.foo.bar/Test">http://www.foo.bar/Test</a>).',
+      'http://foo.bar' => '<a class="external icon-context icon-copy" href="http://foo.bar">http://foo.bar</a>',
+      'http://foo.bar/~user' => '<a class="external icon-context icon-copy" href="http://foo.bar/~user">http://foo.bar/~user</a>',
+      'http://foo.bar.' => '<a class="external icon-context icon-copy" href="http://foo.bar">http://foo.bar</a>.',
+      'https://foo.bar.' => '<a class="external icon-context icon-copy" href="https://foo.bar">https://foo.bar</a>.',
+      'This is a link: http://foo.bar.' => 'This is a link: <a class="external icon-context icon-copy" href="http://foo.bar">http://foo.bar</a>.',
+      'A link (eg. http://foo.bar).' => 'A link (eg. <a class="external icon-context icon-copy" href="http://foo.bar">http://foo.bar</a>).',
+      'http://foo.bar/foo.bar#foo.bar.' => '<a class="external icon-context icon-copy" href="http://foo.bar/foo.bar#foo.bar">http://foo.bar/foo.bar#foo.bar</a>.',
+      'http://www.foo.bar/Test_(foobar)' => '<a class="external icon-context icon-copy" href="http://www.foo.bar/Test_(foobar)">http://www.foo.bar/Test_(foobar)</a>',
+      '(see inline link : http://www.foo.bar/Test_(foobar))' => '(see inline link : <a class="external icon-context icon-copy" href="http://www.foo.bar/Test_(foobar)">http://www.foo.bar/Test_(foobar)</a>)',
+      '(see inline link : http://www.foo.bar/Test)' => '(see inline link : <a class="external icon-context icon-copy" href="http://www.foo.bar/Test">http://www.foo.bar/Test</a>)',
+      '(see inline link : http://www.foo.bar/Test).' => '(see inline link : <a class="external icon-context icon-copy" href="http://www.foo.bar/Test">http://www.foo.bar/Test</a>).',
       '(see "inline link":http://www.foo.bar/Test_(foobar))' => '(see <a href="http://www.foo.bar/Test_(foobar)" class="external">inline link</a>)',
       '(see "inline link":http://www.foo.bar/Test)' => '(see <a href="http://www.foo.bar/Test" class="external">inline link</a>)',
       '(see "inline link":http://www.foo.bar/Test).' => '(see <a href="http://www.foo.bar/Test" class="external">inline link</a>).',
-      'www.foo.bar' => '<a class="external icon-context icon-copy2" href="http://www.foo.bar">www.foo.bar</a>',
-      'http://foo.bar/page?p=1&t=z&s=' => '<a class="external icon-context icon-copy2" href="http://foo.bar/page?p=1&#38;t=z&#38;s=">http://foo.bar/page?p=1&#38;t=z&#38;s=</a>',
-      'http://foo.bar/page#125' => '<a class="external icon-context icon-copy2" href="http://foo.bar/page#125">http://foo.bar/page#125</a>',
-      'http://foo@www.bar.com' => '<a class="external icon-context icon-copy2" href="http://foo@www.bar.com">http://foo@www.bar.com</a>',
-      'http://foo:bar@www.bar.com' => '<a class="external icon-context icon-copy2" href="http://foo:bar@www.bar.com">http://foo:bar@www.bar.com</a>',
-      'ftp://foo.bar' => '<a class="external icon-context icon-copy2" href="ftp://foo.bar">ftp://foo.bar</a>',
-      'ftps://foo.bar' => '<a class="external icon-context icon-copy2" href="ftps://foo.bar">ftps://foo.bar</a>',
-      'sftp://foo.bar' => '<a class="external icon-context icon-copy2" href="sftp://foo.bar">sftp://foo.bar</a>',
+      'www.foo.bar' => '<a class="external icon-context icon-copy" href="http://www.foo.bar">www.foo.bar</a>',
+      'http://foo.bar/page?p=1&t=z&s=' => '<a class="external icon-context icon-copy" href="http://foo.bar/page?p=1&#38;t=z&#38;s=">http://foo.bar/page?p=1&#38;t=z&#38;s=</a>',
+      'http://foo.bar/page#125' => '<a class="external icon-context icon-copy" href="http://foo.bar/page#125">http://foo.bar/page#125</a>',
+      'http://foo@www.bar.com' => '<a class="external icon-context icon-copy" href="http://foo@www.bar.com">http://foo@www.bar.com</a>',
+      'http://foo:bar@www.bar.com' => '<a class="external icon-context icon-copy" href="http://foo:bar@www.bar.com">http://foo:bar@www.bar.com</a>',
+      'ftp://foo.bar' => '<a class="external icon-context icon-copy" href="ftp://foo.bar">ftp://foo.bar</a>',
+      'ftps://foo.bar' => '<a class="external icon-context icon-copy" href="ftps://foo.bar">ftps://foo.bar</a>',
+      'sftp://foo.bar' => '<a class="external icon-context icon-copy" href="sftp://foo.bar">sftp://foo.bar</a>',
       # two exclamation marks
-      'http://example.net/path!602815048C7B5C20!302.html' => '<a class="external icon-context icon-copy2" href="http://example.net/path!602815048C7B5C20!302.html">http://example.net/path!602815048C7B5C20!302.html</a>',
+      'http://example.net/path!602815048C7B5C20!302.html' => '<a class="external icon-context icon-copy" href="http://example.net/path!602815048C7B5C20!302.html">http://example.net/path!602815048C7B5C20!302.html</a>',
       # escaping
-      'http://foo"bar' => '<a class="external icon-context icon-copy2" href="http://foo&quot;bar">http://foo&quot;bar</a>',
+      'http://foo"bar' => '<a class="external icon-context icon-copy" href="http://foo&quot;bar">http://foo&quot;bar</a>',
       # wrap in angle brackets
-      '<http://foo.bar>' => '&lt;<a class="external icon-context icon-copy2" href="http://foo.bar">http://foo.bar</a>&gt;'
+      '<http://foo.bar>' => '&lt;<a class="external icon-context icon-copy" href="http://foo.bar">http://foo.bar</a>&gt;'
     }
     to_test.each { |text, result| assert_dom_equal "<p>#{result}</p>", helper.format_text(text) }
   end
@@ -128,12 +128,12 @@ RAW
 
   it 'should attached images' do
     to_test = {
-      'Inline image: !logo.gif!' => "Inline image: <img src=\"/attachments/#{@attachment.id}/download\" title=\"This is a logo\" alt=\"This is a logo\" />",
-      'Inline image: !logo.GIF!' => "Inline image: <img src=\"/attachments/#{@attachment.id}/download\" title=\"This is a logo\" alt=\"This is a logo\" />",
+      'Inline image: !logo.gif!' => "Inline image: <img src=\"/attachments/#{@attachment.id}\" title=\"This is a logo\" alt=\"This is a logo\" />",
+      'Inline image: !logo.GIF!' => "Inline image: <img src=\"/attachments/#{@attachment.id}\" title=\"This is a logo\" alt=\"This is a logo\" />",
       'No match: !ogo.gif!' => 'No match: <img src="ogo.gif" alt="" />',
       'No match: !ogo.GIF!' => 'No match: <img src="ogo.GIF" alt="" />',
       # link image
-      '!logo.gif!:http://foo.bar/' => "<a href=\"http://foo.bar/\"><img src=\"/attachments/#{@attachment.id}/download\" title=\"This is a logo\" alt=\"This is a logo\" /></a>",
+      '!logo.gif!:http://foo.bar/' => "<a href=\"http://foo.bar/\"><img src=\"/attachments/#{@attachment.id}\" title=\"This is a logo\" alt=\"This is a logo\" /></a>",
     }
     to_test.each { |text, result| assert_dom_equal "<p>#{result}</p>", helper.format_text(text, attachments: [@attachment]) }
   end
@@ -347,8 +347,8 @@ EXPECTED
 
     to_test = { "|[[Page|Link title]]|[[Other Page|Other title]]|\n|Cell 21|[[Last page]]|" =>
                  "<tr><td><a class=\"wiki-page new\" href=\"/projects/#{@project.identifier}/wiki/Page\">Link title</a></td>" +
-                 "<td><a class=\"wiki-page\" href=\"/projects/#{@project.identifier}/wiki/Other_Page\">Other title</a></td>" +
-                 "</tr><tr><td>Cell 21</td><td><a class=\"wiki-page\" href=\"/projects/#{@project.identifier}/wiki/Last_page\">Last page</a></td></tr>"
+                 "<td><a class=\"wiki-page\" href=\"/projects/#{@project.identifier}/wiki/Other%20Page\">Other title</a></td>" +
+                 "</tr><tr><td>Cell 21</td><td><a class=\"wiki-page\" href=\"/projects/#{@project.identifier}/wiki/Last%20page\">Last page</a></td></tr>"
     }
 
     to_test.each { |text, result| assert_dom_equal "<table>#{result}</table>", helper.format_text(text).gsub(/[\t\n]/, '') }

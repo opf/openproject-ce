@@ -194,6 +194,9 @@ default:
   # autologin_cookie_path:
   # autologin_cookie_secure:
 
+  # Configuration of the session cookie
+  # session_cookie_name: the name of the OpenProject cookie (default: _open_project_session)
+
   # disable browser cache for security reasons
   # see: https://websecuritytool.codeplex.com/wikipage?title=Checks#http-cache-control-header-no-store
   # disable_browser_cache: true
@@ -230,9 +233,15 @@ default:
   #     - identifier: The repository identifier name
   #     - vendor: The SCM vendor of the repository to create
   #     - project: identifier, name and ID of the associated project
-  #     - old_repository: The known path to the old repository (used during relocate, only)
+  #     - old_identifier: The identifier to the old repository (used only during relocate)
   #
   #   NOTE: Disabling :managed repositories using disabled_types takes precedence over this setting.
+  #
+  # insecure:
+  #   Only applies when the manages: key is set to a URL
+  #   If the given URL uses SSL, certificate checking will be disabled.
+  #   This key is set for a packaged installation by default, since it communicates locally and
+  #   these installations may often include a snakeoil certificate.
   # mode:
   #   The octal file mode to set the repository folder to (defaults to 0700).
   # group:
@@ -244,7 +253,8 @@ default:
   # disabled_types:
   #   Disable specific repository types for this particular vendor. This allows
   #   to restrict the available choices a project administrator has for creating repositories
-  #   See the example below for available types.
+  #   May be set as a YAML list of types or several types, separated by comma.
+  #    See the example below for available types.
   #
   #   Available types for git:
   #     - :local (Local repositories, registered using a local path)
@@ -264,6 +274,7 @@ default:
   #     manages: /opt/repositories/git
   #   subversion:
   #     client_command: /usr/local/bin/svn
+  #     trustedssl: true
   #     disabled_types:
   #       - :existing
   #     manages: /opt/repositories/svn
@@ -313,6 +324,11 @@ default:
   #   global_basic_auth:
   #     user: admin
   #     password: admin
+
+
+  # By default, the legacy APIv2 allows authentication through basic auth.
+  # Uncomment the following line to restrict APIv2 access to API tokens
+  # apiv2_enable_basic_auth: false
 
 # specific configuration options for production environment
 # that overrides the default ones

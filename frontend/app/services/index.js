@@ -34,13 +34,6 @@ angular.module('openproject.services')
     'NotificationsService',
     require('./activity-service')
   ])
-  .service('CacheService', [
-    'HALAPIResource',
-    '$http',
-    '$q',
-    'CacheFactory',
-    require('./cache-service')
-  ])
   .service('GroupService', ['$http', 'PathHelper', require('./group-service')])
   .service('HookService', require('./hook-service'))
   .service('KeyboardShortcutService', [
@@ -53,30 +46,11 @@ angular.module('openproject.services')
     './pagination-service')])
   .service('PriorityService', ['$http', 'PathHelper', require(
     './priority-service')])
-  .service('ProjectService', ['$http', 'PathHelper', 'FiltersHelper', 'HALAPIResource', require(
-    './project-service')])
-  .service('QueryService', [
-    'Query',
-    'Sortation',
+  .service('ProjectService', [
     '$http',
     'PathHelper',
-    '$q',
-    'AVAILABLE_WORK_PACKAGE_FILTERS',
-    'StatusService',
-    'TypeService',
-    'PriorityService',
-    'UserService',
-    'VersionService',
-    'CategoryService',
-    'RoleService',
-    'GroupService',
-    'ProjectService',
-    'WorkPackagesTableHelper',
-    'I18n',
-    'queryMenuItemFactory',
-    '$rootScope',
-    'QUERY_MENU_ITEM_TYPE',
-    require('./query-service')
+    'apiV3',
+    require('./project-service')
   ])
   .service('RoleService', ['$http', 'PathHelper', require('./role-service')])
   .service('SortService', require('./sort-service'))
@@ -100,20 +74,9 @@ angular.module('openproject.services')
     'fields[]': 'status_id',
     'operators[status_id]': 'o'
   })
-  .service('NotificationsService', [
-    'I18n',
-    '$rootScope',
-    require('./notifications-service.js')
-  ])
   .service('ApiNotificationsService', [
     'NotificationsService',
     'ApiHelper',
     require('./api-notifications-service.js')
-  ])
-  .service('WatchersService', require('./watchers-service.js'))
-  .service('WatchersService', [
-    '$http',
-    '$q',
-    require('./watchers-service.js')
   ])
   .service('ConversionService', require('./conversion-service.js'));

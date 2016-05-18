@@ -28,27 +28,6 @@
 
 
 angular.module('openproject.workPackages')
-  .factory('ColumnContextMenu', [
-    'ngContextMenu',
-    function(ngContextMenu) {
-      return ngContextMenu({
-        controller: 'ColumnContextMenuController',
-        controllerAs: 'contextMenu',
-        templateUrl: '/templates/work_packages/menus/column_context_menu.html',
-        container: '.work-packages--list-table-area'
-      });
-    }
-  ])
-  .controller('ColumnContextMenuController', [
-    '$scope',
-    'ColumnContextMenu',
-    'I18n',
-    'QueryService',
-    'WorkPackagesTableHelper',
-    'WorkPackagesTableService',
-    'columnsModal',
-    require('./column-context-menu-controller')
-  ])
   .factory('ShowMoreDropdownMenu', [
     'ngContextMenu',
     function(ngContextMenu) {
@@ -86,41 +65,28 @@ angular.module('openproject.workPackages')
     'NotificationsService',
     require('./settings-dropdown-menu-controller')
   ])
-  .factory('TasksDropdownMenu', [
-    'ngContextMenu',
-    function(ngContextMenu) {
-      return ngContextMenu({
-        templateUrl: '/templates/work_packages/menus/tasks_dropdown_menu.html',
-        container: '.wp-create-button'
-      });
-    }
-  ])
   .constant('PERMITTED_CONTEXT_MENU_ACTIONS', [
-    'edit', 'watch', 'log_time',
-    'move', 'copy', 'delete'
-  ])
-  .factory('WorkPackageContextMenu', [
-    'ngContextMenu',
-    function(ngContextMenu) {
-      return ngContextMenu({
-        controller: 'WorkPackageContextMenuController',
-        controllerAs: 'contextMenu',
-        templateUrl: '/templates/work_packages/menus/work_package_context_menu.html'
-      });
+    {
+      icon: 'edit',
+      link: 'update'
+    },
+    // TODO: reenable watch
+    {
+      icon: 'log_time',
+      link: 'logTime'
+    },
+    {
+      icon: 'move',
+      link: 'move'
+    },
+    {
+      icon: 'copy',
+      link: 'copy'
+    },
+    {
+      icon: 'delete',
+      link: 'delete'
     }
-  ])
-  .controller('WorkPackageContextMenuController', [
-    '$scope',
-    '$state',
-    'WorkPackagesTableHelper',
-    'WorkPackageContextMenuHelper',
-    'WorkPackageService',
-    'WorkPackagesTableService',
-    'EditableFieldsState',
-    'I18n',
-    '$window',
-    'PERMITTED_CONTEXT_MENU_ACTIONS',
-    require('./work-package-context-menu-controller')
   ])
   .factory('DetailsMoreDropdownMenu', [
     'ngContextMenu',

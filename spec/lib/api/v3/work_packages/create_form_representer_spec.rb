@@ -33,14 +33,16 @@ describe ::API::V3::WorkPackages::CreateFormRepresenter do
   include API::V3::Utilities::PathHelper
 
   let(:errors) { [] }
-  let(:work_package) {
-    FactoryGirl.build(:work_package,
-                      id: 42,
-                      created_at: DateTime.now,
-                      updated_at: DateTime.now)
+  let(:project) {
+    FactoryGirl.build_stubbed(:project)
   }
+  let(:work_package) do
+    wp = FactoryGirl.build_stubbed(:work_package, project: project)
+    allow(wp).to receive(:assignable_versions).and_return []
+    wp
+  end
   let(:current_user) {
-    FactoryGirl.build(:user, member_in_project: work_package.project)
+    FactoryGirl.build_stubbed(:user)
   }
   let(:representer) {
     described_class.new(work_package, current_user: current_user, errors: errors)
@@ -50,69 +52,100 @@ describe ::API::V3::WorkPackages::CreateFormRepresenter do
     subject(:generated) { representer.to_json }
 
     describe '_links' do
-      it do
-        is_expected.to be_json_eql(
-          api_v3_paths.create_work_package_form(work_package.project_id).to_json)
+      it 'links to the create form api' do
+        is_expected
+          .to be_json_eql(api_v3_paths.create_work_package_form.to_json)
           .at_path('_links/self/href')
       end
 
-      it { is_expected.to be_json_eql(:post.to_json).at_path('_links/self/method') }
+      it 'is a post' do
+        is_expected
+          .to be_json_eql(:post.to_json)
+          .at_path('_links/self/method')
+      end
 
       describe 'validate' do
-        it do
-          is_expected.to be_json_eql(
-            api_v3_paths.create_work_package_form(work_package.project_id).to_json)
+        it 'links to the create form api' do
+          is_expected
+            .to be_json_eql(api_v3_paths.create_work_package_form.to_json)
             .at_path('_links/validate/href')
         end
 
-        it { is_expected.to be_json_eql(:post.to_json).at_path('_links/validate/method') }
+        it 'is a post' do
+          is_expected
+            .to be_json_eql(:post.to_json)
+            .at_path('_links/validate/method')
+        end
       end
 
       describe 'preview markup' do
-        it do
-          is_expected.to be_json_eql(
-            api_v3_paths.render_markup(
-              link: api_v3_paths.project(work_package.project_id)).to_json)
+        it 'links to the markup api' do
+          path = api_v3_paths.render_markup(link: api_v3_paths.project(work_package.project_id))
+          is_expected
+            .to be_json_eql(path.to_json)
             .at_path('_links/previewMarkup/href')
         end
 
-        it { is_expected.to be_json_eql(:post.to_json).at_path('_links/previewMarkup/method') }
+        it 'is a post' do
+          is_expected
+            .to be_json_eql(:post.to_json)
+            .at_path('_links/previewMarkup/method')
+        end
 
         it 'contains link to work package' do
           expected_preview_link =
             api_v3_paths.render_markup(format: 'textile',
                                        link: "/api/v3/projects/#{work_package.project_id}")
-          expect(subject).to be_json_eql(expected_preview_link.to_json)
+          expect(subject)
+            .to be_json_eql(expected_preview_link.to_json)
             .at_path('_links/previewMarkup/href')
         end
       end
 
       describe 'commit' do
+        before do
+          allow(current_user)
+            .to receive(:allowed_to?)
+            .and_return(false)
+          allow(current_user)
+            .to receive(:allowed_to?)
+            .with(:edit_work_packages, project)
+            .and_return(true)
+        end
+
         context 'valid work package' do
-          it do
-            is_expected.to be_json_eql(
-              api_v3_paths.work_packages_by_project(work_package.project_id).to_json)
+          it 'links to the work package create api' do
+            is_expected
+              .to be_json_eql(api_v3_paths.work_packages.to_json)
               .at_path('_links/commit/href')
           end
 
-          it { is_expected.to be_json_eql(:post.to_json).at_path('_links/commit/method') }
+          it 'is a post' do
+            is_expected
+              .to be_json_eql(:post.to_json)
+              .at_path('_links/commit/method')
+          end
         end
 
         context 'invalid work package' do
           let(:errors) { [::API::Errors::Validation.new(:subject, 'it is broken')] }
 
-          it { is_expected.not_to have_json_path('_links/commit/href') }
+          it 'has no link' do
+            is_expected.not_to have_json_path('_links/commit/href')
+          end
         end
 
         context 'user with insufficient permissions' do
-          let(:role) { FactoryGirl.create(:role, permissions: []) }
-          let(:current_user) {
-            FactoryGirl.build(:user,
-                              member_in_project: work_package.project,
-                              member_through_role: role)
-          }
+          before do
+            allow(current_user)
+              .to receive(:allowed_to?)
+              .with(:edit_work_packages, project)
+              .and_return(false)
+          end
 
-          it { is_expected.not_to have_json_path('_links/commit/href') }
+          it 'has no link' do
+            is_expected.not_to have_json_path('_links/commit/href')
+          end
         end
       end
     end

@@ -27,10 +27,10 @@
 #++
 
 require 'support/pages/page'
+require 'support/work_packages/inline_edit_field'
 
 module Pages
   class WorkPackagesTable < Page
-
     attr_reader :project
 
     def initialize(project = nil)
@@ -43,18 +43,56 @@ module Pages
       end
     end
 
+    def click_inline_create
+      find('.wp-inline-create--add-link').click
+      expect(page).to have_selector('.wp--row.-new')
+    end
+
     def open_split_view(work_package)
+      # Hover row to show split screen button
+      row_element = row(work_package)
+      row_element.hover
+
       split_page = SplitWorkPackage.new(work_package, project)
 
-      page.driver.browser.mouse.double_click(row(work_package).native)
+      row_element.find('.wp-table--details-link').click
 
       split_page
     end
 
-    def open_full_screen(work_package)
-      row(work_package).find_link(work_package.subject).click
+    def open_full_screen_by_doubleclick(work_package)
+      loading_indicator_saveguard
+      page.driver.browser.mouse.double_click(row(work_package).native)
 
       FullWorkPackage.new(work_package)
+    end
+
+    def open_full_screen_by_button(work_package)
+      row(work_package).check(I18n.t('js.description_select_work_package',
+                                     id: work_package.id))
+
+      click_button(I18n.t('js.label_activate') + ' ' + I18n.t('js.button_show_view'))
+
+      FullWorkPackage.new(work_package)
+    end
+
+    def open_full_screen_by_link(work_package)
+      row(work_package).click_link(work_package.id)
+    end
+
+    def row(work_package)
+      table_container.find("#work-package-#{work_package.id}")
+    end
+
+    def edit_field(work_package, attribute)
+      context =
+        if work_package.nil?
+          table_container.find('.wp--row.-new')
+        else
+          row(work_package)
+        end
+
+      WorkPackageField.new(context, attribute)
     end
 
     private
@@ -65,10 +103,6 @@ module Pages
 
     def table_container
       find('#content .work-package-table--container')
-    end
-
-    def row(work_package)
-      table_container.find("#work-package-#{work_package.id}")
     end
   end
 end

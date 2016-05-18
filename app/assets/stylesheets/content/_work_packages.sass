@@ -62,14 +62,7 @@ div[class*='work-packages--details--']
     .version-wrapper,
     .spent-time-wrapper
       width: 100%
-    span
-      overflow: hidden
-      text-overflow: ellipsis
-      display: block
 
-      p
-        overflow: inherit
-        text-overflow: inherit
 
 .work-packages--details--subject
   @include grid-content
@@ -166,3 +159,10 @@ $work-package-details--tab-height: 40px
 
   .work-packages--edit-actions
     margin-left: -20px
+
+.generic-table
+  .assigned_to a
+    display: block
+    min-height: 22px
+    overflow: hidden
+    text-overflow: ellipsis
