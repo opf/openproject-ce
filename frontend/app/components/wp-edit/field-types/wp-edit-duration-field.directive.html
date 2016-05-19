@@ -3,6 +3,8 @@
        wp-edit-field-requirements="vm.field.schema"
        ng-model="vm.workPackage[vm.fieldName]"
        duration-value
+       ng-required="vm.field.required"
        ng-blur="vm.handleUserBlur()"
        focus="vm.shouldFocus()"
+       focus-priority="vm.shouldFocus()"
        ng-attr-id="{{vm.htmlId}}" />
