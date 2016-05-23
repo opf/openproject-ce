@@ -120,15 +120,23 @@ module API
                  max_length: 255
 
           schema :description,
-                 type: 'Formattable'
+                 type: 'Formattable',
+                 required: false
 
           schema :start_date,
                  type: 'Date',
-                 required: false
+                 required: false,
+                 show_if: -> (*) { !represented.milestone? }
 
           schema :due_date,
                  type: 'Date',
-                 required: false
+                 required: false,
+                 show_if: -> (*) { !represented.milestone? }
+
+          schema :date,
+                 type: 'Date',
+                 required: false,
+                 show_if: -> (*) { represented.milestone? }
 
           schema :estimated_time,
                  type: 'Duration',
