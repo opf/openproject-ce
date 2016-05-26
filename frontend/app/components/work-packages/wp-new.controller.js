@@ -61,6 +61,11 @@ function WorkPackageNewController($scope,
                                                      vm.isFieldHideable);
   };
 
+  vm.shouldHideField = function(field) {
+    return WorkPackagesDisplayHelper.shouldHideFieldOnCreate(
+      vm.workPackage, field, vm.hideEmptyFields);
+  };
+
   //Show all attributes in Edit-Mode
   $scope.$watch(function(){
     return inplaceEditAll.state;
@@ -78,6 +83,7 @@ function WorkPackageNewController($scope,
 
   vm.notifyCreation = function() {
     inplaceEditMultiStorage.save().then(function() {
+      $rootScope.$emit('workPackagesRefreshInBackground');
       NotificationsService.addSuccess({
         message: I18n.t('js.notice_successful_create'),
         link: {
