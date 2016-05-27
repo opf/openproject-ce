@@ -20,7 +20,6 @@ group :opf_plugins do
 
   gem "openproject-documents", path: "vendored-plugins/openproject-documents"
 
-  gem "openproject-help_link", path: "vendored-plugins/openproject-help_link"
   gem "openproject-my_project_page", path: "vendored-plugins/openproject-my_project_page"
   gem "openproject-xls_export", path: "vendored-plugins/openproject-xls_export"
 

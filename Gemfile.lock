@@ -170,12 +170,6 @@ PATH
       rails (~> 4.2.4)
 
 PATH
-  remote: vendored-plugins/openproject-help_link
-  specs:
-    openproject-help_link (5.1.0)
-      rails (~> 4.2.4)
-
-PATH
   remote: vendored-plugins/openproject-local_avatars
   specs:
     openproject-local_avatars (5.1.0)
@@ -848,7 +842,6 @@ DEPENDENCIES
   openproject-documents!
   openproject-github_integration!
   openproject-global_roles!
-  openproject-help_link!
   openproject-local_avatars!
   openproject-meeting!
   openproject-my_project_page!
