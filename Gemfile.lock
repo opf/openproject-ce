@@ -23,6 +23,14 @@ GIT
       rack (>= 1.0, < 3)
 
 GIT
+  remote: git://github.com/omniauth/omniauth-saml.git
+  revision: c0f02d2ca4f7f8ed16a8a5d1299d35781626060e
+  specs:
+    omniauth-saml (1.5.0)
+      omniauth (~> 1.3)
+      ruby-saml (~> 1.1, >= 1.1.1)
+
+GIT
   remote: git://github.com/why-el/svg-graph.git
   revision: e79abffa66639ab203d099250c5d2656a4ebf917
   branch: silence-class-access-warning
@@ -48,6 +56,14 @@ GIT
       omniauth-openid-connect (>= 0.2.0)
 
 GIT
+  remote: https://github.com/finnlabs/openproject-auth_saml
+  revision: 97212abb83781aa7891d09b9fc7ab9209382d500
+  branch: dev
+  specs:
+    openproject-auth_saml (0.1.0)
+      omniauth-saml (~> 1.4)
+
+GIT
   remote: https://github.com/finnlabs/rack-protection.git
   revision: 5a7d1bd2f05ca75faf7909c8cc978732a0080898
   ref: 5a7d1bd
@@ -71,10 +87,10 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: a9056536ff7ba39af18de01fe38328fe42d130fd
+  revision: 4e532704b9930069807af4e7cb9ad44673b0edff
   branch: stable/5
   specs:
-    openproject-translations (5.0.17)
+    openproject-translations (5.0.18)
       crowdin-api (~> 0.4.0)
       mixlib-shellout (~> 2.1.0)
       rails (~> 4.2.3)
@@ -106,20 +122,20 @@ GIT
 PATH
   remote: vendored-plugins/openproject-announcements
   specs:
-    openproject-announcements (5.0.17)
+    openproject-announcements (5.0.18)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-auth_plugins
   specs:
-    openproject-auth_plugins (5.0.17)
+    openproject-auth_plugins (5.0.18)
       omniauth (~> 1.0)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-backlogs
   specs:
-    openproject-backlogs (5.0.17)
+    openproject-backlogs (5.0.18)
       acts_as_silent_list (~> 2.0.0)
       openproject-pdf_export
       rails (~> 4.2.4)
@@ -127,57 +143,57 @@ PATH
 PATH
   remote: vendored-plugins/openproject-costs
   specs:
-    openproject-costs (5.0.17)
+    openproject-costs (5.0.18)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-documents
   specs:
-    openproject-documents (5.0.17)
+    openproject-documents (5.0.18)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-github_integration
   specs:
-    openproject-github_integration (5.0.17)
+    openproject-github_integration (5.0.18)
       openproject-webhooks (~> 5.0.1)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-global_roles
   specs:
-    openproject-global_roles (5.0.17)
+    openproject-global_roles (5.0.18)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-help_link
   specs:
-    openproject-help_link (5.0.17)
+    openproject-help_link (5.0.18)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-local_avatars
   specs:
-    openproject-local_avatars (5.0.17)
+    openproject-local_avatars (5.0.18)
       rails (~> 4.2.4)
       rmagick (~> 2.15.4)
 
 PATH
   remote: vendored-plugins/openproject-meeting
   specs:
-    openproject-meeting (5.0.17)
+    openproject-meeting (5.0.18)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-my_project_page
   specs:
-    openproject-my_project_page (5.0.17)
+    openproject-my_project_page (5.0.18)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-openid_connect
   specs:
-    openproject-openid_connect (5.0.17)
+    openproject-openid_connect (5.0.18)
       lobby_boy (~> 0.1)
       omniauth-openid_connect-providers (~> 0.1)
       openproject-auth_plugins (~> 5.0.1)
@@ -186,14 +202,14 @@ PATH
 PATH
   remote: vendored-plugins/openproject-pdf_export
   specs:
-    openproject-pdf_export (5.0.17)
-      prawn (~> 0.14.0)
+    openproject-pdf_export (5.0.18)
+      prawn (~> 2.1.0)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-reporting
   specs:
-    openproject-reporting (5.0.17)
+    openproject-reporting (5.0.18)
       openproject-costs (>= 5.0.1)
       rails (~> 4.2.4)
       reporting_engine (>= 1.1.0)
@@ -201,26 +217,26 @@ PATH
 PATH
   remote: vendored-plugins/openproject-themes-dark
   specs:
-    openproject-themes-dark (5.0.17)
+    openproject-themes-dark (5.0.18)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-webhooks
   specs:
-    openproject-webhooks (5.0.17)
+    openproject-webhooks (5.0.18)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-xls_export
   specs:
-    openproject-xls_export (5.0.17)
+    openproject-xls_export (5.0.18)
       rails (~> 4.2.4)
       spreadsheet (~> 0.8.9)
 
 PATH
   remote: vendored-plugins/reporting_engine
   specs:
-    reporting_engine (5.0.17)
+    reporting_engine (5.0.18)
       json
       rails (~> 4.2.4)
 
@@ -325,7 +341,7 @@ GEM
     cliver (0.3.2)
     cocaine (0.5.7)
       climate_control (>= 0.0.3, < 1.0)
-    codecov (0.0.8)
+    codecov (0.1.4)
       json
       simplecov
       url
@@ -431,7 +447,7 @@ GEM
       rack-mount
       virtus (>= 1.0.0)
     gravatar_image_tag (1.2.0)
-    hashery (2.1.1)
+    hashery (2.1.2)
     hashie (3.4.3)
     health_check (1.5.1)
       rails (>= 2.3.0)
@@ -467,6 +483,8 @@ GEM
       rails (>= 3.2.21)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
+    macaddr (1.7.1)
+      systemu (~> 2.6.2)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
@@ -474,7 +492,7 @@ GEM
     mini_portile2 (2.0.0)
     minitest (5.8.0)
     mixlib-shellout (2.1.0)
-    multi_json (1.11.2)
+    multi_json (1.11.3)
     multi_test (0.1.2)
     multi_xml (0.5.5)
     mysql2 (0.3.20)
@@ -507,11 +525,12 @@ GEM
     passenger (5.0.22)
       rack
       rake (>= 0.8.1)
+    pdf-core (0.6.1)
     pdf-inspector (1.0.2)
       pdf-reader (>= 0.9.0)
-    pdf-reader (1.3.3)
+    pdf-reader (1.4.0)
       Ascii85 (~> 1.0.0)
-      afm (~> 0.2.0)
+      afm (~> 0.2.1)
       hashery (~> 2.0)
       ruby-rc4
       ttfunk
@@ -522,10 +541,11 @@ GEM
       multi_json (~> 1.0)
       websocket-driver (>= 0.2.0)
     powerpack (0.1.1)
-    prawn (0.14.0)
-      pdf-reader (~> 1.2)
-      ruby-rc4
-      ttfunk (~> 1.0.3)
+    prawn (2.1.0)
+      pdf-core (~> 0.6.1)
+      ttfunk (~> 1.4.0)
+    prawn-table (0.2.2)
+      prawn (>= 1.3.0, < 3.0.0)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -662,6 +682,9 @@ GEM
     ruby-prof (0.15.8)
     ruby-progressbar (1.7.5)
     ruby-rc4 (0.1.5)
+    ruby-saml (1.1.2)
+      nokogiri (>= 1.5.10)
+      uuid (~> 2.3)
     rubytree (0.8.3)
       json (>= 1.7.5)
       structured_warnings (>= 0.1.3)
@@ -710,6 +733,7 @@ GEM
     syck (1.0.5)
     sys-filesystem (1.1.4)
       ffi
+    systemu (2.6.5)
     thin (1.6.3)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0)
@@ -718,7 +742,7 @@ GEM
     thread_safe (0.3.5)
     tilt (1.4.1)
     timecop (0.7.3)
-    ttfunk (1.0.3)
+    ttfunk (1.4.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     tzinfo-data (1.2015.6)
@@ -733,6 +757,8 @@ GEM
       raindrops (~> 0.7)
     url (0.3.2)
     url_safe_base64 (0.2.2)
+    uuid (2.3.8)
+      macaddr (~> 1.0)
     validate_email (0.1.6)
       activemodel (>= 3.0)
       mail (>= 2.2.5)
@@ -811,7 +837,7 @@ DEPENDENCIES
   jruby-openssl
   json_spec
   launchy (~> 2.3.0)
-  letter_opener (~> 1.3.0)
+  letter_opener
   multi_json (~> 1.11.0)
   mysql2 (~> 0.3.20)
   net-ldap (~> 0.8.0)
@@ -822,8 +848,10 @@ DEPENDENCIES
   omniauth!
   omniauth-openid-connect!
   omniauth-openid_connect-providers!
+  omniauth-saml!
   openproject-announcements!
   openproject-auth_plugins!
+  openproject-auth_saml!
   openproject-backlogs!
   openproject-costs!
   openproject-documents!
@@ -845,6 +873,8 @@ DEPENDENCIES
   pdf-inspector (~> 1.0.0)
   pg (~> 0.18.3)
   poltergeist
+  prawn (~> 2.1)
+  prawn-table (~> 0.2.2)
   prototype-rails!
   prototype_legacy_helper (= 0.0.0)!
   pry-byebug

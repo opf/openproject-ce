@@ -12,6 +12,8 @@ group :opf_plugins do
   gem "openproject-global_roles", path: "vendored-plugins/openproject-global_roles"
 
   gem "openproject-auth_plugins", path: "vendored-plugins/openproject-auth_plugins"
+  gem "omniauth-saml", github: "omniauth/omniauth-saml"
+  gem "openproject-auth_saml", git: 'https://github.com/finnlabs/openproject-auth_saml', branch: 'dev'
   gem 'omniauth-openid_connect-providers',  git: 'https://github.com/finnlabs/omniauth-openid_connect-providers.git', branch: 'dev'
   gem 'omniauth-openid-connect',            git: 'https://github.com/finnlabs/omniauth-openid-connect.git',           branch: 'dev'
   gem "openproject-openid_connect", path: "vendored-plugins/openproject-openid_connect"
