@@ -27,7 +27,7 @@
 // ++
 
 import {WorkPackageEditFieldController} from "../wp-edit-field/wp-edit-field.directive";
-import {Field} from "../wp-edit-field/wp-edit-field.module";
+import {EditField} from "../wp-edit-field/wp-edit-field.module";
 
 
 export class WorkPackageFieldControlsController {
@@ -38,7 +38,7 @@ export class WorkPackageFieldControlsController {
   constructor() {
   }
 
-  public get field():Field {
+  public get field():EditField {
     return this.fieldCtrl.field;
   }
 }

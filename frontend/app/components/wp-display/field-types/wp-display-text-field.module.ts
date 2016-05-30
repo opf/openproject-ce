@@ -1,6 +1,6 @@
-//-- copyright
+// -- copyright
 // OpenProject is a project management system.
-// Copyright (C) 2012-2014 the OpenProject Foundation (OPF)
+// Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License version 3.
@@ -24,23 +24,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-//++
+// ++
 
-angular.module('openproject.workPackages.directives')
+import {DisplayField} from "../wp-display-field/wp-display-field.module";
 
-.directive('summarizedCostEntries', function() {
-  return {
-    restrict: 'E',
-    require: '^wpField',
-    templateUrl: '/templates/plugin-costs/work_packages/summarized_cost_entries.html',
-    link: function(scope, element, attributes, fieldController) {
-      scope.workPackage = scope.field.resource;
-      scope.costTypes = scope
-        .workPackage
-        .embedded
-        .costsByType
-        .embedded
-        .elements;
-    }
-  };
-});
+export class TextDisplayField extends DisplayField {
+  public get valueString() {
+    return this.value;
+  }
+}

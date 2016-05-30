@@ -27,67 +27,14 @@
 // ++
 
 import {HalResource} from '../../api/api-v3/hal-resources/hal-resource.service';
+import {Field} from '../../wp-field/wp-field.module'
+import {FieldFactory} from '../../wp-field/wp-field.module'
 
-export class Field {
-  public static type:string;
-  public static $injector:ng.auto.IInjectorService;
-
-  public get value() {
-    return this.resource[this.name];
-  }
-
-  public get type():string {
-    return (this.constructor as typeof Field).type;
-  }
-
-  public get required():boolean {
-    return this.schema.required;
-  }
-
-  public isEmpty():boolean {
-    return !this.value;
-  }
-
-
-  protected get $injector():ng.auto.IInjectorService {
-    return (this.constructor as typeof Field).$injector;
-  }
-
-  constructor(public resource:HalResource,
-              public name:string,
-              public schema) {
-  }
+export class EditField extends Field{
 }
 
-export class FieldFactory {
-  public static defaultType:string;
+export class EditFieldFactory extends FieldFactory{
 
   protected static fields = {};
-
-  protected static classes:{[type:string]:typeof Field} = {};
-
-  public static register(fieldClass:typeof Field, fields:string[] = []) {
-    fields.forEach(field => FieldFactory.fields[field] = fieldClass.type);
-    FieldFactory.classes[fieldClass.type] = fieldClass;
-  }
-
-  public static create(workPackage:HalResource,
-                       fieldName:string,
-                       schema:op.FieldSchema):Field {
-    let type = FieldFactory.getType(schema.type);
-    let fieldClass = FieldFactory.classes[type];
-
-    return new fieldClass(workPackage, fieldName, schema);
-  }
-
-  public static getClassFor(fieldName:string):typeof Field {
-    return this.classes[fieldName];
-  }
-
-  public static getType(type:string):string {
-    let fields = FieldFactory.fields;
-    let defaultType = FieldFactory.defaultType;
-
-    return fields[type] || defaultType;
-  }
+  protected static classes = {};
 }
