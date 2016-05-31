@@ -1,6 +1,6 @@
-//-- copyright
+// -- copyright
 // OpenProject is a project management system.
-// Copyright (C) 2012-2014 the OpenProject Foundation (OPF)
+// Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License version 3.
@@ -24,10 +24,28 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-//++
+// ++
 
-// load all js locales
-var LoadLocales = require('app/plugins/load-locales.module').LoadLocales;
-var localeFiles = require.context('../../config/locales', false, /js-[\w|-]{2,5}\.yml$/);
+export class LoadLocales {
+  public static I18n:op.I18n;
 
-LoadLocales.files(localeFiles);
+  public static files(localeFiles) {
+    localeFiles.keys().forEach(function(localeFile) {
+      var locale_matches = localeFile.match(/js-((\w{2})(-\w{2})?)\.yml/);
+      var locale_with_country = locale_matches[1];
+      var locale_without_country = locale_matches[2];
+
+      var localizations = localeFiles(localeFile)[locale_without_country];
+      var locale = locale_without_country;
+
+      // Some locales e.g. es-ES have a language postfix but within the yml files
+      // that postfix is lacking.
+      if (!localizations) {
+        localizations = localeFiles(localeFile)[locale_with_country];
+        locale = locale_with_country;
+      }
+
+      this.I18n.addTranslations(locale, localizations);
+    });
+  }
+}

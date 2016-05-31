@@ -87,6 +87,12 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
       it { is_expected.to have_json_path('overallCosts') }
 
       describe 'budget' do
+        before do
+          allow(representer)
+            .to receive(:cost_object_visible?)
+            .and_return(true)
+        end
+
         it_behaves_like 'has a titled link' do
           let(:link) { 'costObject' }
           let(:href) { "/api/v3/budgets/#{cost_object.id}" }
@@ -210,7 +216,7 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
           end
         end
 
-        context 'with the :view_own_hourly_rates and :view_own_time_entries permission' do
+        context 'with the :view_own_hourly_rate and :view_own_time_entries permission' do
           before do
             allow(user)
               .to receive(:allowed_to?)
@@ -219,7 +225,7 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
 
             allow(user)
               .to receive(:allowed_to?)
-              .with(:view_own_hourly_rates, cost_object.project)
+              .with(:view_own_hourly_rate, cost_object.project)
               .and_return true
           end
 
@@ -314,7 +320,7 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
           end
         end
 
-        context 'with the :view_own_hourly_rates and :view_own_time_entries permission' do
+        context 'with the :view_own_hourly_rate and :view_own_time_entries permission' do
           before do
             allow(user)
               .to receive(:allowed_to?)
@@ -323,7 +329,7 @@ describe ::API::V3::WorkPackages::WorkPackageRepresenter do
 
             allow(user)
               .to receive(:allowed_to?)
-              .with(:view_own_hourly_rates, cost_object.project)
+              .with(:view_own_hourly_rate, cost_object.project)
               .and_return true
           end
 

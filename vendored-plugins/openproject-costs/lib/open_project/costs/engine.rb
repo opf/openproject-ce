@@ -217,12 +217,6 @@ module OpenProject::Costs
     end
 
     extend_api_response(:v3, :work_packages, :schema, :work_package_schema) do
-      schema :spent_time,
-             type: 'Duration',
-             writable: false,
-             show_if: -> (*) { represented.project && represented.project.costs_enabled? },
-             required: false
-
       # N.B. in the long term we should have a type like "Currency", but that requires a proper
       # format and not a string like "10 EUR"
       schema :overall_costs,
@@ -274,9 +268,7 @@ module OpenProject::Costs
     end
 
     assets %w(costs/costs.css
-              costs/costs.js
-              work_packages/cost_object.html
-              work_packages/summarized_cost_entries.html)
+              costs/costs.js)
 
     initializer 'costs.register_hooks' do
       require 'open_project/costs/hooks'
