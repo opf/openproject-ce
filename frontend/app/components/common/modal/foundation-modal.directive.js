@@ -1,4 +1,4 @@
-//-- copyright
+// -- copyright
 // OpenProject is a project management system.
 // Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
@@ -24,23 +24,40 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-//++
+// ++
 
-#watchers
-  img
-    vertical-align: middle
-    margin-right: 7px
+function foundationModal($timeout, ModalFactory) {
+  var foundationModalController = function(scope, element) {
+    var modal = new ModalFactory({
+      template: element.find('.foundation-modal--template').html(),
+      class: scope.modalClass,
+      // Allows you to pass in properties to the scope of the modal
+      contentScope: {
+        close: function() {
+          modal.deactivate();
+        }
+      }
+    });
 
-  .delete
-    vertical-align: sub
+    if(scope.modalStartOnShow) {
+      modal.activate();
+    } else {
+      element.find('.foundation-modal--activate-link').click(function() {
+        modal.activate();
+      });
+    }
+  };
 
-  li
-    list-style-type: none
-    margin: 0 10px 0 0
-    padding: 0
-    float: left
-    line-height: $user-avatar-mini-width
+  return {
+    restrict: 'E',
+    scope: {
+      modalClass: '@',
+      modalStartOnShow: '='
+    },
+    link: foundationModalController
+  };
+}
 
-.work-package--watchers.-read-only
-  .remove-watcher-btn
-    display: none
+angular
+  .module('openproject.uiComponents')
+  .directive('foundationModal', foundationModal);

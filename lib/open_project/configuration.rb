@@ -85,6 +85,8 @@ module OpenProject
       'blacklisted_routes' => [],
 
       'apiv2_enable_basic_auth' => true,
+
+      'onboarding_video_url' => 'https://player.vimeo.com/video/163426858'
     }
 
     @config = nil
@@ -256,7 +258,10 @@ module OpenProject
             ActionMailer::Base.perform_deliveries = true
             ActionMailer::Base.delivery_method = Setting.email_delivery_method
             %w{address port domain authentication user_name password}.each do |setting|
-              ActionMailer::Base.smtp_settings[setting.to_sym] = Setting["smtp_#{setting}".to_sym]
+              value = Setting["smtp_#{setting}".to_sym]
+              if value.present?
+                ActionMailer::Base.smtp_settings[setting.to_sym] = value
+              end
             end
             ActionMailer::Base.smtp_settings[:enable_starttls_auto] = Setting.smtp_enable_starttls_auto?
           when :sendmail
