@@ -43,6 +43,7 @@ export class WorkPackageEditFieldController {
   public fieldLabel: string;
   public field: EditField;
   public errorenous: boolean;
+  public errors: Array<string>;
   public workPackage: WorkPackageResource;
 
   protected _active: boolean = false;
@@ -51,6 +52,8 @@ export class WorkPackageEditFieldController {
   // Since we load the schema asynchronously
   // all fields are initially viewed as uneditable until it is loaded
   protected _editable: boolean = false;
+
+  private __d__inplaceEditReadValue: JQuery;
 
   constructor(protected wpEditField: WorkPackageEditFieldService,
               protected $scope,
@@ -121,6 +124,8 @@ export class WorkPackageEditFieldController {
       this.editable = fieldSchema && fieldSchema.writable;
       this.fieldType = fieldSchema && this.wpEditField.fieldType(fieldSchema.type);
 
+      this.updateDisplayAttributes();
+
       if (fieldSchema) {
         this.fieldLabel = this.fieldLabel || fieldSchema.name;
 
@@ -132,12 +137,51 @@ export class WorkPackageEditFieldController {
     });
   }
 
+  public activateIfEditable(event) {
+    if (this.isEditable) {
+      this.handleUserActivate();
+    }
+    event.stopImmediatePropagation();
+  }
+
   public get isEditable(): boolean {
     return this._editable && this.workPackage.isEditable;
   }
 
   public get inEditMode(): boolean {
     return this.formCtrl.inEditMode;
+  }
+
+  public isRequired(): boolean {
+    return this.workPackage.schema[this.fieldName].required;
+  }
+
+  public isEmpty(): boolean {
+    return !this.workPackage[this.fieldName];
+  }
+
+  public isChanged(): boolean {
+    return this.workPackage.$pristine[this.fieldName] !== this.workPackage[this.fieldName];
+  }
+
+  public isErrorenous(): boolean {
+    return this.errorenous;
+  }
+
+  public isSubmittable(): boolean {
+    return !(this.inEditMode ||
+             (this.isRequired() && this.isEmpty()) ||
+             (this.isErrorenous() && !this.isChanged()));
+  }
+
+  public get errorMessageOnLabel(): string {
+    if (_.isEmpty(this.errors)) {
+      return '';
+    }
+    else {
+      return this.I18n.t('js.inplace.errors.messages_on_field',
+                         { messages: this.errors.join(" ") });
+    }
   }
 
   public set editable(enabled: boolean) {
@@ -166,12 +210,12 @@ export class WorkPackageEditFieldController {
   }
 
   public handleUserBlur(): boolean {
-    if (this.inEditMode) {
+    if (!this.isSubmittable()) {
       return;
     }
 
     this.deactivate();
-
+    this.submit();
   }
 
   public handleUserCancel() {
@@ -196,9 +240,9 @@ export class WorkPackageEditFieldController {
     return false;
   }
 
-  public setErrorState(error = true) {
-    this.errorenous = error;
-    this.$element.toggleClass('-error', error);
+  public setErrors(errors) {
+    this.errorenous = !_.isEmpty(errors);
+    this.errors = errors;
   }
 
   public reset() {
@@ -214,6 +258,10 @@ export class WorkPackageEditFieldController {
     });
   }
 
+  protected updateDisplayAttributes() {
+    this.__d__inplaceEditReadValue = this.__d__inplaceEditReadValue || this.$element.find(".__d__inplace-edit--read-value");
+    this.__d__inplaceEditReadValue.attr("tabindex", this.isEditable ? "0" : "-1");
+  }
 }
 
 function wpEditFieldLink(scope,
