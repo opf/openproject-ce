@@ -74,12 +74,20 @@ class ProjectsController < ApplicationController
     end
   end
 
+  current_menu_item :index do
+    :list_projects
+  end
+
   def new
     @issue_custom_fields = WorkPackageCustomField.order("#{CustomField.table_name}.position")
     @types = ::Type.all
     @project = Project.new
     @project.parent = Project.find(params[:parent_id]) if params[:parent_id]
     @project.attributes = permitted_params.project if params[:project].present?
+  end
+
+  current_menu_item :new do
+    :new_project
   end
 
   def create
@@ -205,7 +213,8 @@ class ProjectsController < ApplicationController
       if @project.save
         flash[:notice] = l(:notice_successful_update)
       else
-        flash[:error] = l(:notice_project_cannot_update_custom_fields)
+        flash[:error] = l(:notice_project_cannot_update_custom_fields,
+                          errors: @project.errors.full_messages.join(', '))
         raise ActiveRecord::Rollback
       end
     end
