@@ -32,7 +32,7 @@ GIT
 
 GIT
   remote: git://github.com/opf/rails-angular-xss.git
-  revision: e149647a0d303114ee40f03141f9b5cc097bdf43
+  revision: 13f8443cc3e1944743cba578685904b826515177
   specs:
     rails-angular-xss (0.1.0)
       rails (>= 4.2.0, < 5.0)
@@ -94,10 +94,10 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 4e532704b9930069807af4e7cb9ad44673b0edff
+  revision: 31f5157005783b91d58c1cb4fb808e9934bfe06a
   branch: stable/5
   specs:
-    openproject-translations (5.0.18)
+    openproject-translations (5.0.19)
       crowdin-api (~> 0.4.0)
       mixlib-shellout (~> 2.1.0)
       rails (~> 4.2.3)
