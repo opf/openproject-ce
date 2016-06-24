@@ -41,10 +41,6 @@ See doc/COPYRIGHT.rdoc for more details.
     <%= csrf_meta_tags %>
     <%= render 'common/favicons' %>
     <%= stylesheet_link_tag current_theme.stylesheet_manifest, media: "all" %>
-    <% if User.current.impaired? && accessibility_css_enabled? %>
-      <%= stylesheet_link_tag 'accessibility' %>
-    <% end %>
-
     <%= javascript_include_tag 'application' %>
     <!-- user specific tags -->
     <%= user_specific_javascript_includes %>
@@ -89,7 +85,9 @@ See doc/COPYRIGHT.rdoc for more details.
           </div>
         </div>
       <% end %>
-      <div id="main" class="<%= initial_classes %>">
+      <div id="main"
+           class="<%= initial_classes %>"
+           ng-class="{ 'hidden-navigation': !showNavigation }">
         <% if (side_displayed && show_decoration) %>
           <div id="main-menu" ng-controller="MainMenuController as mainMenu">
             <h1 class="hidden-for-sighted"><%= l(:label_main_menu) %></h1>

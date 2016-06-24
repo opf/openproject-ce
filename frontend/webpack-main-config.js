@@ -33,6 +33,7 @@ var _ = require('lodash');
 var pathConfig = require('./rails-plugins.conf');
 
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var failPlugin = require('webpack-fail-plugin');
 
 var pluginEntries = _.reduce(pathConfig.pluginNamesPaths, function (entries, path, name) {
   entries[name.replace(/^openproject\-/, '')] = name;
@@ -126,7 +127,6 @@ function getWebpackMainConfig() {
         'locales': './../../config/locales',
         'core-components': path.resolve(__dirname, 'app', 'components'),
 
-        'angular-ui-date': 'angular-ui-date/src/date',
         'angular-truncate': 'angular-truncate/src/truncate',
         'angular-context-menu': 'angular-context-menu/dist/angular-context-menu.js',
         'mousetrap': 'mousetrap/mousetrap.js',
@@ -144,6 +144,10 @@ function getWebpackMainConfig() {
     },
 
     plugins: [
+      // The fail plugin returns a status code of 1 if
+      // errors are detected (this includes TS warnings)
+      // It is not executed when `--watch` is passed.
+      failPlugin,
       new ExtractTextPlugin('openproject-[name].css'),
       new webpack.ProvidePlugin({
         '_': 'lodash',

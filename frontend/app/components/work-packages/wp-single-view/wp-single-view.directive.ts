@@ -28,14 +28,18 @@
 
 import {opWorkPackagesModule} from '../../../angular-modules';
 import {scopedObservable} from '../../../helpers/angular-rx-utils';
-import {WorkPackageResource} from '../../api/api-v3/hal-resources/work-package-resource.service';
+import {
+  WorkPackageResource,
+  WorkPackageResourceInterface
+} from '../../api/api-v3/hal-resources/work-package-resource.service';
+import {WorkPackageEditFormController} from "../../wp-edit/wp-edit-form.directive";
 
 export class WorkPackageSingleViewController {
-  public workPackage:any|WorkPackageResource;
+  public formCtrl: WorkPackageEditFormController;
+  public workPackage:WorkPackageResourceInterface;
   public singleViewWp;
   public groupedFields:any[] = [];
   public hideEmptyFields:boolean = true;
-  public filesExist:() => boolean;
   public attachments:any;
   public text:any;
   public scope:any;
@@ -91,7 +95,9 @@ export class WorkPackageSingleViewController {
   }
 
   public shouldHideField(field) {
-    return this.singleViewWp.shouldHideField(field, this.hideEmptyFields);
+    let hideEmpty = !this.formCtrl.fields[field].active && this.hideEmptyFields;
+
+    return this.singleViewWp.shouldHideField(field, hideEmpty);
   };
 
   public setFocus() {
@@ -141,6 +147,15 @@ export class WorkPackageSingleViewController {
 }
 
 function wpSingleViewDirective() {
+
+  function wpSingleViewLink(scope,
+                            element,
+                            attrs,
+                            controllers: [WorkPackageEditFormController, WorkPackageSingleViewController]) {
+
+    controllers[1].formCtrl = controllers[0];
+
+  }
   return {
     restrict: 'E',
     templateUrl: '/components/work-packages/wp-single-view/wp-single-view.directive.html',
@@ -148,6 +163,9 @@ function wpSingleViewDirective() {
     scope: {
       workPackage: '=?'
     },
+
+    require: ['^wpEditForm', 'wpSingleView'],
+    link: wpSingleViewLink,
 
     bindToController: true,
     controller: WorkPackageSingleViewController,
