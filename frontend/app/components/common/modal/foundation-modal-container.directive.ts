@@ -26,31 +26,42 @@
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
 
-import {opApiModule} from '../../../angular-modules';
+export class FoundationModalContainerController {
+  protected showing:boolean;
+  protected activationSelector:string;
 
-function apiV3Config(apiV3, HalResource) {
-  apiV3.addResponseInterceptor((data, operation, what) => {
-    apiV3.addElementTransformer(what, HalResource.create);
-
-    if (data) {
-      // lodash's clone seems to have better performance in our situation
-      // when compared to angular.clone
-      // see also:
-      // https://github.com/angular/angular.js/issues/11099
-      data._plain = _.clone(data, true);
-
-      if (data._type === 'Collection') {
-        const resp = [];
-        angular.extend(resp, data);
-        return resp;
-      }
+  constructor(protected $element, protected $timeout) {
+    if (this.activationSelector) {
+      angular.element(this.activationSelector).click(() => {
+        $timeout(() => this.showing = true);
+      });
     }
-    return data;
-  });
+  }
 
-  apiV3.setErrorInterceptor(response => {
-    response.data = HalResource.create(response.data);
-  });
+  public get isShowing() {
+    return !!this.showing;
+  }
+
+  public hide() {
+    this.showing = false;
+  }
 }
 
-opApiModule.run(apiV3Config);
+function foundationModalContainer() {
+  return {
+    restrict: 'E',
+    transclude: true,
+    scope: {
+      activationSelector: '@',
+      showing: '=?'
+    },
+    bindToController: true,
+    controller: FoundationModalContainerController,
+    controllerAs: '$ctrl',
+    templateUrl: '/components/common/modal/foundation-modal-container.directive.html'
+  };
+}
+
+angular
+  .module('openproject.uiComponents')
+  .directive('foundationModalContainer', foundationModalContainer);
