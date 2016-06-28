@@ -49,8 +49,13 @@ export class HalResource {
     return new resourceClass(element);
   }
 
-  public static getEmptyResource():any {
-    return {_links: {self: {href: null}}};
+  public static fromLink(link:HalLinkInterface) {
+    const resource = HalResource.getEmptyResource(HalLink.fromObject(link));
+    return new HalResource(resource, false);
+  }
+
+  public static getEmptyResource(self = {href: null}):any {
+    return {_links: {self: self}};
   }
 
   public $links:any = {};
@@ -132,16 +137,6 @@ function initializeResource(halResource:HalResource) {
     }
   }
 
-  function createLinkedResource(linkName, link) {
-    var resource = HalResource.getEmptyResource();
-    resource._links.self = link;
-
-    const resourceClass = halResourceTypesStorage
-      .getResourceClassOfAttribute(halResource.constructor._type, linkName);
-
-    return new resourceClass(resource, false);
-  }
-
   function proxyProperties() {
     var source = halResource.$source.restangularized ? halResource.$source.plain() : halResource.$source;
 
@@ -169,7 +164,7 @@ function initializeResource(halResource:HalResource) {
 
           if (Array.isArray(link)) {
             var items = link.map(item => createLinkedResource(linkName, item.$link));
-            var property:Array<HalResource> = new ObservableArray(...items).on('change', () => {
+            var property:HalResource[] = new ObservableArray(...items).on('change', () => {
               property.forEach(item => {
                 if (!item.$link) {
                   property.splice(property.indexOf(item), 1);
@@ -184,7 +179,7 @@ function initializeResource(halResource:HalResource) {
 
           if (link.href) {
             if (link.method !== 'get') {
-              return HalLink.asFunc(link);
+              return HalLink.callable(link);
             }
 
             return createLinkedResource(linkName, link);
@@ -218,7 +213,7 @@ function initializeResource(halResource:HalResource) {
 
   function setupLinks() {
     setupProperty('links',
-      link => Array.isArray(link) ? link.map(HalLink.asFunc) : HalLink.asFunc(link));
+      link => Array.isArray(link) ? link.map(HalLink.callable) : HalLink.callable(link));
   }
 
   function setupEmbedded() {
@@ -237,7 +232,17 @@ function initializeResource(halResource:HalResource) {
     });
   }
 
-  function setter(val, linkName) {
+  function createLinkedResource(linkName, link) {
+    var resource = HalResource.getEmptyResource();
+    resource._links.self = link;
+
+    const resourceClass = halResourceTypesStorage
+      .getResourceClassOfAttribute(halResource.constructor._type, linkName);
+
+    return new resourceClass(resource, false);
+  }
+
+  function setter(val:HalResource, linkName:string) {
     if (!val) {
       halResource.$source._links[linkName] = {href: null};
     }
