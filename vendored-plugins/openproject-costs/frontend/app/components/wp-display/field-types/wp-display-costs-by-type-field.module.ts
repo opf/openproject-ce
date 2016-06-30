@@ -28,17 +28,28 @@
 
 import {DisplayField} from 'app/components/wp-display/wp-display-field/wp-display-field.module';
 
+interface ICostsByType {
+  $source: {
+    _links: {
+      costType: {
+        title: string;
+      }
+    }
+  };
+  spentUnits: number;
+}
+
 export class CostsByTypeDisplayField extends DisplayField {
 
   isManualRenderer = true;
 
   public get valueString() {
-    return  _.map(this.value.elements, val => {
+    return  _.map(this.value.elements, (val: ICostsByType) => {
       return val.spentUnits + ' ' + val.$source._links.costType.title;
     }).join(', ');
   };
 
-  public isEmpty():boolean {
-    return this.value.elements.length === 0;
+  public isEmpty(): boolean {
+    return !this.value || this.value.elements.length === 0;
   }
 }
