@@ -1,4 +1,4 @@
-// -- copyright
+//-- copyright
 // OpenProject is a project management system.
 // Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
@@ -24,46 +24,61 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-// ++
+//++
 
-import {FoundationModalContainerController} from "./foundation-modal-container.directive";
-function foundationModal(ModalFactory) {
-  var foundationModalLink = function(scope,
-    element,
-    attr,
-    foundationModalContainer
-  ) {
-    var modal;
+ul.projects
+  margin: 0
+  padding-left: 1em
 
-    modal = new ModalFactory({
-      template: element.html(),
-      class: scope.modalClass,
-      // Allows you to pass in properties to the scope of the modal
-      contentScope: {
-        close: function () {
-          foundationModalContainer.hide();
-          modal.deactivate();
+  &.root
+    margin: 0
+    padding: 0
 
-          // modal.destroy SHOULD be enough, but it is actually delayed
-          // by foundation by 3 seconds...
-          angular.element('.' + scope.modalClass).remove();
-        }
-      }
-    });
+  ul
+    border: none
+    &.projects
+      border-left: 3px solid #e0e0e0
 
-    modal.activate();
-  };
+  li
+    &.root
+      list-style-type: none
+      margin-bottom: 1em
+    &.child
+      list-style-type: none
+      margin-top: 1em
 
-  return {
-    restrict: 'A',
-    require: '^foundationModalContainer',
-    scope: {
-      modalClass: '@',
-    },
-    link: foundationModalLink
-  };
-}
+  a
+    font-weight: bold
 
-angular
-  .module('openproject.uiComponents')
-  .directive('foundationModal', foundationModal);
+  .description
+    max-height: 100px
+    position: relative
+    overflow-y: hidden
+
+    &:after
+      position: absolute
+      bottom: 0
+      height: 100%
+      width: 100%
+      content: ""
+      background: linear-gradient(to top, rgba(255,255,255, 1) 10%, rgba(255,255,255, 0) 80%)
+      pointer-events: none
+
+  div.root
+    margin-bottom: 12px
+
+    a.project
+      font-weight: bold
+      margin: 0 0 10px 0
+      font-family: inherit
+
+  .nosidebar &
+    margin: 24px 0 0
+
+    ul
+      margin: 0
+
+    li
+      list-style: none outside none
+      background: none
+
