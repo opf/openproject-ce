@@ -27,6 +27,10 @@ This plugin contains migrations. To migrate the database, run:
 
 `rake db:migrate`
 
+Finally, build the assets, run:
+
+`rake assets:precompile`
+
 
 Deinstallation
 --------------
