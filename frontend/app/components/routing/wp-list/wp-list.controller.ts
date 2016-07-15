@@ -65,9 +65,6 @@ function WorkPackagesListController($scope,
         wpCacheService.updateWorkPackageList(json.work_packages);
 
         setupPage(json, !!$state.params.query_props);
-        QueryService.loadAvailableUnusedColumns($scope.projectIdentifier).then(function (data) {
-          $scope.availableUnusedColumns = data;
-        });
 
         QueryService.loadAvailableGroupedQueries($scope.projectIdentifier);
         QueryService.loadAvailableUnusedColumns($scope.projectIdentifier).then(function(data) {
@@ -151,6 +148,7 @@ function WorkPackagesListController($scope,
     $scope.groupableColumns = WorkPackagesTableService.getGroupableColumns();
     $scope.totalEntries = QueryService.getTotalEntries();
     $scope.resource = json.resource;
+    $scope.groupHeaders = WorkPackagesTableService.buildGroupHeaders(json.resource);
 
     // Authorisation
     AuthorisationService.initModelAuth('work_package', meta._links);
