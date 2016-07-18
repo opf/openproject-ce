@@ -32,7 +32,6 @@ import {WorkPackageCacheService} from '../../../work-packages/work-package-cache
 import {ApiWorkPackagesService} from '../../api-work-packages/api-work-packages.service';
 import IQService = angular.IQService;
 import {CollectionResourceInterface} from './collection-resource.service';
-
 interface WorkPackageResourceEmbedded {
   activities:HalResource|any;
   assignee:HalResource|any;
@@ -111,6 +110,7 @@ export class WorkPackageResource extends HalResource {
   public subject:string;
   public lockVersion:number;
   public description:any;
+  public inFlight:boolean;
 
   private form;
 
@@ -193,6 +193,7 @@ export class WorkPackageResource extends HalResource {
   public setAllowedValueFor(field, href) {
     this.allowedValuesFor(field).then(allowedValues => {
       this[field] = _.find(allowedValues, entry => entry.href === href);
+      wpCacheService.updateWorkPackage(this);
     });
   }
 
@@ -254,6 +255,8 @@ export class WorkPackageResource extends HalResource {
 
   public save() {
     var deferred = $q.defer();
+    this.inFlight = true;
+    const wasNew = this.isNew;
 
     this.updateForm(this.$source)
       .then(form => {
@@ -265,15 +268,23 @@ export class WorkPackageResource extends HalResource {
             this.$pristine = {};
 
             deferred.resolve(this);
+
           })
           .catch(error => {
             deferred.reject(error);
           })
           .finally(() => {
+            this.inFlight = false;
             wpCacheService.updateWorkPackage(this);
+            if (wasNew) {
+              wpCacheService.newWorkPackageCreated(this);
+            }
           });
       })
-      .catch(deferred.reject);
+      .catch(() => {
+        this.inFlight = false;
+        deferred.reject();
+      });
 
     return deferred.promise;
   }
