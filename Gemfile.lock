@@ -104,8 +104,8 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 9bac7feb402832f0ef5cf6389e4a3c8eac38c9c7
-  branch: dev
+  revision: 9a50ec05340896ea879ed8f2bf0a86e59462bc70
+  branch: stable/6
   specs:
     openproject-translations (6.0.0)
       crowdin-api (~> 0.4.0)
@@ -216,7 +216,7 @@ PATH
   remote: vendored-plugins/openproject-reporting
   specs:
     openproject-reporting (6.0.0)
-      openproject-costs (>= 5.1.0)
+      openproject-costs (= 6.0.0)
       rails (~> 4.2.4)
       reporting_engine (>= 1.1.0)
 
