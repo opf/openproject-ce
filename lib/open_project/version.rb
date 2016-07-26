@@ -33,8 +33,8 @@ require 'open3'
 module OpenProject
   module VERSION #:nodoc:
     MAJOR = 6
-    MINOR = 0
-    PATCH = 1
+    MINOR = 1
+    PATCH = 0
     TINY  = PATCH # Redmine compat
 
     # Used by semver to define the special version (if any).
@@ -57,6 +57,9 @@ module OpenProject
       if revision.present?
         revision.strip[0..8]
       end
+    rescue => e
+      Rails.logger.warn("Tried to parse version REVISION, but failed with #{e.message}.")
+      nil
     end
 
     def self.product_version
