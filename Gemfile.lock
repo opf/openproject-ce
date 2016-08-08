@@ -104,7 +104,7 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 2fb9a509fd940581a0b85abed68a2ab60b47b5ea
+  revision: d1edffceb436bddefc2b9228ebca0009c913a5d9
   branch: dev
   specs:
     openproject-translations (6.1.0)
@@ -333,6 +333,15 @@ GEM
     capybara-screenshot (1.0.13)
       capybara (>= 1.0, < 3)
       launchy
+    cells (4.1.2)
+      tilt (>= 1.4, < 3)
+      uber (>= 0.0.9)
+    cells-erb (0.0.8)
+      cells (~> 4.0)
+      erbse (>= 0.0.2)
+    cells-rails (0.0.6)
+      actionpack (>= 3.0)
+      cells (>= 4.1)
     childprocess (0.5.9)
       ffi (~> 1.0, >= 1.0.11)
     climate_control (0.0.3)
@@ -390,6 +399,7 @@ GEM
     equalizer (0.0.11)
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
+    erbse (0.0.2)
     erubis (2.7.0)
     eventmachine (1.2.0.1)
     excon (0.48.0)
@@ -810,6 +820,8 @@ DEPENDENCIES
   capybara-screenshot (~> 1.0.12)
   capybara-select2!
   carrierwave!
+  cells-erb (~> 0.0.8)
+  cells-rails (~> 0.0.6)
   cocaine
   codecov
   coderay (~> 1.1.0)
