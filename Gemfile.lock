@@ -104,10 +104,10 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: eacdb7c1312a9b4b969f0bb31124492970212de5
+  revision: 8f51476878ea149ce9d8a6c62a277f3707f480c8
   branch: stable/6
   specs:
-    openproject-translations (6.0.1)
+    openproject-translations (6.0.2)
       crowdin-api (~> 0.4.0)
       mixlib-shellout (~> 2.1.0)
       rails (~> 4.2.3)
@@ -140,66 +140,66 @@ GIT
 PATH
   remote: vendored-plugins/openproject-auth_plugins
   specs:
-    openproject-auth_plugins (6.0.1)
+    openproject-auth_plugins (6.0.2)
       omniauth (~> 1.0)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-backlogs
   specs:
-    openproject-backlogs (6.0.1)
+    openproject-backlogs (6.0.2)
       acts_as_silent_list (~> 2.0.0)
-      openproject-pdf_export (= 6.0.1)
+      openproject-pdf_export (= 6.0.2)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-costs
   specs:
-    openproject-costs (6.0.1)
+    openproject-costs (6.0.2)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-documents
   specs:
-    openproject-documents (6.0.1)
+    openproject-documents (6.0.2)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-github_integration
   specs:
-    openproject-github_integration (6.0.1)
-      openproject-webhooks (~> 6.0.1)
+    openproject-github_integration (6.0.2)
+      openproject-webhooks (~> 6.0.2)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-global_roles
   specs:
-    openproject-global_roles (6.0.1)
+    openproject-global_roles (6.0.2)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-local_avatars
   specs:
-    openproject-local_avatars (6.0.1)
+    openproject-local_avatars (6.0.2)
       rails (~> 4.2.4)
       rmagick (~> 2.15.4)
 
 PATH
   remote: vendored-plugins/openproject-meeting
   specs:
-    openproject-meeting (6.0.1)
+    openproject-meeting (6.0.2)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-my_project_page
   specs:
-    openproject-my_project_page (6.0.1)
+    openproject-my_project_page (6.0.2)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-openid_connect
   specs:
-    openproject-openid_connect (6.0.1)
+    openproject-openid_connect (6.0.2)
       lobby_boy (~> 0.1)
       omniauth-openid_connect-providers (~> 0.1)
       openproject-auth_plugins (~> 6.0)
@@ -208,41 +208,41 @@ PATH
 PATH
   remote: vendored-plugins/openproject-pdf_export
   specs:
-    openproject-pdf_export (6.0.1)
+    openproject-pdf_export (6.0.2)
       prawn (~> 2.1.0)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-reporting
   specs:
-    openproject-reporting (6.0.1)
-      openproject-costs (= 6.0.1)
+    openproject-reporting (6.0.2)
+      openproject-costs (= 6.0.2)
       rails (~> 4.2.4)
       reporting_engine (>= 1.1.0)
 
 PATH
   remote: vendored-plugins/openproject-themes-dark
   specs:
-    openproject-themes-dark (6.0.1)
+    openproject-themes-dark (6.0.2)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-webhooks
   specs:
-    openproject-webhooks (6.0.1)
+    openproject-webhooks (6.0.2)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-xls_export
   specs:
-    openproject-xls_export (6.0.1)
+    openproject-xls_export (6.0.2)
       rails (~> 4.2.4)
       spreadsheet (~> 0.8.9)
 
 PATH
   remote: vendored-plugins/reporting_engine
   specs:
-    reporting_engine (6.0.1)
+    reporting_engine (6.0.2)
       json
       rails (~> 4.2.4)
 
@@ -700,9 +700,8 @@ GEM
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
     securecompare (1.0.0)
-    selenium-webdriver (2.52.0)
+    selenium-webdriver (2.53.4)
       childprocess (~> 0.5)
-      multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
     shoulda-context (1.2.1)
@@ -782,7 +781,7 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
-    websocket (1.2.2)
+    websocket (1.2.3)
     websocket-driver (0.6.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
@@ -914,7 +913,7 @@ DEPENDENCIES
   rubytree (~> 0.9.7)
   sass (~> 3.4.12)
   sass-rails (~> 5.0.3)
-  selenium-webdriver (~> 2.52.0)
+  selenium-webdriver (~> 2.53.4)
   shoulda-context (~> 1.2)
   shoulda-matchers (~> 3.1)
   simplecov
