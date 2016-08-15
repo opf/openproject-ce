@@ -286,7 +286,7 @@ OpenProject::Application.routes.draw do
       # states managed by client-side routing on work_package#index
       get '(/*state)' => 'work_packages#index', on: :collection, as: ''
       get '/create_new' => 'work_packages#index', on: :collection, as: 'new_split'
-      get '/new' => 'work_packages#index', on: :collection, as: 'new'
+      get '/new' => 'work_packages#index', on: :collection, as: 'new', state: 'new'
     end
 
     resources :activity, :activities, only: :index, controller: 'activities'
@@ -301,7 +301,7 @@ OpenProject::Application.routes.draw do
 
     resources :categories, except: [:index, :show], shallow: true
 
-    resources :members, only: [:index, :new, :create, :update, :destroy], shallow: true do
+    resources :members, only: [:index, :create, :update, :destroy], shallow: true do
       match :autocomplete_for_member, on: :collection, via: [:get, :post]
     end
 

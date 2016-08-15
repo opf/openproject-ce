@@ -30,10 +30,18 @@ See doc/COPYRIGHT.rdoc for more details.
 <%= form_tag({}, method: :get) do %>
   <fieldset class="simple-filters--container">
     <legend><%= t(:label_filter_plural) %></legend>
-    <ul class="simple-filters--filters <%= groups.present? ? "-columns-3" : '' %>">
+    <% custom_class = ''
+      if groups.present? || roles.present?
+        custom_class = '-columns-3'
+      end
+      if groups.present? && roles.present?
+        custom_class = '-columns-4'
+      end
+    %>
+    <ul class="simple-filters--filters <%= custom_class %>">
       <li class="simple-filters--filter">
           <label class='simple-filters--filter-name' for='status'><%= User.human_attribute_name(:status) %>:</label>
-          <%= select_tag 'status', users_status_options_for_select(status), onchange: "this.form.submit(); return false;", class: 'simple-filters--filter-value' %>
+          <%= select_tag 'status', user_status_options, onchange: "this.form.submit(); return false;", class: 'simple-filters--filter-value' %>
       </li>
       <% if groups.present? %>
         <li class="simple-filters--filter">
@@ -78,7 +86,7 @@ See doc/COPYRIGHT.rdoc for more details.
       </li>
       <li class="simple-filters--controls">
         <%= submit_tag t(:button_apply), class: 'button -highlight -small', name: nil %>
-        <%= link_to t(:button_clear), users_path, class: 'button -small -with-icon icon-undo' %>
+        <%= link_to t(:button_clear), clear_url, class: 'button -small -with-icon icon-undo' %>
       </li>
     </ul>
   </fieldset>

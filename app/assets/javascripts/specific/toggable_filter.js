@@ -26,50 +26,22 @@
 // See doc/COPYRIGHT.rdoc for more details.
 //++
 
-(function($) {
+function findFilter() {
+  var filter =  jQuery('.simple-filters--container');
 
-  function mergeOptions(options) {
-    if (typeof options === "string") {
-      options = { message: options };
-    }
-    return $.extend({}, $.fn.topShelf.defaults, options);
-  }
+  // Find the filter elements on the page
+  if(filter.length === 0)
+    filter = jQuery('.advanced-filters--container');
+  else if(filter.length === 0)
+     filter = nil;
 
-  $.fn.topShelf = function(options) {
-    var opts = mergeOptions(options);
-    var message = this;
-    var topShelf = $("<div/>").addClass(opts.className);
-    var link = $("<a/>").append(' ' + opts.link).attr({"href": opts.url});
+  return filter;
+}
 
-    if (window.localStorage.getItem(opts.id)) {
-      return;
-    }
+function hideFilter(filter) {
+  filter.addClass('collapsed');
+}
 
-    var closeLink = $("<a/>").append(opts.close);
-    closeLink.click(function() {
-      window.localStorage.setItem(opts.id, '1');
-      topShelf.remove();
-    });
-
-    if (message.length === 0) {
-      topShelf.append($("<h1/>").append(opts.title))
-              .append($("<p/>").append(opts.message).append(link))
-              .append($("<h2/>").append(closeLink));
-    } else {
-      topShelf.append(message);
-    }
-
-    $("body").prepend(topShelf);
-
-    return this;
-  };
-
-  $.fn.topShelf.defaults = {
-    className: "top-shelf icon icon-warning",
-    title: "",
-    message: "",
-    link: "",
-    url: ""
-  };
-
-}(jQuery));
+function showFilter(filter) {
+  filter.removeClass('collapsed');
+}
