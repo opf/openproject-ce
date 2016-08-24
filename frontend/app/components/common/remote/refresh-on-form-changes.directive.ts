@@ -26,19 +26,24 @@
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
 
-import {filtersModule} from '../../../angular-modules';
+import {wpDirectivesModule} from "../../../angular-modules";
 
-function filterContainerDirective(wpFiltersService) {
+function refreshOnFormChanges($http, $window) {
   return {
-    restrict: 'E',
-    replace: true,
-    templateUrl: '/components/filters/filter-container/filter-container.directive.html',
+    restrict: 'EA',
+    scope: {
+      url: '@',
+      inputSelector: '@',
+    },
+    link: (scope, element, attr) => {
+      const form = element.closest('form');
+      const input = element.find(scope.inputSelector);
 
-    link: (scope) => {
-      scope.wpFilters = wpFiltersService;
+      input.on('change', function() {
+        $window.location = scope.url + '?' + form.serialize();
+      });
     }
   };
 }
 
-filtersModule.directive('filterContainer', filterContainerDirective);
-
+wpDirectivesModule.directive('refreshOnFormChanges', refreshOnFormChanges);
