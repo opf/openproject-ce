@@ -1,3 +1,4 @@
+#-- encoding: UTF-8
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
@@ -26,31 +27,53 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require 'rack_session_access/capybara'
+class Users::MembershipsController < ApplicationController
+  layout 'admin'
 
-module AuthenticationHelpers
-  def login_as(user)
-    if is_a? RSpec::Rails::FeatureExampleGroup
-      # If we want to mock having finished the login process
-      # we must set the user_id in rack.session accordingly
-      # Otherwise e.g. calls to Warden will behave unexpectantly
-      # as they will login AnonymousUser
-      page.set_rack_session(user_id: user.id)
-    end
+  before_filter :disable_api
+  before_filter :require_admin
+  before_filter :find_user
 
-    allow(User).to receive(:current).and_return(user)
+  def update
+    update_or_create(request.patch?)
   end
 
-  def login_with(login, password)
-    visit '/login'
-    within('#login-form') do
-      fill_in 'username', with: login
-      fill_in 'password', with: password
-      click_button I18n.t(:button_login)
+  def create
+    update_or_create(request.post?)
+  end
+
+  def destroy
+    @membership = @user.memberships.find(params[:id])
+
+    if @membership.deletable? && request.delete?
+      @membership.destroy && @membership = nil
+    end
+
+    respond_to do |format|
+      format.html do
+        redirect_to controller: '/users', action: 'edit', id: @user, tab: 'memberships'
+      end
+
+      format.js {}
     end
   end
-end
 
-RSpec.configure do |config|
-  config.include AuthenticationHelpers
+  private
+
+  def update_or_create(save_record)
+    @membership = Member.edit_membership(params[:id], permitted_params.membership, @user)
+    @membership.save if save_record
+    respond_to do |format|
+      format.html do
+        redirect_to controller: '/users', action: 'edit', id: @user, tab: 'memberships'
+      end
+      format.js { render 'update_or_create' }
+    end
+  end
+
+  def find_user
+    @user = User.find(params[:user_id])
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
 end

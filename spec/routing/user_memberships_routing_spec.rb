@@ -26,31 +26,28 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require 'rack_session_access/capybara'
+require 'spec_helper'
 
-module AuthenticationHelpers
-  def login_as(user)
-    if is_a? RSpec::Rails::FeatureExampleGroup
-      # If we want to mock having finished the login process
-      # we must set the user_id in rack.session accordingly
-      # Otherwise e.g. calls to Warden will behave unexpectantly
-      # as they will login AnonymousUser
-      page.set_rack_session(user_id: user.id)
+describe Users::MembershipsController, type: :routing do
+  describe 'routing' do
+    it 'connects DELETE users/:user_id/memberships/:id' do
+      expect(delete('/users/1/memberships/2')).to route_to(controller: 'users/memberships',
+                                                           action: 'destroy',
+                                                           user_id: '1',
+                                                           id: '2')
     end
 
-    allow(User).to receive(:current).and_return(user)
-  end
+    it 'connects PATCH users/:user_id/memberships/:id' do
+      expect(patch('/users/1/memberships/2')).to route_to(controller: 'users/memberships',
+                                                          action: 'update',
+                                                          user_id: '1',
+                                                          id: '2')
+    end
 
-  def login_with(login, password)
-    visit '/login'
-    within('#login-form') do
-      fill_in 'username', with: login
-      fill_in 'password', with: password
-      click_button I18n.t(:button_login)
+    it 'connects POST users/:user_id/memberships' do
+      expect(post('/users/1/memberships')).to route_to(controller: 'users/memberships',
+                                                       action: 'create',
+                                                       user_id: '1')
     end
   end
-end
-
-RSpec.configure do |config|
-  config.include AuthenticationHelpers
 end

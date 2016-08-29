@@ -35,6 +35,8 @@ class ApplicationController < ActionController::Base
   class_attribute :_model_scope
   class_attribute :accept_key_auth_actions
 
+  helper_method :render_to_string
+
   protected
 
   include I18n
@@ -190,10 +192,10 @@ class ApplicationController < ActionController::Base
   # Sets the logged in user
   def logged_user=(user)
     reset_session
+
     if user && user.is_a?(User)
       User.current = user
-      session[:user_id] = user.id
-      session[:updated_at] = Time.now
+      InitializeSessionService.call(user, session)
     else
       User.current = User.anonymous
     end

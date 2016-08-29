@@ -26,49 +26,36 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-RSpec::Matchers.define :have_no_selected_menu_item_in do |menu|
-  match do |actual|
-    build_failure_message(menu, actual) == nil
-  end
+require 'spec_helper'
+require 'work_package'
 
-  failure_message do |actual|
-    build_failure_message(menu, actual)
-  end
+describe Users::MembershipsController, type: :controller do
+  let(:user) { FactoryGirl.create(:user) }
+  let(:admin) { FactoryGirl.create(:admin) }
+  let(:anonymous) { FactoryGirl.create(:anonymous) }
 
-  description do
-    "have no selected menu item in #{menu}"
-  end
+  describe 'update memberships' do
+    let(:project) { FactoryGirl.create(:project) }
+    let(:role) { FactoryGirl.create(:role) }
 
-  failure_message_when_negated do |_actual|
-    raise 'You should not use this matcher for should_not matches'
-  end
-
-  def build_failure_message(menu, actual)
-    menu_selector = HTML::Selector.new(selector_for_menu(menu))
-    menu_item_selector = HTML::Selector.new('a.selected')
-
-    html = HTML::Document.new(actual.is_a?(String) ? actual : actual.body)
-
-    menu_matches = menu_selector.select(html.root)
-    if menu_matches.size == 1
-      menu_item_matches = menu_item_selector.select(menu_matches.first)
-
-      if menu_item_matches.size > 0
-        "Expected to find no selected menu item in #{menu}, but found one."
-      else
-        nil
+    it 'works' do
+      # i.e. it should successfully add a user to a project's members
+      as_logged_in_user admin do
+        post :create,
+             user_id: user.id,
+             membership: {
+               project_id: project.id,
+               role_ids: [role.id]
+             },
+             format: 'js'
       end
-    else
-      "Expected to find #{menu.inspect} in document, but didn't."
-    end
-  end
 
-  def selector_for_menu(menu)
-    case menu
-    when :project_menu
-      '#main-menu'
-    else
-      raise ArgumentError, 'Unknown menu identifier'
+      expect(response.status).to eql(200)
+
+      is_member = user.reload.memberships.any? { |m|
+        m.project_id == project.id && m.role_ids.include?(role.id)
+      }
+      expect(is_member).to eql(true)
     end
   end
 end

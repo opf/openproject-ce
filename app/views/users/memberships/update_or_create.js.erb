@@ -27,31 +27,21 @@ See doc/COPYRIGHT.rdoc for more details.
 
 ++#%>
 
-<div class="modal-wrapper--content">
-  <div class="onboarding--start-modal">
-    <div class="onboarding--top-menu">
-      <%= homescreen_user_avatar %>
-      <h2><%= I18n.t('onboarding.welcome') %></h2>
-    </div>
+(function($) {
+  var memberships = $("<%= escape_javascript(render(partial: 'users/memberships')) %>");
 
-    <div class="onboarding--main">
-      <h2><%= I18n.t('top_menu.getting_started') %></h2>
-      <div class="onboarding--video-block">
-        <div class="onboarding--video-text">
-          <span><%= I18n.t('onboarding.text_getting_started') %></span>
-        </div>
-        <div class="onboarding--video">
-          <iframe src="<%= OpenProject::Configuration.onboarding_video_url %>" height="282" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
+  $('#tab-content-memberships').html(memberships);
 
-    <div class="onboarding--footer">
-      <em><label><%= I18n.t('onboarding.text_show_again') %></label></em>
-      <button class="button -highlight -large"
-              ng-click="closeThisDialog()"
-              title=<%= l(:label_next)%>> <%= l(:label_next)%>
-      </button>
-    </div>
-  </div>
-</div>
+  <% if @membership.valid? %>
+    var notice = $("<%= escape_javascript(render(partial: 'members/common_notice',
+                                                 locals: { message: l(:notice_successful_update) })) %>");
+    $('#tab-content-memberships').prepend(notice);
+    $('#member-<%= @membership.id %>').effect("highlight", {}, 2000);
+
+  <% else %>
+    var error = $("<%= escape_javascript(render(partial: 'members/member_errors',
+                                                 locals: { member: @membership })) %>");
+    $('#tab-content-memberships').prepend(error);
+  <% end %>
+})(jQuery);
+
