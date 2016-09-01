@@ -140,66 +140,66 @@ GIT
 PATH
   remote: vendored-plugins/openproject-auth_plugins
   specs:
-    openproject-auth_plugins (6.0.4)
+    openproject-auth_plugins (6.0.5)
       omniauth (~> 1.0)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-backlogs
   specs:
-    openproject-backlogs (6.0.4)
+    openproject-backlogs (6.0.5)
       acts_as_silent_list (~> 2.0.0)
-      openproject-pdf_export (= 6.0.4)
+      openproject-pdf_export (= 6.0.5)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-costs
   specs:
-    openproject-costs (6.0.4)
+    openproject-costs (6.0.5)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-documents
   specs:
-    openproject-documents (6.0.4)
+    openproject-documents (6.0.5)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-github_integration
   specs:
-    openproject-github_integration (6.0.4)
-      openproject-webhooks (~> 6.0.4)
+    openproject-github_integration (6.0.5)
+      openproject-webhooks (~> 6.0.5)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-global_roles
   specs:
-    openproject-global_roles (6.0.4)
+    openproject-global_roles (6.0.5)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-local_avatars
   specs:
-    openproject-local_avatars (6.0.4)
+    openproject-local_avatars (6.0.5)
       rails (~> 4.2.4)
       rmagick (~> 2.15.4)
 
 PATH
   remote: vendored-plugins/openproject-meeting
   specs:
-    openproject-meeting (6.0.4)
+    openproject-meeting (6.0.5)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-my_project_page
   specs:
-    openproject-my_project_page (6.0.4)
+    openproject-my_project_page (6.0.5)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-openid_connect
   specs:
-    openproject-openid_connect (6.0.4)
+    openproject-openid_connect (6.0.5)
       lobby_boy (~> 0.1)
       omniauth-openid_connect-providers (~> 0.1)
       openproject-auth_plugins (~> 6.0)
@@ -208,41 +208,41 @@ PATH
 PATH
   remote: vendored-plugins/openproject-pdf_export
   specs:
-    openproject-pdf_export (6.0.4)
+    openproject-pdf_export (6.0.5)
       prawn (~> 2.1.0)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-reporting
   specs:
-    openproject-reporting (6.0.4)
-      openproject-costs (= 6.0.4)
+    openproject-reporting (6.0.5)
+      openproject-costs (= 6.0.5)
       rails (~> 4.2.4)
       reporting_engine (>= 1.1.0)
 
 PATH
   remote: vendored-plugins/openproject-themes-dark
   specs:
-    openproject-themes-dark (6.0.4)
+    openproject-themes-dark (6.0.5)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-webhooks
   specs:
-    openproject-webhooks (6.0.4)
+    openproject-webhooks (6.0.5)
       rails (~> 4.2.4)
 
 PATH
   remote: vendored-plugins/openproject-xls_export
   specs:
-    openproject-xls_export (6.0.4)
+    openproject-xls_export (6.0.5)
       rails (~> 4.2.4)
       spreadsheet (~> 0.8.9)
 
 PATH
   remote: vendored-plugins/reporting_engine
   specs:
-    reporting_engine (6.0.4)
+    reporting_engine (6.0.5)
       json
       rails (~> 4.2.4)
 
@@ -385,7 +385,7 @@ GEM
       uber
     docile (1.1.5)
       unf (>= 0.0.5, < 1.0.0)
-    domain_name (0.5.20160615)
+    domain_name (0.5.20160826)
       unf (>= 0.0.5, < 1.0.0)
     equalizer (0.0.11)
     equivalent-xml (0.6.0)
