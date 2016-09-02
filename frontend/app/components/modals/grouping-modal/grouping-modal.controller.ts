@@ -26,22 +26,35 @@
 // See doc/COPYRIGHT.rdoc for more details.
 //++
 
-import {opApiModule} from '../../angular-modules';
-import IDirective = angular.IDirective;
+import {wpControllersModule} from '../../../angular-modules';
 
-function wpUploadButtonDirective(): IDirective {
-  return {
-    restrict: 'E',
-    template: `
-      <button class="button" wp-attachments-upload work-package="workPackage">
-        <i class="icon-attachment"></i>
-        <span class="button--text" aria-hidden="true"></span>
-      </button>`,
+function GroupingModalController($scope,
+                                 groupingModal,
+                                 QueryService,
+                                 WorkPackagesTableService,
+                                 I18n) {
+  this.name = 'GroupBy';
+  this.closeMe = groupingModal.deactivate;
 
-    scope: {
-      workPackage: '='
-    }
+  var emptyOption = {title: I18n.t('js.inplace.clear_value_label')};
+
+  $scope.vm = {};
+
+  $scope.updateGroupBy = () => {
+    QueryService.setGroupBy($scope.vm.selectedColumnName);
+    groupingModal.deactivate();
   };
+
+  $scope.workPackageTableData = WorkPackagesTableService.getWorkPackagesTableData();
+
+  $scope.$watch('workPackageTableData.groupableColumns', groupableColumns => {
+    if (!groupableColumns) {
+      return;
+    }
+
+    $scope.vm.groupableColumns = [emptyOption].concat(groupableColumns);
+    $scope.vm.selectedColumnName = QueryService.getGroupBy();
+  });
 }
 
-opApiModule.directive('wpUploadButton', wpUploadButtonDirective);
+wpControllersModule.controller('GroupingModalController', GroupingModalController);

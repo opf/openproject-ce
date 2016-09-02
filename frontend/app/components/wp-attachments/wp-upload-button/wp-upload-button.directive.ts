@@ -26,10 +26,29 @@
 // See doc/COPYRIGHT.rdoc for more details.
 //++
 
-module.exports = function(exportModal, QueryService, UrlParamsHelper) {
-  this.name    = 'Export';
-  var query = QueryService.getQuery();
-  this.closeMe = exportModal.deactivate;
+import {opApiModule} from '../../../angular-modules';
+import IDirective = angular.IDirective;
 
-  this.exportOptions = UrlParamsHelper.buildQueryExportOptions(query);
-};
+function wpUploadButtonDirective(I18n): IDirective {
+  return {
+    restrict: 'E',
+    template: `
+      <button
+        class="button"
+        wp-attachments-upload
+        work-package="workPackage"
+        title="{{ ::text.addAttachments }}">
+        <i class="icon-attachment"></i>
+      </button>`,
+
+    scope: {
+      workPackage: '='
+    },
+
+    link(scope: any) {
+      scope.text = {addAttachments: I18n.t('js.label_add_attachments')};
+    }
+  };
+}
+
+opApiModule.directive('wpUploadButton', wpUploadButtonDirective);
