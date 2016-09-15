@@ -28,10 +28,12 @@
 
 source 'https://rubygems.org'
 
+ruby '2.3.1'
+
 gem 'rails', '~> 4.2.7', '>= 4.2.7.1'
 gem 'actionpack-action_caching'
 gem 'actionpack-xml_parser'
-gem 'activerecord-session_store'
+gem 'activerecord-session_store', '~> 1.0.0'
 gem 'rails-observers'
 gem 'responders', '~> 2.0'
 
@@ -77,6 +79,8 @@ gem 'ruby-duration', '~> 3.2.0'
 
 # provide compatible filesystem information for available storage
 gem 'sys-filesystem', '~> 1.1.4', require: false
+
+gem 'bcrypt', '~> 3.1.6'
 
 # We rely on this specific version, which is the latest as of now (end of 2013),
 # because we have to apply to it a bugfix which could break things in other versions.
@@ -146,7 +150,7 @@ gem 'fog-aws'
 gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave', branch: 'master'
 
 group :test do
-  gem 'rack-test', '~> 0.6.2'
+  gem 'rack-test', '~> 0.6.3'
   gem 'shoulda-context', '~> 1.2'
   gem 'launchy'
 
@@ -155,35 +159,35 @@ group :test do
   # definitions from core are not available in the plugin thus specs break
   gem 'factory_girl', '~> 4.5'
   # require factory_girl_rails for convenience in core development
-  gem 'factory_girl_rails', '~> 4.6', require: false
+  gem 'factory_girl_rails', '~> 4.7', require: false
 
-  gem 'cucumber', '~> 1.3.19'
-  gem 'cucumber-rails', '~> 1.4.2', require: false
+  gem 'cucumber', '~> 2.4.0'
+  gem 'cucumber-rails', '~> 1.4.4', require: false
   gem 'rack_session_access'
-  gem 'database_cleaner', '~> 1.5.1'
-  gem 'rspec', '~> 3.4.0'
+  gem 'database_cleaner', '~> 1.5.3'
+  gem 'rspec', '~> 3.5.0'
   # also add to development group, so "spec" rake task gets loaded
-  gem 'rspec-rails', '~> 3.4.2', group: :development
+  gem 'rspec-rails', '~> 3.5.2', group: :development
   gem 'rspec-activemodel-mocks', '~> 1.0.3', git: 'https://github.com/rspec/rspec-activemodel-mocks'
   gem 'rspec-example_disabler', git: 'https://github.com/finnlabs/rspec-example_disabler.git'
   gem 'rspec-legacy_formatters', require: false
-  gem 'capybara', '~> 2.6.2'
-  gem 'capybara-screenshot', '~> 1.0.12'
+  gem 'capybara', '~> 2.8.1'
+  gem 'capybara-screenshot', '~> 1.0.13'
   gem 'fuubar'
   gem 'capybara-select2', github: 'goodwill/capybara-select2'
-  gem 'capybara-ng', '~> 0.2.2'
+  gem 'capybara-ng', '~> 0.2.7'
   gem 'selenium-webdriver', '~> 2.53.4'
-  gem 'poltergeist'
+  gem 'poltergeist', '~> 1.10.0'
   gem 'timecop', '~> 0.8'
   gem 'webmock', '~> 1.24.2', require: false
 
   # why in Gemfile? see: https://github.com/guard/guard-test
   gem 'ruby-prof'
-  gem 'simplecov', require: false
+  gem 'simplecov', '~> 0.12.0', require: false
   gem 'shoulda-matchers', '~> 3.1', require: nil
   gem 'json_spec'
   gem 'activerecord-tableless', '~> 1.0'
-  gem 'codecov', require: nil
+  gem 'codecov', '~> 0.1.5', require: nil
   gem 'equivalent-xml', '~> 0.6'
 end
 
@@ -200,11 +204,11 @@ group :development do
 end
 
 group :development, :test do
-  gem 'pry-rails'
-  gem 'pry-stack_explorer'
-  gem 'pry-rescue'
-  gem 'pry-byebug', platforms: [:mri]
-  gem 'pry-doc'
+  gem 'pry-rails', '~> 0.3.4'
+  gem 'pry-stack_explorer', '~> 0.4.9.2'
+  gem 'pry-rescue', '~> 1.4.4'
+  gem 'pry-byebug', '~> 3.4.0', platforms: [:mri]
+  gem 'pry-doc', '~> 0.9.0'
   gem 'parallel_tests', '~> 2.4.1'
   gem 'rubocop'
 end
