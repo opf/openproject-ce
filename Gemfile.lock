@@ -104,7 +104,7 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: edcc09f6786f305892da54feeed8cda7f6a3c5f5
+  revision: 3d6b1fbfd687ced64abe137e608760367889e9d6
   branch: dev
   specs:
     openproject-translations (6.1.0)
@@ -465,7 +465,7 @@ GEM
     interception (0.5)
     ipaddress (0.8.3)
     iso8601 (0.9.0)
-    jquery-tablesorter (1.22.5)
+    jquery-tablesorter (1.22.7)
       railties (>= 3.2, < 6)
     json (1.8.3)
     json-jwt (1.5.2)
