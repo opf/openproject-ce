@@ -454,7 +454,7 @@ GEM
     health_check (1.5.1)
       rails (>= 2.3.0)
     htmldiff (0.0.1)
-    http-cookie (1.0.2)
+    http-cookie (1.0.3)
       domain_name (~> 0.5)
     httpclient (2.8.0)
     i18n (0.7.0)
