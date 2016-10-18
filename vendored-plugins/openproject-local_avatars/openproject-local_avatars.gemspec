@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*"] + %w(README.md)
   s.test_files = Dir["spec/**/*"]
 
-  s.add_dependency 'rails', '~> 4.2.4'
+  s.add_dependency 'rails', '~> 5.0'
   s.add_dependency 'rmagick', '~> 2.15.4'
 
 end

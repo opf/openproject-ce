@@ -53,7 +53,7 @@ Feature: Timeline View Tests
   Scenario: Creating a timeline
      When there is a timeline "Testline" for project "ecookbook"
      When I go to the page of the timeline "Testline" of the project called "ecookbook"
-     Then I should see "New timeline report"
+     Then I should see "Timeline report" within ".toolbar-items"
       And I should see "Testline"
       And I should be on the page of the timeline "Testline" of the project called "ecookbook"
 
@@ -65,24 +65,12 @@ Feature: Timeline View Tests
      Then the first table column should not take more than 25% of the space
 
   @javascript
-  Scenario: Select columns
-    Given I am working in the timeline "Testline" of the project called "ecookbook"
-    When there is a timeline "Testline" for project "ecookbook"
-      And I set the columns shown in the timeline to:
-        | start_date |
-        | type       |
-        | due_date   |
-      Then I should see the column "Start date" before the column "End date" in the timelines table
-        And I should see the column "Start date" before the column "Type" in the timelines table
-        And I should see the column "Type" before the column "End date" in the timelines table
-
-  @javascript
   Scenario: switch timeline
     When there is a timeline "Testline" for project "ecookbook"
       And there is a timeline "Testline2" for project "ecookbook"
       And I go to the page of the project called "ecookbook"
       And I follow "Timelines"
       And I select "Testline2" from "Timeline report"
-     Then I should see "New timeline report"
+     Then I should see "Timeline report" within ".toolbar-items"
       And I should see "Testline2"
       And I should be on the page of the timeline "Testline2" of the project called "ecookbook"

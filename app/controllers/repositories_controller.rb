@@ -45,9 +45,9 @@ class RepositoriesController < ApplicationController
   menu_item :settings, only: [:edit, :destroy_info]
   default_search_scope :changesets
 
-  before_filter :find_project_by_project_id
-  before_filter :authorize
-  before_filter :find_repository, except: [:edit, :update, :create, :destroy, :destroy_info]
+  before_action :find_project_by_project_id
+  before_action :authorize
+  before_action :find_repository, except: [:edit, :update, :create, :destroy, :destroy_info]
   accept_key_auth :revisions
 
   rescue_from OpenProject::Scm::Exceptions::ScmError, with: :show_error_command_failed
@@ -96,7 +96,7 @@ class RepositoriesController < ApplicationController
     @users += User.where(id: additional_user_ids) unless additional_user_ids.empty?
     @users.compact!
     @users.sort!
-    if request.post? && params[:committers].is_a?(Hash)
+    if request.post? && params.key?(:committers)
       # Build a hash with repository usernames as keys and corresponding user ids as values
       @repository.committer_ids = params[:committers].values.inject({}) { |h, c| h[c.first] = c.last; h }
       flash[:notice] = l(:notice_successful_update)
@@ -149,7 +149,9 @@ class RepositoriesController < ApplicationController
     (show_error_not_found; return) unless @entry
     @changesets = @repository.latest_changesets(@path, @rev, Setting.repository_log_display_limit.to_i)
     @properties = @repository.properties(@path, @rev)
-    @changeset = @repository.find_changeset_by_name(@rev)
+    @changeset  = @repository.find_changeset_by_name(@rev)
+
+    render 'changes', formats: [:html]
   end
 
   def revisions
@@ -218,6 +220,8 @@ class RepositoriesController < ApplicationController
 
     @annotate = @repository.scm.annotate(@path, @rev)
     @changeset = @repository.find_changeset_by_name(@rev)
+
+    render 'annotate', formats: [:html]
   end
 
   def revision

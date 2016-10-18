@@ -116,9 +116,15 @@ end
 Given /^the backlogs module is initialized(?: in [pP]roject "(.*)")?$/ do |project_name|
   project = get_project(project_name)
 
-  step 'the following types are configured to track stories:', Cucumber::Ast::Table.new([['Story'], ['Epic']])
+  step 'the following types are configured to track stories:', table(%{
+    | Story |
+    | Epic |
+  })
   step 'the type "Task" is configured to track tasks'
-  step "the project \"#{project.name}\" uses the following types:", Cucumber::Ast::Table.new([['Story', 'Task']])
+  step "the project \"#{project.name}\" uses the following types:", table(%{
+    | Story |
+    | Task |
+  })
 end
 
 Given /^the [pP]roject(?: "([^\"]*)")? has the following sprints:$/ do |project_name, table|
@@ -322,7 +328,7 @@ Given /^the [tT]ype(?: "([^\"]*)")? has for the Role "(.+?)" the following workf
 end
 
 Given /^the status of "([^"]*)" is "([^"]*)"$/ do |work_package_subject, status_name|
-  s = WorkPackage.find_by_subject(work_package_subject)
+  s = WorkPackage.find_by(subject: work_package_subject)
   s.status = Status.find_by(name: status_name)
   s.save!
 end
