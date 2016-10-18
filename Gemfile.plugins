@@ -2,7 +2,6 @@ CORE_VERSION = 'dev'
 
 # the dependencies from the gemspec from a git repo are ignored
 # see also https://github.com/bundler/bundler/issues/1041
-gem "acts_as_silent_list", "~> 2.0.0"
 gem "pdf-inspector", "~>1.0.0", group: [:development, :test]
 
 #
