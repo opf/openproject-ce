@@ -104,10 +104,10 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: e19713a37e64af3d99d84ae901936958ec87de43
+  revision: 9821ade5d966ef12321618d5fe60c45d8c8573ba
   branch: stable/6
   specs:
-    openproject-translations (6.0.4)
+    openproject-translations (6.0.5)
       crowdin-api (~> 0.4.0)
       mixlib-shellout (~> 2.1.0)
       rails (~> 4.2.3)
@@ -934,4 +934,4 @@ DEPENDENCIES
   will_paginate (~> 3.1)
 
 BUNDLED WITH
-   1.13.0
+   1.13.2
