@@ -94,7 +94,7 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 65290788cf62082a49d4409ec39296c6e8b52e8e
+  revision: 46f36d4b1ed956989eb9a5e06654a331bcb18dbe
   branch: dev
   specs:
     openproject-translations (6.1.0)
@@ -491,7 +491,7 @@ GEM
       addressable (~> 2.3)
     letter_opener (1.4.1)
       launchy (~> 2.2)
-    livingstyleguide (2.0.0)
+    livingstyleguide (2.0.1)
       minisyntax (>= 0.2.5)
       redcarpet
       sass
@@ -848,7 +848,7 @@ DEPENDENCIES
   json_spec (~> 1.1.4)
   launchy (~> 2.4.3)
   letter_opener
-  livingstyleguide (~> 2.0.0)
+  livingstyleguide (~> 2.0.1)
   multi_json (~> 1.12.1)
   mysql2 (~> 0.4.4)
   net-ldap (~> 0.14.0)

@@ -53,6 +53,14 @@ module API
           }
         end
 
+        link :update do
+          {
+            href: api_v3_paths.user(represented.id),
+            title: "Update #{represented.login}",
+            method: :patch
+          } if current_user_is_admin
+        end
+
         link :lock do
           {
             href: api_v3_paths.user_lock(represented.id),
@@ -92,11 +100,15 @@ module API
                  render_nil: true
         property :name,
                  render_nil: true
-        property :email,
-                 getter: -> (*) { mail },
+        property :mail,
+                 as: :email,
                  render_nil: true,
                  # FIXME: remove the "is_a?" as soon as we have a dedicated group representer
-                 if: -> (*) { self.is_a?(User) && !pref.hide_mail }
+                 getter: ->(*) {
+                   if is_a?(User) && !pref.hide_mail
+                     mail
+                   end
+                 }
         property :avatar,
                  getter: -> (*) { avatar_url(represented) },
                  render_nil: true,
@@ -111,7 +123,16 @@ module API
                  getter: -> (*) { datetime_formatter.format_datetime(represented.updated_on) }
         property :status,
                  getter: -> (*) { status_name },
+                 setter: -> (value, *) { self.status = User::STATUSES[value.to_sym] },
                  render_nil: true
+
+        # Write-only properties
+        property :password,
+                 getter: -> (*) { nil },
+                 render_nil: false,
+                 setter: -> (value, *) {
+                   self.password = self.password_confirmation = value
+                 }
 
         def _type
           'User'

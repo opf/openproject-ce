@@ -58,8 +58,8 @@ describe ::API::V3::Users::UserRepresenter do
         let(:preference) { FactoryGirl.build(:user_preference, hide_mail: true) }
         let(:user) { FactoryGirl.build_stubbed(:user, status: 1, preference: preference) }
 
-        it 'hides the users E-Mail address' do
-          is_expected.not_to have_json_path('email')
+        it 'does not render the users E-Mail address' do
+          is_expected.to be_json_eql(nil.to_json).at_path('email')
         end
       end
     end
@@ -94,14 +94,16 @@ describe ::API::V3::Users::UserRepresenter do
         it 'should have no lock-related links' do
           expect(subject).not_to have_json_path('_links/lock/href')
           expect(subject).not_to have_json_path('_links/unlock/href')
+          expect(subject).not_to have_json_path('_links/update/href')
         end
       end
 
       context 'when current_user is admin' do
         let(:current_user) { FactoryGirl.build_stubbed(:admin) }
 
-        it 'should link to lock' do
+        it 'should link to lock and update' do
           expect(subject).to have_json_path('_links/lock/href')
+          expect(subject).to have_json_path('_links/update/href')
         end
 
         context 'when account is locked' do

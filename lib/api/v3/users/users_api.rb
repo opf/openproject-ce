@@ -44,19 +44,39 @@ module API
               fail ::API::Errors::InvalidUserStatusTransition
             end
           end
+
+          def allow_only_admin
+            unless current_user.admin?
+              fail ::API::Errors::Unauthorized
+            end
+          end
         end
 
         resources :users do
+          helpers ::API::V3::Users::CreateUser
+
+          post do
+            allow_only_admin
+            create_user(request_body, current_user)
+          end
+
           params do
             requires :id, desc: 'User\'s id'
           end
           route_param :id do
+            helpers ::API::V3::Users::UpdateUser
+
             before do
               @user  = User.find(params[:id])
             end
 
             get do
               UserRepresenter.new(@user, current_user: current_user)
+            end
+
+            patch do
+              allow_only_admin
+              update_user(request_body, current_user)
             end
 
             delete do
