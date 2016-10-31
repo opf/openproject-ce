@@ -26,31 +26,23 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require 'support/pages/abstract_work_package'
+shared_context 'typeahead helpers' do
+  def select_typeahead(element, query:, select_text: nil)
+    # Open the element
+    element.click
+    # Insert the text to find
+    element.set(query)
 
-module Pages
-  class FullWorkPackage < Pages::AbstractWorkPackage
+    ##
+    # Find the dropdown by reference
+    target_dropdown = element['aria-owns']
 
-    def edit_field(attribute)
-      super(attribute, container)
-    end
+    ##
+    # If a specific select_text is given, use that to locate the match,
+    # otherwise use the query
+    text = select_text.presence || query
 
-    private
-
-    def container
-      find('.work-packages--show-view')
-    end
-
-    def path(tab = 'activity')
-      if project
-        project_work_package_path(project, work_package.id, tab)
-      else
-        work_package_path(work_package.id, tab)
-      end
-    end
-
-    def create_page(args)
-      Pages::FullWorkPackageCreate.new(args)
-    end
+    # click the element to select it
+    page.find("##{target_dropdown} .uib-typeahead-match", text: text).click
   end
 end

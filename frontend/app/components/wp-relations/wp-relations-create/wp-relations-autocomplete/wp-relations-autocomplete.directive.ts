@@ -31,7 +31,7 @@ import {WorkPackageRelationsController} from "../../wp-relations.directive";
 import {WorkPackageRelationsHierarchyController} from "../../wp-relations-hierarchy/wp-relations-hierarchy.directive";
 import {WorkPackageResourceInterface} from "../../../api/api-v3/hal-resources/work-package-resource.service";
 
-function wpRelationsAutocompleteDirective($q, PathHelper, $http) {
+function wpRelationsAutocompleteDirective($q, PathHelper, $http, I18n) {
   return {
     restrict: 'E',
     templateUrl: '/components/wp-relations/wp-relations-create/wp-relations-autocomplete/wp-relations-autocomplete.template.html',
@@ -39,83 +39,50 @@ function wpRelationsAutocompleteDirective($q, PathHelper, $http) {
     scope: {
       selectedWpId: '=',
       selectedRelationType: '=',
+      filterCandidatesFor: '@',
       workPackage: '='
     },
     link: function (scope, element, attrs, controllers) {
+      scope.text = {
+        placeholder: I18n.t('js.relations_autocomplete.placeholder')
+      };
+      scope.options = [];
       scope.relatedWps = [];
-      getRelatedWorkPackages();
 
-      scope.onSelect = function (wpId) {
-        scope.selectedWpId = wpId;
+      scope.onSelect = (selected) => {
+        scope.selectedWpId = selected.id;
       };
 
-      scope.autocompleteWorkPackages = (term) => {
-        if (!term) {
-          return;
+      scope.getIdentifier = function(workPackage){
+        if (workPackage) {
+          return `#${workPackage.id} - ${workPackage.subject}`;
         }
-
-        findRelatableWorkPackages(term).then((workPackages:Array<WorkPackageResourceInterface>) => {
-          // reject already related work packages, self, children and parent
-          // to prevent invalid relations
-          scope.options = _.reject(workPackages, (wp) => {
-            return scope.relatedWps.indexOf(parseInt((wp.id as string))) > -1;
-          });
-        });
       };
 
-      function findRelatableWorkPackages(search:string) {
-        const deferred = $q.defer();
-        var params;
-
-        scope.workPackage.project.$load().then(() => {
-          params = {
-            q: search,
-            scope: 'relatable',
-            escape: false,
-            id: scope.workPackage.id,
-            project_id: scope.workPackage.project.id
-          };
-
-          $http({
-            method: 'GET',
-            url: URI(PathHelper.workPackageJsonAutoCompletePath()).search(params).toString()
-          })
-            .then((response:any) => {
-              deferred.resolve(response.data);
-            })
-            .catch(deferred.reject);
-        })
-          .catch(deferred.reject);
-
-        return deferred.promise;
-      }
-
-      function getRelatedWorkPackages() {
-        const wpRelationsController:WorkPackageRelationsController = controllers[0];
-        const wpRelationsHierarchyController:WorkPackageRelationsHierarchyController = controllers[1];
-
-        let wps = [scope.workPackage.id];
-
-        wps = wps.concat(wpRelationsController.currentRelations.map(relation => relation.id));
-
-        if (scope.workPackage.parentId) {
-          wps.push(scope.workPackage.parentId);
+      scope.autocompleteWorkPackages = (query) => {
+        if (!query) {
+          return [];
         }
 
-        if (wpRelationsHierarchyController && wpRelationsHierarchyController.children) {
-          wps = wps.concat(wpRelationsHierarchyController.children.map(child => child.id));
-        } else if (scope.workPackage.children && scope.workPackage.children.length > 0) {
-
-          var childPromises = [];
-
-          childPromises = childPromises.concat(scope.workPackage.children.map(child => child.$load()));
-          $q.all(childPromises).then(children => {
-            wps = wps.concat(children.map(child => child.id));
-            scope.relatedWps = wps;
+        return scope.workPackage
+          .available_relation_candidates.$link.$fetch({
+            query: query,
+            type: scope.filterCandidatesFor
+          }, {
+            'caching': {
+              enabled: false
+            }
+          }).then(collection => {
+            return collection.elements;
           });
+      };
+
+      scope.$watch('autocompleteIsOpen', (isOpen) => {
+        if (isOpen) {
+          var searchInput = angular.element('input[uib-typeahead]');
+          angular.element('.dropdown-menu').width(searchInput.outerWidth());
         }
-        scope.relatedWps = wps;
-      }
+      });
     }
   };
 }
