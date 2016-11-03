@@ -1,7 +1,7 @@
 FROM ruby:2.2
 
 ENV NODE_VERSION="6.9.1"
-ENV BUNDLER_VERSION="1.13.2"
+ENV BUNDLER_VERSION="1.11.2"
 
 # install node + npm
 RUN curl https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz | tar xzf - -C /usr/local --strip-components=1
@@ -35,6 +35,7 @@ COPY frontend/*.json /tmp/npm/frontend/
 RUN chown -R app:app /tmp/npm
 
 USER app
+RUN cd /tmp/npm && npm install npm@4.0
 RUN cd /tmp/npm && RAILS_ENV=production npm install
 RUN mv /tmp/npm/frontend /usr/src/app/
 

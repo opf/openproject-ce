@@ -94,7 +94,7 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: dde91757885a247c32010957b0f74d708b322736
+  revision: e95d1da8f0cd080a22d7381a66850c2b6de45a9a
   branch: dev
   specs:
     openproject-translations (6.1.0)
@@ -438,6 +438,7 @@ GEM
     fuubar (2.2.0)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
+    get_process_mem (0.2.1)
     gherkin (4.0.0)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
@@ -764,6 +765,9 @@ GEM
     unicorn (5.1.0)
       kgio (~> 2.6)
       raindrops (~> 0.7)
+    unicorn-worker-killer (0.4.4)
+      get_process_mem (~> 0)
+      unicorn (>= 4, < 6)
     url (0.3.2)
     url_safe_base64 (0.2.2)
     validate_email (0.1.6)
@@ -934,6 +938,7 @@ DEPENDENCIES
   transactional_lock!
   tzinfo-data (~> 1.2016.1)
   unicorn
+  unicorn-worker-killer
   warden (~> 1.2)
   warden-basic_auth (~> 0.2.1)
   webmock (~> 2.1.0)

@@ -1,3 +1,4 @@
+#-- encoding: UTF-8
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
@@ -26,23 +27,25 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require 'spec_helper'
+require_relative 'migration_utils/ar_parameter_patch'
 
-describe Timeline, type: :model do
-  describe 'helper methods for creation' do
-    describe 'available_responsibles' do
+class QueryEmptyColumnNamesToArray < ActiveRecord::Migration[5.0]
+  class QueryWithWhatever < ActiveRecord::Base
+    self.table_name = :queries
+    serialize :column_names
+  end
 
-      let!(:ab) { FactoryGirl.create(:user, firstname: 'a', lastname: 'b') }
-      let!(:ba) { FactoryGirl.create(:user, firstname: 'b', lastname: 'a') }
-      let!(:t) { Timeline.new }
+  def up
+    ArParametersPatch.load
 
-      it 'sorted by firstname_lastname', with_settings: { user_format: :firstname_lastname } do
-        expect(t.available_responsibles).to eq([ab, ba])
-      end
+    QueryWithWhatever.transaction do
+      empty = QueryWithWhatever.where(column_names: '')
+      null = QueryWithWhatever.where(column_names: nil)
 
-      it 'sorted by lastname_firstname', with_settings: { user_format: :lastname_firstname } do
-        expect(t.available_responsibles).to eq([ba, ab])
-      end
+      empty.or(null).update_all(column_names: [])
     end
   end
+
+  # This migration does not need to be rolled back because
+  # it only harmonizes the possible values of the value attribute.
 end
