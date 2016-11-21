@@ -36,14 +36,14 @@ module OpenProject::LocalAvatars
       module InstanceMethods
         def dump_avatar
           return unless find_user
-          av = @user.local_avatar_attachment
-          unless av
-            render_404
-          else
 
+          av = @user.local_avatar_attachment
+          if av
             send_file(av.diskfile, :filename => filename_for_content_disposition(av.filename),
                       :type => av.content_type,
                       :disposition => (av.image? ? 'inline' : 'attachment'))
+          else
+            render_404
           end
         end
 
