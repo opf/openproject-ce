@@ -94,10 +94,10 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 3ec505f4e77c46baf60c3c2c34dd27ae05cd6ad9
+  revision: 12a7a422b4e4348c8bde1aee9650063dfa4c499f
   branch: stable/6
   specs:
-    openproject-translations (6.1.0)
+    openproject-translations (6.1.1)
       crowdin-api (~> 0.4.1)
       mixlib-shellout (~> 2.1.0)
       rails (~> 5.0.0)
@@ -401,7 +401,7 @@ GEM
       representable (~> 2.0)
       uber
     docile (1.1.5)
-    domain_name (0.5.20161021)
+    domain_name (0.5.20161129)
       unf (>= 0.0.5, < 1.0.0)
     enumerable-lazy (0.0.1)
     equalizer (0.0.11)
