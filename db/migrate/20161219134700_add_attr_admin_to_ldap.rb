@@ -1,7 +1,7 @@
 #-- encoding: UTF-8
 #-- copyright
 # OpenProject is a project management system.
-# Copyright (C) 2012-2014 the OpenProject Foundation (OPF)
+# Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
@@ -27,22 +27,8 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require 'open_project/plugins'
-
-module OpenProject::AuthPlugins
-  class Engine < ::Rails::Engine
-    engine_name :openproject_auth_plugins
-
-    include OpenProject::Plugins::ActsAsOpEngine
-
-    register 'openproject-auth_plugins',
-             author_url: 'http://finn.de',
-             requires_openproject: '>= 3.1.0pre1'
-
-    initializer 'auth_plugins.register_hooks' do
-      require 'open_project/auth_plugins/hooks'
-    end
-
-    assets %w(auth_plugins/auth_plugins.css)
+class AddAttrAdminToLdap < ActiveRecord::Migration[5.0]
+  def change
+    add_column :auth_sources, :attr_admin, :string
   end
 end
