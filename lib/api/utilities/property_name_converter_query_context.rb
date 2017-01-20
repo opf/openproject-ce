@@ -1,13 +1,13 @@
 #-- encoding: UTF-8
 #-- copyright
 # OpenProject is a project management system.
-# Copyright (C) 2012-2014 the OpenProject Foundation (OPF)
+# Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
 #
 # OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-# Copyright (C) 2006-2013 Jean-Philippe Lang
+# Copyright (C) 2006-2017 Jean-Philippe Lang
 # Copyright (C) 2010-2013 the ChiliProject Team
 #
 # This program is free software; you can redistribute it and/or
@@ -27,22 +27,22 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require 'open_project/plugins'
+module API
+  module Utilities
+    # The PropertyNameConverter checks whether the object responds to the attribute
+    # that is to be converted.
+    # If the context is Query (e.g. when filters are restored), a WorkPackage
+    # is used instead.  However, some of the methods a work package does not
+    # respond to are nevertheless valid for transformation.  We therefore
+    # delegate to a WorkPackage per default but also explicitly respond in some
+    # cases.
+    class PropertyNameConverterQueryContext < SimpleDelegator
+      def initialize
+        super(WorkPackage.new)
+      end
 
-module OpenProject::AuthPlugins
-  class Engine < ::Rails::Engine
-    engine_name :openproject_auth_plugins
-
-    include OpenProject::Plugins::ActsAsOpEngine
-
-    register 'openproject-auth_plugins',
-             author_url: 'http://finn.de',
-             requires_openproject: '>= 3.1.0pre1'
-
-    initializer 'auth_plugins.register_hooks' do
-      require 'open_project/auth_plugins/hooks'
+      def subproject_id
+      end
     end
-
-    assets %w(auth_plugins/auth_plugins.css)
   end
 end

@@ -43,3 +43,5 @@ openprojectBacklogsApp.run([ 'ConfigurationService',
     WorkPackagesOverviewService.addAttributesToGroup('estimatesAndTime', ['storyPoints', 'remainingTime']);
   }
 }]);
+
+require('jquery-ui/ui/jquery-ui.js');
