@@ -29,4 +29,5 @@ ratings:
 exclude_paths:
   - .bundle/**/*
   - lib/plugins/rfpdf/**/*
+  - frontend/vendor/**/*
   - spec_legacy/**/*
