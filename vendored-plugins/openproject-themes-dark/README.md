@@ -23,14 +23,6 @@ Afterwards, run:
 
 `bundle install`
 
-This plugin contains migrations. To migrate the database, run:
-
-`rake db:migrate`
-
-Finally, build the assets, run:
-
-`rake assets:precompile`
-
 
 Deinstallation
 --------------
@@ -42,8 +34,6 @@ Remove the line
 from the file `Gemfile.plugins` and run:
 
 `bundle install`
-
-Please not that this leaves plugin data in the database. Currently, we do not support full uninstall of the plugin.
 
 
 Bug Reporting
