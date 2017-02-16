@@ -84,7 +84,7 @@ var loaders = [
       fallbackLoader: 'style-loader',
       loader: [
         'css-loader',
-        'postcss-loader',
+        'postcss-loader'
       ],
       publicPath: '/assets/bundles/'
     })
