@@ -11,7 +11,7 @@ export interface WorkPackageTableRow {
   workPackageId:string;
   position:number;
   element?:HTMLElement;
-  group?:GroupObject;
+  group:GroupObject|null;
 }
 
 export interface GroupableColumn {
@@ -32,9 +32,9 @@ export interface GroupObject {
   collapsed?:boolean;
   index:number;
   identifier:string;
-  href:string;
+  href:{ href:string }[];
   _links?: {
-    valueLink: { href:string };
+    valueLink: { href:string }[];
   }
 }
 
