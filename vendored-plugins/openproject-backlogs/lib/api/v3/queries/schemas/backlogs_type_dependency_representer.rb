@@ -1,3 +1,4 @@
+#-- encoding: UTF-8
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
@@ -26,25 +27,22 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-Feature: As an admin
-         I want to administrate roles with permissions
-         So that I can modify permissions of roles
+module API
+  module V3
+    module Queries
+      module Schemas
+        class BacklogsTypeDependencyRepresenter <
+          FilterDependencyRepresenter
 
-  @javascript
-  Scenario: Normal Role creation with existing role with same name
-    And I am already admin
-    When I go to the new page of "Role"
-    Then I should see "Work packages can be assigned to users and groups in possession of this role in the respective project"
-    When I fill in "Name" with "Manager"
-    And I click on "Create"
-    Then I should see "Successful creation."
+          def href_callback; end
 
-  @javascript
-  Scenario: Normal Role creation with existing role with same name
-    And there is a role "Manager"
-    And I am already admin
-    When I go to the new page of "Role"
-    Then I should see "Work packages can be assigned to users and groups in possession of this role in the respective project"
-    When I fill in "Name" with "Manager"
-    And I click on "Create"
-    Then I should see "Name has already been taken"
+          private
+
+          def type
+            '[]String'
+          end
+        end
+      end
+    end
+  end
+end
