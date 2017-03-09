@@ -26,6 +26,7 @@
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
 
+
 import {scopedObservable} from "../../helpers/angular-rx-utils";
 import {KeepTabService} from "../wp-panels/keep-tab/keep-tab.service";
 import {WorkPackageTimelineTableController} from './timeline/wp-timeline-container.directive';
@@ -188,6 +189,7 @@ function WorkPackagesTableController($scope:any, $rootScope:ng.IRootScopeService
       title: I18n.t('js.work_packages.faulty_query.title'),
       description: I18n.t('js.work_packages.faulty_query.description')
     },
+    addColumns: I18n.t('js.label_add_columns'),
     tableSummary: I18n.t('js.work_packages.table.summary'),
     tableSummaryHints: [
       I18n.t('js.work_packages.table.text_inline_edit'),
