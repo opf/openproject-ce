@@ -82,7 +82,9 @@ class Widget::Table::EntryTable < Widget::Table
         @subject.each_direct_result do |result|
           next if hit
           if entry_for(result).editable_by? User.current
-            concat content_tag(:th, class: 'unsortable') {}
+            concat content_tag(:th, class: 'unsortable') {
+              content_tag(:div, class: 'generic-table--empty-header')
+            }
             hit = true
           end
         end
@@ -94,20 +96,20 @@ class Widget::Table::EntryTable < Widget::Table
     content_tag :tfoot do
       content_tag :tr do
         if show_result(@subject, 0) != show_result(@subject)
-          concat content_tag(:th, '', colspan: FIELDS.size)
-          concat content_tag(:th) {
+          concat content_tag(:td, '', colspan: FIELDS.size)
+          concat content_tag(:td) {
             concat content_tag(:div,
                                show_result(@subject),
                                class: 'inner generic-table--footer-outer')
           }
-          concat content_tag(:th) {
+          concat content_tag(:td) {
             concat content_tag(:div,
                                show_result(@subject, 0),
                                class: 'result generic-table--footer-outer')
           }
         else
-          concat content_tag(:th, '', colspan: FIELDS.size + 1)
-          concat content_tag(:th) {
+          concat content_tag(:td, '', colspan: FIELDS.size + 1)
+          concat content_tag(:td) {
             concat content_tag(:div,
                                show_result(@subject),
                                class: 'result generic-table--footer-outer')
