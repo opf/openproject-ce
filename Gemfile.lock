@@ -236,7 +236,7 @@ PATH
 PATH
   remote: vendored-plugins/reporting_engine
   specs:
-    reporting_engine (6.1.0)
+    reporting_engine (6.1.6)
       json
       rails (~> 5.0.0)
 
