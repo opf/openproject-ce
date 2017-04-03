@@ -1,20 +1,17 @@
-import {WorkPackageTableRow} from '../../wp-table.interfaces';
-import {RowsBuilder} from './rows-builder';
-import {States} from '../../../states.service';
-import {injectorBridge} from '../../../angular/angular-injector-bridge.functions';
-import {WorkPackageTableColumnsService} from '../../state/wp-table-columns.service';
-import {WorkPackageTable} from '../../wp-fast-table';
-import {SingleRowBuilder} from './single-row-builder';
+import {WorkPackageTableRow} from "../../wp-table.interfaces";
+import {RowsBuilder} from "./rows-builder";
+import {States} from "../../../states.service";
+import {injectorBridge} from "../../../angular/angular-injector-bridge.functions";
+import {WorkPackageTableColumnsService} from "../../state/wp-table-columns.service";
+import {WorkPackageTable} from "../../wp-fast-table";
 
 export class PlainRowsBuilder extends RowsBuilder {
   // Injections
-  public states:States;
-  public wpTableColumns:WorkPackageTableColumnsService;
   public I18n:op.I18n;
 
   // The group expansion state
-  constructor() {
-    super();
+  constructor(workPackageTable: WorkPackageTable) {
+    super(workPackageTable);
     injectorBridge(this);
   }
 
@@ -40,5 +37,4 @@ export class PlainRowsBuilder extends RowsBuilder {
   }
 }
 
-
-PlainRowsBuilder.$inject = ['wpTableColumns', 'states', 'I18n'];
+PlainRowsBuilder.$inject = ['states', 'I18n'];

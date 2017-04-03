@@ -45,6 +45,12 @@ module OpenProject
       def dig(*keys)
         keys.inject(self) { |hash, key| hash && (hash.is_a?(Hash) || nil) && hash[key] }
       end
+
+      def map_values(&_block)
+        entries = map { |key, value| [key, (yield value)] }
+
+        ::Hash[entries]
+      end
     end
   end
 end

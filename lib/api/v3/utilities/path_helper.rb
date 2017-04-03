@@ -123,6 +123,11 @@ module API
             "#{priorities}/#{id}"
           end
 
+          class << self
+            alias :issue_priorities :priorities
+            alias :issue_priority :priority
+          end
+
           def self.projects
             "#{root}/projects"
           end
@@ -145,6 +150,14 @@ module API
 
           def self.query_project_default(id)
             "#{project(id)}/queries/default"
+          end
+
+          def self.create_query_form
+            "#{queries}/form"
+          end
+
+          def self.query_form(id)
+            "#{query(id)}/form"
           end
 
           def self.query_star(id)
@@ -177,6 +190,10 @@ module API
 
           def self.query_filter_instance_schema(id)
             "#{queries}/filter_instance_schemas/#{id}"
+          end
+
+          def self.query_project_form(id)
+            "#{project(id)}/queries/form"
           end
 
           def self.query_project_filter_instance_schemas(id)
@@ -277,6 +294,11 @@ module API
 
           def self.user(id)
             "#{users}/#{id}"
+          end
+
+          class << self
+            alias :groups :users
+            alias :group :user
           end
 
           def self.user_lock(id)

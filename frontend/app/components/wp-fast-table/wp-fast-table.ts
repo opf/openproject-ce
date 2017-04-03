@@ -1,4 +1,3 @@
-import {WorkPackageTableMetadata} from './wp-table-metadata';
 import {HierarchyRowsBuilder} from './builders/rows/hierarchy-rows-builder';
 import {RowsBuilder} from './builders/rows/rows-builder';
 import {WorkPackageCacheService} from '../work-packages/work-package-cache.service';
@@ -12,6 +11,7 @@ import {TableHandlerRegistry} from './handlers/table-handler-registry';
 import {locateRow} from './helpers/wp-table-row-helpers';
 import {GroupedRowsBuilder} from './builders/rows/grouped-rows-builder';
 import {PlainRowsBuilder} from './builders/rows/plain-rows-builder';
+import {WorkPackageTimelineTableController} from "../wp-table/timeline/wp-timeline-container.directive";
 
 export class WorkPackageTable {
   public wpCacheService:WorkPackageCacheService;
@@ -24,12 +24,14 @@ export class WorkPackageTable {
   // WP rows builder
   // Ordered by priority
   private builders = [
-    new HierarchyRowsBuilder(),
-    new GroupedRowsBuilder(),
-    new PlainRowsBuilder()
+    new HierarchyRowsBuilder(this),
+    new GroupedRowsBuilder(this),
+    new PlainRowsBuilder(this)
   ];
 
-  constructor(public container:HTMLElement, public tbody:HTMLElement) {
+  constructor(public container:HTMLElement,
+              public tbody:HTMLElement,
+              public timelineController: WorkPackageTimelineTableController) {
     injectorBridge(this);
     TableHandlerRegistry.attachTo(this);
   }
@@ -39,15 +41,14 @@ export class WorkPackageTable {
   }
 
   /**
-   * Returns the reference to the last table.metadata state value
+   * Returns the reference to the last table.query state value
    */
-  public get metaData() {
-    return this.states.table.metadata.getCurrentValue() as WorkPackageTableMetadata;
+  public get query() {
+    return this.states.table.query.getCurrentValue();
   }
 
   public get rowBuilder():RowsBuilder {
-    const metaData = this.metaData;
-    return _.find(this.builders, (builder:RowsBuilder) => builder.isApplicable(this, metaData))!;
+    return _.find(this.builders, (builder:RowsBuilder) => builder.isApplicable(this))!;
   }
 
   /**

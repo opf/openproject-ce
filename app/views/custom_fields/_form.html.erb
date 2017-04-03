@@ -63,19 +63,21 @@ See doc/COPYRIGHT.rdoc for more details.
     </span>
   </div>
 
-  <div class="form--field" id="custom_field_multi_select">
-    <% if EnterpriseToken.allows_to?(:multiselect_custom_fields) %>
-      <%= f.check_box :multi_value %>
-    <% else %>
-      <label class="form--label" for="custom_field_multi_value_disabled"><%= CustomField.human_attribute_name('multi_value') %></label>
-      <span class="form--field-container">
-        <span class="form--check-box-container">
-          <input disabled="disabled" class="-cf-ignore-disabled form--check-box" type="checkbox" name="custom_field_multi_value_disabled">
-          <%= render partial: 'enterprise/locked_note' %>
+  <% if @custom_field.class.name == 'WorkPackageCustomField' %>
+    <div class="form--field" id="custom_field_multi_select">
+      <% if EnterpriseToken.allows_to?(:multiselect_custom_fields) %>
+        <%= f.check_box :multi_value %>
+      <% else %>
+        <label class="form--label" for="custom_field_multi_value_disabled"><%= CustomField.human_attribute_name('multi_value') %></label>
+        <span class="form--field-container">
+          <span class="form--check-box-container">
+            <input disabled="disabled" class="-cf-ignore-disabled form--check-box" type="checkbox" name="custom_field_multi_value_disabled">
+            <%= render partial: 'enterprise/locked_note' %>
+          </span>
         </span>
-      </span>
-    <% end %>
-  </div>
+      <% end %>
+    </div>
+  <% end %>
 
   <% if @custom_field.new_record? || @custom_field.field_format == 'list' %>
     <fieldset class="form--fieldset">
@@ -104,28 +106,6 @@ See doc/COPYRIGHT.rdoc for more details.
 <section class="form--section">
   <% case @custom_field.class.name
      when "WorkPackageCustomField" %>
-    <fieldset class="form--fieldset">
-      <legend class="form--fieldset-legend"><%=l(:label_type_plural)%></legend>
-      <div class="form--field">
-        <div class="form--field-container -wrap-around">
-          <% for type in @types %>
-            <%= content_tag :label, '',
-                  class: "form--label-with-check-box",
-                  for: "custom_field_type_ids_#{type.id}" do %>
-              <div class="form--check-box-container">
-                <%= check_box_tag "custom_field[type_ids][]", type.id, (@custom_field.types.include? type),
-                      id: "custom_field_type_ids_#{type.id}",
-                      class: 'form--check-box' %>
-              </div>
-              <%= (type.is_standard) ? l(:label_custom_field_default_type) : h(type) %>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-      <%= hidden_field_tag "custom_field[type_ids][]", '' %>
-    </fieldset>
-    &nbsp;
-
     <div class="form--field"><%= f.check_box :is_required %></div>
     <div class="form--field"><%= f.check_box :is_for_all %></div>
     <div class="form--field"><%= f.check_box :is_filter %></div>

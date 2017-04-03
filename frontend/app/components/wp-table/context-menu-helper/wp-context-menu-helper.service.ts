@@ -25,9 +25,8 @@
 //
 // See doc/COPYRIGHT.rdoc for more details.
 //++
-
-import {WorkPackageTableMetadataService} from '../../wp-fast-table/state/wp-table-metadata.service';
-import {WorkPackageResource} from '../../api/api-v3/hal-resources/work-package-resource.service';
+import {WorkPackageResourceInterface} from './../../api/api-v3/hal-resources/work-package-resource.service';
+import {States} from "../../states.service";
 
 angular
   .module('openproject.workPackages.helpers')
@@ -35,12 +34,12 @@ angular
 
 function WorkPackageContextMenuHelper(
   PERMITTED_BULK_ACTIONS:any,
-  wpTableMetadata:WorkPackageTableMetadataService,
   HookService:any,
   UrlParamsHelper:any,
-  I18n:op.I18n) {
+  I18n: op.I18n,
+  states: States) {
 
-  function getPermittedActionLinks(workPackage:WorkPackageResource, permittedActionConstants:any) {
+  function getPermittedActionLinks(workPackage:WorkPackageResourceInterface, permittedActionConstants:any) {
     var singularPermittedActions:any[] = [];
 
     var allowedActions = getAllowedActions(workPackage, permittedActionConstants);
@@ -60,7 +59,7 @@ function WorkPackageContextMenuHelper(
     var bulkPermittedActions:any = [];
 
     var permittedActions = _.filter(PERMITTED_BULK_ACTIONS, function(action:any) {
-      return _.every(workPackages, function(workPackage:WorkPackageResource) {
+      return _.every(workPackages, function(workPackage:WorkPackageResourceInterface) {
         return getAllowedActions(workPackage, [action]).length >= 1;
       });
     });
@@ -77,8 +76,6 @@ function WorkPackageContextMenuHelper(
   }
 
   function getBulkActionLink(action:any, workPackages:any) {
-    var bulkLinks = wpTableMetadata.current.bulkLinks;
-
     var workPackageIdParams = {
       'ids[]': workPackages.map(function(wp:any){
         return wp.id;
@@ -86,14 +83,14 @@ function WorkPackageContextMenuHelper(
     };
     var serializedIdParams = UrlParamsHelper.buildQueryString(workPackageIdParams);
 
-    var linkAndQueryString = bulkLinks[action.link].split('?');
+    var linkAndQueryString = action.href.split('?');
     var link = linkAndQueryString.shift();
     var queryParts = linkAndQueryString.concat(new Array(serializedIdParams));
 
     return link + '?' + queryParts.join('&');
   }
 
-  function getAllowedActions(workPackage:WorkPackageResource, actions:any) {
+  function getAllowedActions(workPackage:WorkPackageResourceInterface, actions:any) {
     var allowedActions:any[] = [];
 
     angular.forEach(actions, function(action) {
@@ -110,11 +107,24 @@ function WorkPackageContextMenuHelper(
       }
     });
 
+    if (workPackage.addRelation && states.table.timelineVisible.getCurrentValue()) {
+      allowedActions.push({
+        icon: "timeline-relation-add-predecessor",
+        text: I18n.t("js.relation_buttons.add_predecessor"),
+        link: "addRelation"
+      });
+      allowedActions.push({
+        icon: "timeline-relation-add-follower",
+        text: I18n.t("js.relation_buttons.add_follower"),
+        link: "addRelation"
+      });
+    }
+
     return allowedActions;
   }
 
   var WorkPackageContextMenuHelper = {
-    getPermittedActions: function (workPackages:WorkPackageResource[], permittedActionConstants:any) {
+    getPermittedActions: function (workPackages:WorkPackageResourceInterface[], permittedActionConstants:any) {
       if (workPackages.length === 1) {
         return getPermittedActionLinks(workPackages[0], permittedActionConstants);
       } else if (workPackages.length > 1) {

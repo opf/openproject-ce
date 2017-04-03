@@ -1,10 +1,11 @@
 import {RowRefreshBuilder} from "./row-refresh-builder";
-import {WorkPackageTableMetadata} from "../../wp-table-metadata";
+import {WorkPackageTableColumnsService} from '../../state/wp-table-columns.service';
 import {States} from "../../../states.service";
 import {SingleRowBuilder} from "./single-row-builder";
 import {WorkPackageTable} from "../../wp-fast-table";
 import {WorkPackageTableRow} from "../../wp-table.interfaces";
 import {Subject} from "rxjs";
+import {injectorBridge} from '../../../angular/angular-injector-bridge.functions';
 
 export abstract class RowsBuilder {
   public states:States;
@@ -14,9 +15,9 @@ export abstract class RowsBuilder {
 
   private stopExisting$ = new Subject();
 
-  constructor() {
-    this.rowBuilder = new SingleRowBuilder(this.stopExisting$);
-    this.refreshBuilder = new RowRefreshBuilder(this.stopExisting$);
+  constructor(public workPackageTable: WorkPackageTable) {
+    this.rowBuilder = new SingleRowBuilder(this.stopExisting$, workPackageTable);
+    this.refreshBuilder = new RowRefreshBuilder(this.stopExisting$, workPackageTable);
   }
 
   /**
@@ -33,7 +34,7 @@ export abstract class RowsBuilder {
   /**
    * Determine if this builder applies to the current view mode.
    */
-  public isApplicable(table:WorkPackageTable, metaData:WorkPackageTableMetadata) {
+  public isApplicable(table:WorkPackageTable) {
     return true;
   }
 

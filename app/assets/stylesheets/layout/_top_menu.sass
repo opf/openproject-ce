@@ -187,6 +187,24 @@
     left: 260px
     @include varprop(color, font-color-on-primary)
 
+  #top-menu--project-toggler:not(.show)
+    position: absolute
+    left: -40px
+    width: 40px
+    .navigation-toggler
+      &:before
+        font-size: 12px
+      &:hover
+        background-color: $main-menu-bg-color
+
+#wrapper:not(.hidden-navigation) #top-menu
+  margin-left: $main-menu-width
+  width: calc(100% - #{$main-menu-width})
+
+#wrapper.nosidebar #top-menu
+  margin-left: 0
+  width: initial
+
 .top-menu-search
   display: inline-block
   &:not(.-collapsed) > div
@@ -307,13 +325,12 @@ input.top-menu-search--input
 
 #account-nav-left
   .drop-down
-    max-width: 186px
+    max-width: 300px
 
   #projects-menu
     overflow: hidden
     text-overflow: ellipsis
     padding-right: 34px
-    font-size: 18px
     font-weight: bold
 
     &:after

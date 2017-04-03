@@ -41,8 +41,10 @@ module API
           mount API::V3::Queries::Operators::QueryOperatorsAPI
           mount API::V3::Queries::Schemas::QuerySchemaAPI
           mount API::V3::Queries::Schemas::QueryFilterInstanceSchemaAPI
+          mount API::V3::Queries::CreateFormAPI
 
           helpers ::API::V3::Queries::Helpers::QueryRepresenterResponse
+          helpers ::API::V3::Queries::QueryHelper
 
           helpers do
             def authorize_by_policy(action, &block)
@@ -57,7 +59,9 @@ module API
           get do
             authorize_any [:view_work_packages, :manage_public_queries], global: true
 
-            ::API::V3::Utilities::ParamsToQuery.collection_response(Query,
+            queries_scope = Query.all.includes(QueryRepresenter.to_eager_load)
+
+            ::API::V3::Utilities::ParamsToQuery.collection_response(queries_scope,
                                                                     current_user,
                                                                     params)
           end
@@ -88,6 +92,10 @@ module API
             end
           end
 
+          post do
+            create_query request_body, current_user
+          end
+
           params do
             requires :id, desc: 'Query id'
           end
@@ -98,6 +106,12 @@ module API
               authorize_by_policy(:show) do
                 raise API::Errors::NotFound
               end
+            end
+
+            mount API::V3::Queries::UpdateFormAPI
+
+            patch do
+              update_query @query, request_body, current_user
             end
 
             get do
