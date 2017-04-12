@@ -26,15 +26,11 @@
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
 
-import {DisplayField} from "../wp-display-field/wp-display-field.module";
+import {TextEditField} from './wp-edit-text-field.module';
 
-export class StringObjectDisplayField extends DisplayField {
-  public get value() {
-    if(this.schema) {
-      return this.resource[this.name] && (this.resource[this.name].value || this.resource[this.name].name);
-    }
-    else {
-      return null;
-    }
+export class WorkPackageEditField extends TextEditField {
+
+  public get writable() {
+    return false;
   }
 }

@@ -37,14 +37,8 @@ import {FloatEditField} from "../field-types/wp-edit-float-field.module";
 import {BooleanEditField} from "../field-types/wp-edit-boolean-field.module";
 import {DateEditField} from "../field-types/wp-edit-date-field.module";
 import {WikiTextareaEditField} from "../field-types/wp-edit-wiki-textarea-field.module";
+import {WorkPackageEditField} from './../field-types/wp-edit-work-package-field.module';
 import {openprojectModule} from "../../../angular-modules";
-
-//TODO: Implement
-class DateRangeEditField extends EditField {
-}
-
-
-//TODO: See file wp-field.service.js:getInplaceEditStrategy for more eventual classes
 
 openprojectModule
   .run((wpEditField:WorkPackageEditFieldService) => {
@@ -59,13 +53,14 @@ openprojectModule
         'User',
         'Version',
         'Category',
-        'StringObject',
+        'CustomOption',
         'Project'])
       .addFieldType(MultiSelectEditField, 'multi-select', [
-        '[]StringObject',
+        '[]CustomOption',
         '[]User'
       ])
       .addFieldType(FloatEditField, 'float', ['Float'])
+      .addFieldType(WorkPackageEditField, 'workPackage', ['WorkPackage'])
       .addFieldType(IntegerEditField, 'integer', ['Integer'])
       .addFieldType(BooleanEditField, 'boolean', ['Boolean'])
       .addFieldType(DateEditField, 'date', ['Date'])
