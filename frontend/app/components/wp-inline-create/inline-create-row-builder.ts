@@ -55,7 +55,7 @@ export class InlineCreateRowBuilder extends SingleRowBuilder {
 
     // Set editing context to table
     form.editContext = new TableRowEditContext(workPackage.id);
-    this.states.editing.get(workPackage.id).put(form);
+    this.states.editing.get(workPackage.id).putValue(form);
 
     return row;
   }
@@ -76,7 +76,7 @@ export class InlineCreateRowBuilder extends SingleRowBuilder {
 
   protected buildCancelButton() {
     const td = document.createElement('td');
-    td.classList.add('wp-table--cancel-create-td', '-short');
+    td.classList.add('wp-table--cancel-create-td');
 
    td.innerHTML = `
     <a

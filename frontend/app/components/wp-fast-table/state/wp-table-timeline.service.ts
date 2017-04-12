@@ -38,7 +38,6 @@ import {QuerySchemaResourceInterface} from '../../api/api-v3/hal-resources/query
 import {QueryGroupByResource} from '../../api/api-v3/hal-resources/query-group-by-resource.service';
 import {opServicesModule} from '../../../angular-modules';
 import {States} from '../../states.service';
-import {State} from '../../../helpers/reactive-fassade';
 import {WorkPackageTableTimelineVisible} from './../wp-table-timeline-visible';
 
 export class WorkPackageTableTimelineService extends WorkPackageTableBaseService {
@@ -51,7 +50,7 @@ export class WorkPackageTableTimelineService extends WorkPackageTableBaseService
   public initialize(query:QueryResource) {
     let current = new WorkPackageTableTimelineVisible(query.timelineVisible);
 
-    this.state.put(current);
+    this.state.putValue(current);
   }
 
   public toggle() {
@@ -59,7 +58,7 @@ export class WorkPackageTableTimelineService extends WorkPackageTableBaseService
 
     currentState.toggle();
 
-    this.state.put(currentState);
+    this.state.putValue(currentState);
   }
 
   public get isVisible() {
@@ -67,7 +66,7 @@ export class WorkPackageTableTimelineService extends WorkPackageTableBaseService
   }
 
   private get current():WorkPackageTableTimelineVisible {
-    return this.state.getCurrentValue() as WorkPackageTableTimelineVisible;
+    return this.state.value as WorkPackageTableTimelineVisible;
   }
 
   public get currentSum():boolean|undefined {

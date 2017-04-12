@@ -28,6 +28,9 @@
 
 /*jshint expr: true*/
 
+var reactivestates = require("reactivestates");
+var input = reactivestates.input;
+
 describe('optionsDropdown Directive', function() {
   var compile,
       element,
@@ -41,7 +44,7 @@ describe('optionsDropdown Directive', function() {
       sortByModal,
       groupByModal,
       exportModal,
-      wpTableHierarchy,
+      wpTableHierarchies,
       states,
       query,
       form;
@@ -57,7 +60,7 @@ describe('optionsDropdown Directive', function() {
       isEnabled: false
     };
 
-    wpTableHierarchy = {
+    wpTableHierarchies = {
       isEnabled: false
     };
 
@@ -78,21 +81,13 @@ describe('optionsDropdown Directive', function() {
 
     states = {
       table: {
-        query: {
-          getCurrentValue: function() {
-            return query;
-          }
-        },
-        form: {
-          getCurrentValue: function() {
-            return form;
-          }
-        }
+        query: input(query),
+        form: input(form)
       }
     };
 
     $provide.constant('wpTableSum', wpTableSum);
-    $provide.constant('wpTableHierarchy', wpTableHierarchy);
+    $provide.constant('wpTableHierarchies', wpTableHierarchies);
     $provide.constant('wpTableGroupBy', wpTableGroupBy);
     $provide.constant('columnsModal', columnsModal);
     $provide.constant('sortingModal', sortByModal);
@@ -305,7 +300,7 @@ describe('optionsDropdown Directive', function() {
       });
 
       it('displays active if the service tells it to', function() {
-        wpTableHierarchy['isEnabled'] = true;
+        wpTableHierarchies['isEnabled'] = true;
 
         compile();
 
@@ -332,7 +327,7 @@ describe('optionsDropdown Directive', function() {
 
         var spy = sinon.spy();
 
-        wpTableHierarchy['setEnabled'] = spy;
+        wpTableHierarchies['setEnabled'] = spy;
 
         angular.element(item).click();
 

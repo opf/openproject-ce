@@ -39,7 +39,6 @@ import {
 import {CollectionResource} from '../../api/api-v3/hal-resources/collection-resource.service';
 import {opServicesModule} from '../../../angular-modules';
 import {States} from '../../states.service';
-import {State} from '../../../helpers/reactive-fassade';
 import {WorkPackageTableFilters} from '../wp-table-filters';
 
 export class WorkPackageTableFiltersService extends WorkPackageTableBaseService {
@@ -56,12 +55,12 @@ export class WorkPackageTableFiltersService extends WorkPackageTableBaseService 
     this.loadCurrentFiltersSchemas(filters).then(() => {
       let newState = new WorkPackageTableFilters(filters, schema);
 
-      this.state.put(newState);
+      this.state.putValue(newState);
     });
   }
 
   public get currentState():WorkPackageTableFilters {
-    return this.state.getCurrentValue() as WorkPackageTableFilters;
+    return this.state.value as WorkPackageTableFilters;
   }
 
   public get current():QueryFilterInstanceResource[]{
@@ -73,13 +72,13 @@ export class WorkPackageTableFiltersService extends WorkPackageTableBaseService 
   }
 
   public replace(newState:WorkPackageTableFilters) {
-    this.state.put(newState);
+    this.state.putValue(newState);
   }
 
   public remove(removedFilter:QueryFilterInstanceResource) {
     this.currentState.remove(removedFilter);
 
-    this.state.put(this.currentState);
+    this.state.putValue(this.currentState);
   }
 
   private loadCurrentFiltersSchemas(filters:QueryFilterInstanceResource[]):ng.IPromise<{}> {

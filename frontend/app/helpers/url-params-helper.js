@@ -61,6 +61,10 @@ module.exports = function(I18n, PaginationService, PathHelper) {
         paramsData.tv = query.timelineVisible;
       }
 
+      if(!!query.showHierarchies) {
+        paramsData.hi = query.showHierarchies;
+      }
+
       if(query.groupBy) {
         paramsData.g = query.groupBy.id;
       }
@@ -111,6 +115,10 @@ module.exports = function(I18n, PaginationService, PathHelper) {
         queryData.timelineVisible = properties.tv;
       }
 
+      if(!!properties.hi) {
+        queryData.showHierarchies = properties.hi;
+      }
+
       if(properties.g) {
         queryData.groupBy = properties.g;
       }
@@ -157,6 +165,7 @@ module.exports = function(I18n, PaginationService, PathHelper) {
 
       queryData.showSums = query.sums;
       queryData.timelineVisible = query.timelineVisible;
+      queryData.showHierarchies = query.showHierarchies;
 
       if(query.groupBy) {
         queryData.groupBy = query.groupBy.id;
@@ -196,7 +205,9 @@ module.exports = function(I18n, PaginationService, PathHelper) {
         return value ? 't': 'f';
       }
 
-      if (value.id) {
+      if (!value) {
+        return '';
+      } else if (value.id) {
         return value.id.toString();
       } else if (value.$href && value.$href.match(/^\/api\/v3\/string_objects/i)) {
         return value.$href.match(/value=([^&]+)/)[1].toString();

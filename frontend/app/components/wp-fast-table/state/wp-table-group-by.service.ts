@@ -36,7 +36,6 @@ import {opServicesModule} from '../../../angular-modules';
 import {
   States
 } from '../../states.service';
-import {State} from '../../../helpers/reactive-fassade';
 import {WorkPackageTableGroupBy} from '../wp-table-group-by';
 import {
   WorkPackageTableBaseService,
@@ -53,7 +52,7 @@ export class WorkPackageTableGroupByService extends WorkPackageTableBaseService 
   public initialize(query:QueryResource, schema?:QuerySchemaResourceInterface) {
     let state = this.create(query, schema);
 
-    this.state.put(state);
+    this.state.putValue(state);
   }
 
   public update(query:QueryResource|null, schema?:QuerySchemaResourceInterface) {
@@ -61,7 +60,7 @@ export class WorkPackageTableGroupByService extends WorkPackageTableBaseService 
 
     currentState.update(query, schema);
 
-    this.state.put(currentState);
+    this.state.putValue(currentState);
   }
 
   protected create(query:QueryResource, schema?:QuerySchemaResourceInterface) {
@@ -77,7 +76,7 @@ export class WorkPackageTableGroupByService extends WorkPackageTableBaseService 
 
     currentState.current = groupBy;
 
-    this.state.put(currentState);
+    this.state.putValue(currentState);
   }
 
   public setBy(column:QueryColumn) {
@@ -85,11 +84,11 @@ export class WorkPackageTableGroupByService extends WorkPackageTableBaseService 
 
     currentState.setBy(column);
 
-    this.state.put(currentState);
+    this.state.putValue(currentState);
   }
 
   protected get currentState():WorkPackageTableGroupBy {
-    return this.state.getCurrentValue() as WorkPackageTableGroupBy;
+    return this.state.value as WorkPackageTableGroupBy;
   }
 
   public get current():QueryGroupByResource|undefined {

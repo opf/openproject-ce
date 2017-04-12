@@ -40,7 +40,6 @@ import {
 } from '../../api/api-v3/hal-resources/query-sort-by-resource.service';
 import {opServicesModule} from '../../../angular-modules';
 import {States} from '../../states.service';
-import {State} from '../../../helpers/reactive-fassade';
 import {WorkPackageTableSortBy} from '../wp-table-sort-by';
 
 export class WorkPackageTableSortByService extends WorkPackageTableBaseService {
@@ -53,7 +52,7 @@ export class WorkPackageTableSortByService extends WorkPackageTableBaseService {
   public initialize(query:QueryResource, schema:QuerySchemaResourceInterface) {
     let sortBy = new WorkPackageTableSortBy(query, schema);
 
-    this.state.put(sortBy);
+    this.state.putValue(sortBy);
   }
 
   public isSortable(column:QueryColumn):boolean {
@@ -81,7 +80,7 @@ export class WorkPackageTableSortByService extends WorkPackageTableBaseService {
 
     currentState.addCurrent(sortBy);
 
-    this.state.put(currentState);
+    this.state.putValue(currentState);
   }
 
   public set(sortBys:QuerySortByResource[]) {
@@ -89,11 +88,11 @@ export class WorkPackageTableSortByService extends WorkPackageTableBaseService {
 
     currentState.setCurrent(sortBys);
 
-    this.state.put(currentState);
+    this.state.putValue(currentState);
   }
 
   private get current():WorkPackageTableSortBy {
-    return this.state.getCurrentValue() as WorkPackageTableSortBy;
+    return this.state.value as WorkPackageTableSortBy;
   }
 
   public get currentSortBys():QuerySortByResource[] {

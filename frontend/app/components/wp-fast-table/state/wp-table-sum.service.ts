@@ -38,7 +38,6 @@ import {QuerySchemaResourceInterface} from '../../api/api-v3/hal-resources/query
 import {QueryGroupByResource} from '../../api/api-v3/hal-resources/query-group-by-resource.service';
 import {opServicesModule} from '../../../angular-modules';
 import {States} from '../../states.service';
-import {State} from '../../../helpers/reactive-fassade';
 import {WorkPackageTableSum} from '../wp-table-sum';
 
 export class WorkPackageTableSumService extends WorkPackageTableBaseService {
@@ -51,7 +50,7 @@ export class WorkPackageTableSumService extends WorkPackageTableBaseService {
   public initialize(query:QueryResource) {
     let sum = new WorkPackageTableSum(query.sums);
 
-    this.state.put(sum);
+    this.state.putValue(sum);
   }
 
   public toggle() {
@@ -59,7 +58,7 @@ export class WorkPackageTableSumService extends WorkPackageTableBaseService {
 
     currentState.toggle();
 
-    this.state.put(currentState);
+    this.state.putValue(currentState);
   }
 
   public get isEnabled() {
@@ -67,7 +66,7 @@ export class WorkPackageTableSumService extends WorkPackageTableBaseService {
   }
 
   private get current():WorkPackageTableSum {
-    return this.state.getCurrentValue() as WorkPackageTableSum;
+    return this.state.value as WorkPackageTableSum;
   }
 
   public get currentSum():boolean|undefined {

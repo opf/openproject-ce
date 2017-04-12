@@ -1,4 +1,3 @@
-import { WorkPackageTableTimelineVisible } from './../../wp-fast-table/wp-table-timeline-visible';
 // -- copyright
 // OpenProject is a project management system.
 // Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
@@ -26,6 +25,7 @@ import { WorkPackageTableTimelineVisible } from './../../wp-fast-table/wp-table-
 //
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
+import { WorkPackageTableTimelineVisible } from './../../wp-fast-table/wp-table-timeline-visible';
 import {openprojectModule} from "../../../angular-modules";
 import {
   TimelineViewParameters, RenderInfo, timelineElementCssClass,
@@ -48,6 +48,7 @@ import IDirective = angular.IDirective;
 import IScope = angular.IScope;
 import {WorkPackageRelationsService} from "../../wp-relations/wp-relations.service";
 import {HalRequestService} from "../../api/api-v3/hal-request/hal-request.service";
+import {WorkPackageTableTimelineService} from '../../wp-fast-table/state/wp-table-timeline.service';
 
 export class WorkPackageTimelineTableController {
 
@@ -70,6 +71,7 @@ export class WorkPackageTimelineTableController {
               private TypeResource:any,
               private states:States,
               private halRequest:HalRequestService,
+              private wpTableTimeline:WorkPackageTableTimelineService,
               private wpRelations:WorkPackageRelationsService) {
 
     "ngInject";
@@ -80,14 +82,13 @@ export class WorkPackageTimelineTableController {
     });
 
     // Refresh timeline view after table rendered
-    states.table.rendered
-      .observeUntil(scopeDestroyed$(this.$scope)) // TODO can be removed, if take(1) remains
+    states.table.rendered.values$()
       .take(1)
       .subscribe(() => this.refreshView());
 
     // Refresh timeline view when becoming visible
-    states.table.timelineVisible
-      .observeUntil(scopeDestroyed$(this.$scope))
+    states.table.timelineVisible.values$()
+      .takeUntil(scopeDestroyed$(this.$scope))
       .subscribe((timelineState:WorkPackageTableTimelineVisible) => {
         if (timelineState.isVisible) {
           this.refreshView();
@@ -110,6 +111,11 @@ export class WorkPackageTimelineTableController {
   }
 
   refreshView() {
+    if (!this.wpTableTimeline.isVisible) {
+      debugLog('refreshView() requested, but TL is invisible.');
+      return;
+    }
+
     if (!this.refreshViewRequested) {
       debugLog('refreshView() in timeline container');
       setTimeout(() => {
@@ -128,8 +134,8 @@ export class WorkPackageTimelineTableController {
   }
 
   addWorkPackage(wpId: string): Observable<RenderInfo> {
-    const wpObs = this.states.workPackages.get(wpId)
-      .observeUntil(scopeDestroyed$(this.$scope))
+    const wpObs = this.states.workPackages.get(wpId).values$()
+      .takeUntil(scopeDestroyed$(this.$scope))
       .map((wp: any) => {
         this.workPackagesInView[wp.id] = wp;
         const viewParamsChanged = this.calculateViewParams(this._viewParameters);
@@ -145,11 +151,7 @@ export class WorkPackageTimelineTableController {
         };
       })
       .distinctUntilChanged((v1, v2) => {
-        if (v1 === v2) {
-          return true;
-        } else {
-          return false;
-        }
+        return v1 === v2;
       }, renderInfo => {
         return ""
           + renderInfo.viewParams.dateDisplayStart

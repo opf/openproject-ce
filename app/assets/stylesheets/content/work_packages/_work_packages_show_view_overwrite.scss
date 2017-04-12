@@ -28,9 +28,12 @@
 
 body.controller-work_packages.action-show {
   overflow-x: auto;
+}
 
+body.controller-work_packages {
   #content {
     padding-left: 15px;
+    padding-right: 15px;
   }
 }
 
@@ -50,7 +53,6 @@ body.controller-work_packages.action-show {
   .toolbar-container {
     @include clearfix;
     margin-bottom: 10px;
-    padding-right: 20px;
   }
 
 
@@ -135,7 +137,7 @@ body.controller-work_packages.action-show {
     width: 40%;
 
     .work-packages--panel-inner {
-      padding: 2px 15px 20px 15px;
+      padding: 2px 0 20px 15px;
     }
   }
 
@@ -250,13 +252,9 @@ body.controller-work_packages.action-show {
       line-height: 34px;
     }
 
-    .work-packages--type-selector .wp-inline-edit--field {
-      line-height: 34px;
-    }
-
     .work-packages--subject-element .wp-inline-edit--field {
-      height: auto;
-      padding: 0;
+      height: 1.75rem;
+      margin-top: 11px;
     }
   }
 }
@@ -307,8 +305,4 @@ body.controller-work_packages.action-show {
   .work-packages--details--title, .work-packages--details--description {
     margin-left: 0;
   }
-}
-
-.work-packages--page-container {
-  .toolbar { padding-right: 20px; }
 }
