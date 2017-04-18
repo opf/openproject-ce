@@ -1,5 +1,3 @@
-#-- encoding: UTF-8
-
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
@@ -28,14 +26,27 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-class CustomValue::UserStrategy < CustomValue::ARObjectStrategy
-  private
+require 'spec_helper'
 
-  def ar_class
-    User
+describe ::API::Decorators::AggregationGroup do
+  let(:query) do
+    query = FactoryGirl.build_stubbed(:query)
+    query.group_by = :assigned_to
+
+    query
   end
+  let(:group_key) { OpenStruct.new name: 'ABC' }
+  let(:count) { 5 }
 
-  def ar_object(value)
-    User.find_by(id: value)
+  subject { described_class.new(group_key, count, query: query).to_json }
+
+  context 'with an empty array key' do
+    let(:group_key) { [] }
+
+    it 'has an empty value' do
+      is_expected
+        .to be_json_eql(nil.to_json)
+        .at_path('value')
+    end
   end
 end
