@@ -54,6 +54,23 @@ module Components
         select name, from: "values-watcher"
       end
 
+      def add_filter_by(name, operator, value, selector = nil)
+        id = selector || name.downcase
+
+        select name, from: "add_filter_select"
+        select operator, from: "operators-#{id}"
+
+        set_value(id, value)
+      end
+
+      def expect_filter_by(name, operator, value, selector = nil)
+        id = selector || name.downcase
+
+        expect(page).to have_select("operators-#{id}", selected: operator)
+
+        expect_value(id, value)
+      end
+
       def remove_filter(field)
         page.within(filters_selector) do
           find("#filter_#{field} .advanced-filters--remove-filter-icon").click
@@ -72,6 +89,39 @@ module Components
 
       def filters_selector
         '.work-packages--filters-optional-container'
+      end
+
+      def set_value(id, value)
+        within_values(id) do |is_select|
+          if is_select
+            select value, from: "values-#{id}"
+          else
+            page.all('input').each_with_index do |input, index|
+              input.set value[index]
+              sleep(0.5)
+            end
+          end
+        end
+      end
+
+      def expect_value(id, value)
+        within_values(id) do |is_select|
+          if is_select
+            expect(page).to have_select("values-#{id}", selected: value)
+          else
+            page.all('input').each_with_index do |input, index|
+              expect(input.value).to eql(value[index])
+            end
+          end
+        end
+      end
+
+      def within_values(id)
+        page.within("#div-values-#{id}") do
+          inputs = page.first('select, input')
+
+          yield inputs.tag_name == 'select'
+        end
       end
     end
   end

@@ -32,7 +32,8 @@ describe ::API::V3::Queries::Schemas::UserFilterDependencyRepresenter do
   include ::API::V3::Utilities::PathHelper
 
   let(:project) { FactoryGirl.build_stubbed :project }
-  let(:filter) { Queries::WorkPackages::Filter::AuthorFilter.new(context: project) }
+  let(:query) { FactoryGirl.build_stubbed(:query, project: project) }
+  let(:filter) { Queries::WorkPackages::Filter::AuthorFilter.new(context: query) }
   let(:form_embedded) { false }
 
   let(:instance) do
@@ -50,7 +51,7 @@ describe ::API::V3::Queries::Schemas::UserFilterDependencyRepresenter do
         let(:type) { '[]User' }
         let(:filter_query) do
           [{ type: { operator: '=', values: ['User'] } },
-           { status: { operator: '=', values: ['1'] } },
+           { status: { operator: '!', values: ['0', '3'] } },
            { member: { operator: '=', values: [project.id.to_s] } }]
         end
         let(:href) do
@@ -73,7 +74,7 @@ describe ::API::V3::Queries::Schemas::UserFilterDependencyRepresenter do
           let(:project) { nil }
           let(:filter_query) do
             [{ type: { operator: '=', values: ['User'] } },
-             { status: { operator: '=', values: ['1'] } }]
+             { status: { operator: '!', values: ['0', '3'] } }]
           end
 
           context "for operator 'Queries::Operators::Equals'" do

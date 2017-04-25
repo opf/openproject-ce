@@ -1,14 +1,20 @@
-#-- encoding: UTF-8
 #-- copyright
-# OpenProject is a project management system.
-# Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
+# OpenProject Backlogs Plugin
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License version 3.
+# Copyright (C)2013-2014 the OpenProject Foundation (OPF)
+# Copyright (C)2011 Stephan Eckardt, Tim Felgentreff, Marnen Laibow-Koser, Sandro Munda
+# Copyright (C)2010-2011 friflaj
+# Copyright (C)2010 Maxime Guilbot, Andrew Vit, Joakim Kolsjö, ibussieres, Daniel Passos, Jason Vasquez, jpic, Emiliano Heyns
+# Copyright (C)2009-2010 Mark Maglana
+# Copyright (C)2009 Joe Heck, Nate Lowrie
 #
-# OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-# Copyright (C) 2006-2017 Jean-Philippe Lang
-# Copyright (C) 2010-2013 the ChiliProject Team
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License version 3.
+#
+# OpenProject Backlogs is a derivative work based on ChiliProject Backlogs.
+# The copyright follows:
+# Copyright (C) 2010-2011 - Emiliano Heyns, Mark Maglana, friflaj
+# Copyright (C) 2011 - Jens Ulferts, Gregor Schmidt - Finn GmbH - Berlin, Germany
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,12 +40,32 @@ module API
         class BacklogsTypeDependencyRepresenter <
           FilterDependencyRepresenter
 
+          schema_with_allowed_collection :values,
+                                         type: ->(*) { type },
+                                         writable: true,
+                                         has_default: false,
+                                         required: true,
+                                         visibility: false,
+                                         values_callback: ->(*) {
+                                           represented.allowed_values
+                                         },
+                                         value_representer: BacklogsTypes::BacklogsTypeRepresenter,
+                                         link_factory: ->(value) {
+                                           {
+                                             href: api_v3_paths.backlogs_type(value.last),
+                                             title: value.first
+                                           }
+                                         },
+                                         show_if: ->(*) {
+                                           value_required?
+                                         }
+
           def href_callback; end
 
           private
 
           def type
-            '[]String'
+            '[1]BacklogsType'
           end
         end
       end

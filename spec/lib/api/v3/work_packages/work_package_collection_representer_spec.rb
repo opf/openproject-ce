@@ -80,32 +80,39 @@ describe ::API::V3::WorkPackages::WorkPackageCollectionRepresenter do
 
           it 'has a collection of export formats' do
             expected_query = query.merge(pageSize: 30, offset: 1)
-            expected = [
+            expected = JSON.parse([
               {
                 href: work_packages_path({ format: 'pdf' }.merge(expected_query)),
                 type: 'application/pdf',
+                identifier: 'pdf',
                 title: I18n.t('export.format.pdf')
               },
               {
                 href: work_packages_path({ format: 'pdf', show_descriptions: true }.merge(expected_query)),
+                identifier: 'pdf-with-descriptions',
                 type: 'application/pdf',
                 title: I18n.t('export.format.pdf_with_descriptions')
               },
               {
                 href: work_packages_path({ format: 'csv' }.merge(expected_query)),
                 type: 'text/csv',
+                identifier: 'csv',
                 title: I18n.t('export.format.csv')
               },
               {
                 href: work_packages_path({ format: 'atom' }.merge(expected_query)),
+                identifier: 'atom',
                 type: 'application/atom+xml',
                 title: I18n.t('export.format.atom')
               }
-            ]
+            ].to_json)
 
-            is_expected
-              .to be_json_eql(expected.to_json)
-              .at_path('_links/representations')
+            actual = JSON.parse(subject).dig('_links', 'representations')
+
+            # As plugins might extend the representation, we only
+            # check for a subset
+            expect(actual)
+              .to include(*expected)
           end
 
           context 'with project scope' do
@@ -113,32 +120,39 @@ describe ::API::V3::WorkPackages::WorkPackageCollectionRepresenter do
 
             it 'has a project scoped collection of export formats if inside a project' do
               expected_query = query.merge(pageSize: 30, offset: 1)
-              expected = [
+              expected = JSON.parse([
                 {
                   href: project_work_packages_path(project, { format: 'pdf' }.merge(expected_query)),
                   type: 'application/pdf',
+                  identifier: 'pdf',
                   title: I18n.t('export.format.pdf')
                 },
                 {
                   href: project_work_packages_path(project, { format: 'pdf', show_descriptions: true }.merge(expected_query)),
                   type: 'application/pdf',
+                  identifier: 'pdf-with-descriptions',
                   title: I18n.t('export.format.pdf_with_descriptions')
                 },
                 {
                   href: project_work_packages_path(project, { format: 'csv' }.merge(expected_query)),
+                  identifier: 'csv',
                   type: 'text/csv',
                   title: I18n.t('export.format.csv')
                 },
                 {
                   href: project_work_packages_path(project, { format: 'atom' }.merge(expected_query)),
+                  identifier: 'atom',
                   type: 'application/atom+xml',
                   title: I18n.t('export.format.atom')
                 }
-              ]
+              ].to_json)
 
-              is_expected
-                .to be_json_eql(expected.to_json)
-                .at_path('_links/representations')
+              actual = JSON.parse(subject).dig('_links', 'representations')
+
+              # As plugins might extend the representation, we only
+              # check for a subset
+              expect(actual)
+                .to include(*expected)
             end
           end
         end

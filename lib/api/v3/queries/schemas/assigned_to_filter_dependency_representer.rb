@@ -1,4 +1,5 @@
 #-- encoding: UTF-8
+
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
@@ -37,14 +38,16 @@ module API
           private
 
           def filter_query
-            params = [{ status: { operator: '=', values: [Principal::STATUSES[:active].to_s] } }]
+            params = [{ status: { operator: '!',
+                                  values: [Principal::STATUSES[:builtin].to_s,
+                                           Principal::STATUSES[:locked].to_s] } }]
 
             unless Setting.work_package_group_assignment?
               params << { type: { operator: '=', values: ['User'] } }
             end
 
-            params << if filter.context
-                        { member: { operator: '=', values: [filter.context.id.to_s] } }
+            params << if filter.project
+                        { member: { operator: '=', values: [filter.project.id.to_s] } }
                       else
                         { member: { operator: '*', values: [] } }
                       end
