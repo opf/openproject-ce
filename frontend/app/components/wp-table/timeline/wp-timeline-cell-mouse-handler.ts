@@ -34,6 +34,7 @@ import {keyCodes} from "../../common/keyCodes.enum";
 import IScope = angular.IScope;
 import * as moment from 'moment';
 import Moment = moment.Moment;
+import {WorkPackageTableRefreshService} from "../wp-table-refresh-request.service";
 
 const classNameBar = "bar";
 export const classNameLeftHandle = "leftHandle";
@@ -52,6 +53,7 @@ export function registerWorkPackageMouseHandler(this: void,
                                                 getRenderInfo: () => RenderInfo,
                                                 workPackageTimeline: WorkPackageTimelineTableController,
                                                 wpCacheService: WorkPackageCacheService,
+                                                wpTableRefresh: WorkPackageTableRefreshService,
                                                 cell: HTMLElement,
                                                 bar: HTMLDivElement,
                                                 renderer: TimelineCellRenderer,
@@ -87,7 +89,12 @@ export function registerWorkPackageMouseHandler(this: void,
     workPackageTimeline.disableViewParamsCalculation = true;
     mouseDownStartDay = getCursorOffsetInDaysFromLeft(renderInfo, ev);
 
-    // Determine what attributes of the work package should be changed
+    // if this wp is a parent element, changing it is not allowed
+    if (!renderInfo.workPackage.isLeaf) {
+      return;
+    }
+
+      // Determine what attributes of the work package should be changed
     const direction = renderer.onMouseDown(ev, null, renderInfo, bar);
 
     jBody.on("mousemove", createMouseMoveFn(direction));
@@ -211,6 +218,9 @@ export function registerWorkPackageMouseHandler(this: void,
 
   function saveWorkPackage(workPackage: WorkPackageResourceInterface) {
     wpCacheService.saveIfChanged(workPackage)
+      .then(() => {
+        wpTableRefresh.request(true, `Moved work package ${workPackage.id} through timeline`);
+      })
       .catch(() => {
         if (!workPackage.isNew) {
           // Reset the changes on error
