@@ -1,4 +1,3 @@
-// -- copyright
 // OpenProject is a project management system.
 // Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
@@ -24,19 +23,24 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-// ++
+//++
 
-import {calculatePositionValueForDayCount, TimelineViewParameters} from "./wp-timeline";
-import * as moment from 'moment';
+import {opWorkPackagesModule} from '../../../angular-modules';
+import {WorkPackageEditModeStateService} from "../../wp-edit/wp-edit-mode-state.service";
 
+import {States} from '../../states.service';
 
-// Today Line
-export function todayLine(viewParams: TimelineViewParameters, elem: HTMLElement) {
-  elem.style.width = "2px";
-  elem.style.borderLeft = "2px dotted red";
-  const offsetToday = viewParams.now.diff(viewParams.dateDisplayStart, "days");
-  const dayProgress = moment().hour() / 24;
-  elem.style.left = calculatePositionValueForDayCount(viewParams, offsetToday + dayProgress);
-  elem.style.marginLeft = viewParams.scrollOffsetInPx + "px";
+function CreateWpDropdownMenuController($scope:ng.IScope, wpEditModeState: WorkPackageEditModeStateService) {
+
+  if (wpEditModeState.form && wpEditModeState.form.workPackage) {
+    wpEditModeState.form.workPackage.getForm().then(
+      (loadedForm:any) => {
+        $scope.configureFormLink = loadedForm.configureForm;
+        $scope.queryCustomFields = loadedForm.customFields;
+      }
+    );
+  }
+
 }
 
+opWorkPackagesModule.controller('CreateWpDropdownMenuController', CreateWpDropdownMenuController);

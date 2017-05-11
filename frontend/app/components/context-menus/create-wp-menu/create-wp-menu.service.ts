@@ -26,28 +26,15 @@
 // See doc/COPYRIGHT.rdoc for more details.
 //++
 
-function wpAccessibleAttribute() {
-  return {
-    restrict: 'A',
-    scope: {
-      field: '=wpAccessibleAttribute'
-    },
+import {opWorkPackagesModule} from '../../../angular-modules';
 
-    link: function(scope:any, element:ng.IAugmentedJQuery) {
-      scope.$watch('field', function(field:any) {
-        if (!field.isEditable()) {
-          angular.element(element).attr('aria-label', field.getKeyValue())
-                                  .attr('tabindex', 0);
-        }
-        else {
-          angular.element(element).removeAttr('aria-label')
-                                  .removeAttr('tabindex');
-        }
-      });
-    }
-  };
+function createWpMenuService(ngContextMenu:any) {
+  return ngContextMenu({
+    templateUrl: '/components/context-menus/create-wp-menu/create-wp-menu.service.html',
+
+    controller: 'CreateWpDropdownMenuController',
+    container: '.toolbar'
+  });
 }
 
-angular
-  .module('openproject.workPackages.directives')
-  .directive('wpAccessibleAttribute', wpAccessibleAttribute);
+opWorkPackagesModule.factory('CreateWpDropdownMenu', createWpMenuService);

@@ -26,20 +26,23 @@
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
 
-import {WorkPackageTableBaseState} from "./wp-table-base";
-export class WorkPackageTableTimelineVisible extends WorkPackageTableBaseState<boolean> {
-  public current:boolean;
+import {calculatePositionValueForDayCount, TimelineViewParameters} from "../wp-timeline";
+import * as moment from 'moment';
+import {TimelineStaticElement} from "./timeline-static-element";
 
-  constructor(isVisible:boolean) {
-    super();
-    this.current = isVisible;
+
+export class TodayLineElement extends TimelineStaticElement {
+
+  protected finishElement(elem:HTMLElement, vp:TimelineViewParameters):HTMLElement {
+    const offsetToday = vp.now.diff(vp.dateDisplayStart, "days");
+    const dayProgress = moment().hour() / 24;
+    elem.style.left = calculatePositionValueForDayCount(vp, offsetToday + dayProgress);
+
+    return elem;
   }
 
-  public toggle() {
-    this.current = !this.current;
-  }
-
-  public get isVisible() {
-    return this.current;
+  public get identifier():string {
+    return 'wp-timeline-static-element-today-line';
   }
 }
+

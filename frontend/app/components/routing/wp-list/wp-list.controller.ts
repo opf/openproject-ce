@@ -145,7 +145,7 @@ function WorkPackagesListController($scope:any,
       )
       .subscribe((stateValue:WorkPackageTableBaseState<any>) => {
         const newQuery = queryState.value!;
-        newQuery[name] = _.cloneDeep(stateValue.current);
+        newQuery[name] = _.cloneDeep(stateValue.currentQueryValue);
         states.table.query.putValue(newQuery);
 
         if (triggerUpdate) {
@@ -161,7 +161,6 @@ function WorkPackagesListController($scope:any,
   function setupRefreshObserver() {
     wpTableRefresh.state
       .values$('Refresh listener in wp-list.controller')
-      .throttleTime(2000)
       .takeUntil(scopeDestroyed$($scope))
       .subscribe((refreshVisibly:boolean) => {
         if (refreshVisibly) {
