@@ -39,16 +39,13 @@ import { injectorBridge } from "../../angular/angular-injector-bridge.functions"
 import IScope = angular.IScope;
 import Moment = moment.Moment;
 import {WorkPackageTableRefreshService} from "../wp-table-refresh-request.service";
-
-const renderers = {
-  milestone: new TimelineMilestoneCellRenderer(),
-  generic: new TimelineCellRenderer()
-};
+import {LoadingIndicatorService} from '../../common/loading-indicator/loading-indicator.service';
 
 export class WorkPackageTimelineCell {
   public wpCacheService: WorkPackageCacheService;
   public wpTableRefresh: WorkPackageTableRefreshService;
   public states: States;
+  public loadingIndicator: LoadingIndicatorService;
 
   private subscription: Subscription;
 
@@ -58,10 +55,17 @@ export class WorkPackageTimelineCell {
 
   private elementShape: string;
 
+  private renderers:{ milestone: TimelineMilestoneCellRenderer, generic: TimelineCellRenderer };
+
   constructor(private workPackageTimeline: WorkPackageTimelineTableController,
               private workPackageId: string,
               public timelineCell: HTMLElement) {
     injectorBridge(this);
+
+    this.renderers = {
+      milestone: new TimelineMilestoneCellRenderer(this.workPackageTimeline),
+      generic: new TimelineCellRenderer(this.workPackageTimeline)
+    };
   }
 
   activate() {
@@ -136,6 +140,7 @@ export class WorkPackageTimelineCell {
         this.workPackageTimeline,
         this.wpCacheService,
         this.wpTableRefresh,
+        this.loadingIndicator,
         this.timelineCell,
         this.wpElement,
         renderer,
@@ -145,10 +150,10 @@ export class WorkPackageTimelineCell {
 
   private cellRenderer(workPackage: WorkPackageResourceInterface): TimelineCellRenderer {
     if (workPackage.isMilestone) {
-      return renderers.milestone;
+      return this.renderers.milestone;
     }
 
-    return renderers.generic;
+    return this.renderers.generic;
   }
 
   private updateView(renderInfo: RenderInfo) {
@@ -167,4 +172,4 @@ export class WorkPackageTimelineCell {
 
 }
 
-WorkPackageTimelineCell.$inject = ['wpCacheService', 'wpTableRefresh', 'states', 'TimezoneService'];
+WorkPackageTimelineCell.$inject = ['loadingIndicator', 'wpCacheService', 'wpTableRefresh', 'states', 'TimezoneService'];
