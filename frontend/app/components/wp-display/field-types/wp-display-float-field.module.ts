@@ -1,12 +1,12 @@
-//-- copyright
+// -- copyright
 // OpenProject is a project management system.
-// Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
+// Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License version 3.
 //
 // OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-// Copyright (C) 2006-2017 Jean-Philippe Lang
+// Copyright (C) 2006-2013 Jean-Philippe Lang
 // Copyright (C) 2010-2013 the ChiliProject Team
 //
 // This program is free software; you can redistribute it and/or
@@ -24,15 +24,29 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-//++
+// ++
 
-angular.module('openproject.helpers')
-  .constant('CUSTOM_FIELD_PREFIX', 'cf_')
-  .service('AutoCompleteHelper', ['$http', 'PathHelper', require('./auto-complete-helper')])
-  .service('CustomFieldHelper', ['CUSTOM_FIELD_PREFIX', 'I18n', require(
-    './custom-field-helper')])
-  .factory('SvgHelper', require('./svg-helper'))
-  .service('UrlParamsHelper', ['PaginationService',
-    require('./url-params-helper')])
-  .service('WorkPackageLoadingHelper', ['$timeout', require(
-    './work-package-loading-helper')]);
+import {DisplayField} from '../wp-display-field/wp-display-field.module';
+import {HalResource} from '../../api/api-v3/hal-resources/hal-resource.service';
+import {$injectFields} from '../../angular/angular-injector-bridge.functions';
+
+import * as angular from 'angular';
+
+export class FloatDisplayField extends DisplayField {
+
+  private $locale:angular.ILocaleService;
+
+  constructor(public resource:HalResource,
+              public name:string,
+              public schema:op.FieldSchema) {
+    super(resource, name, schema);
+    $injectFields(this, '$locale');
+  }
+
+  public get valueString():string {
+    return this.value.toLocaleString(
+      this.$locale.id,
+      { useGrouping: true, maximumFractionDigits: 20 }
+    );
+  }
+}

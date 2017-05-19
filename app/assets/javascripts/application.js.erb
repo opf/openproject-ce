@@ -45,8 +45,6 @@
 //= require settings
 //= require modal
 //= require tab_handling
-//= require top-shelf
-//= require unsupported-browsers
 //= require autocomplete_textareas
 //= require openproject_plugins
 //= require versions
@@ -396,10 +394,9 @@ jQuery(document).ready(function($) {
     });
 
     menu.bind("opened", function () {
-      // Open select2 element, when menu is opened
-      select2.open();
-
       setTimeout(function () {
+        // Open select2 element, when menu is opened
+        select2.open();
         jQuery("#select2-drop-mask").hide();
       }, 50);
 

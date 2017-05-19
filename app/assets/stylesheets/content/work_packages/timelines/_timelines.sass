@@ -29,13 +29,25 @@
   position: relative
   width: 100%
 
+.wp-table-timeline--relations,
+.wp-table-timeline--grid
+  position: absolute
+  width: 100%
+  // Position 45px below header
+  top: $generic-table--header-height
+  height: calc(100% - #{$generic-table--header-height})
+
 // Left border for the timeline
 .work-packages-split-view--left-timeline
   border-left: 5px solid #888
 
 // Ensure the height of table and timeline rows
 .wp-timeline-cell
-  height: 41px
+  height: $table-timeline--row-height
+
+  &:first-child
+    // The first table child is 1px larger
+    height: #{$table-timeline--row-height} + 1px
 
 .wp-timeline-cell
   // Vertically center elements

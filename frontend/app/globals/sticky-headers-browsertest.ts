@@ -26,13 +26,9 @@
 // See doc/COPYRIGHT.rdoc for more details.
 //++
 
-angular.module('openproject.helpers')
-  .constant('CUSTOM_FIELD_PREFIX', 'cf_')
-  .service('AutoCompleteHelper', ['$http', 'PathHelper', require('./auto-complete-helper')])
-  .service('CustomFieldHelper', ['CUSTOM_FIELD_PREFIX', 'I18n', require(
-    './custom-field-helper')])
-  .factory('SvgHelper', require('./svg-helper'))
-  .service('UrlParamsHelper', ['PaginationService',
-    require('./url-params-helper')])
-  .service('WorkPackageLoadingHelper', ['$timeout', require(
-    './work-package-loading-helper')]);
+jQuery(function() {
+  if (bowser.chrome && bowser.version >= '58') {
+    document.documentElement.classList.add('-supports-sticky-headers');
+  }
+});
+

@@ -1,12 +1,9 @@
-.wp-table-timeline--grid
-  position: absolute
-  width: 100%
-  // Position 45px below header
-  top: $generic-table--header-height
-  height: calc(100% - #{$generic-table--header-height})
-
 .wp-timeline--grid-element
   position: absolute
   top: 0
+  padding-top: 5px
   height: 100%
   border-right: 1px solid $timeline--grid-color
+
+  &.-grid-highlight
+    border-right: 1px solid $timeline--header-border-color

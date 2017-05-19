@@ -25,7 +25,6 @@
 //
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
-import {BehaviorSubject, Observable} from "rxjs";
 import {openprojectModule} from "../../../../angular-modules";
 import {scopeDestroyed$} from "../../../../helpers/angular-rx-utils";
 import {debugLog} from "../../../../helpers/debug_output";
@@ -39,10 +38,12 @@ import {WorkPackageRelationsService} from "../../../wp-relations/wp-relations.se
 import {WorkPackagesTableController} from "../../wp-table.directive";
 import {RenderInfo, timelineMarkerSelectionStartClass, TimelineViewParameters} from "../wp-timeline";
 import {WorkPackageTimelineCell} from "../wp-timeline-cell";
-import IDirective = angular.IDirective;
-import IScope = angular.IScope;
 import {WorkPackageTable} from '../../../wp-fast-table/wp-fast-table';
 import {WorkPackageTableHierarchiesService} from '../../../wp-fast-table/state/wp-table-hierarchy.service.ts';
+
+import * as angular from 'angular';
+import {BehaviorSubject, Observable} from "rxjs";
+import {selectorTimelineSide} from '../../wp-table-scroll-sync';
 
 export class WorkPackageTimelineTableController {
 
@@ -62,18 +63,34 @@ export class WorkPackageTimelineTableController {
 
   private renderers:{ [name:string]: (vp:TimelineViewParameters) => void } = {};
 
-  constructor(private $scope:IScope,
-              private $element:ng.IAugmentedJQuery,
+  private outerContainer:JQuery;
+
+  private selectionParams = {
+    notification: null
+  };
+
+  private text:{ selectionMode:string };
+
+  constructor(private $scope:angular.IScope,
+              private $element:angular.IAugmentedJQuery,
               private states:States,
+              private NotificationsService:any,
               private wpTableTimeline:WorkPackageTableTimelineService,
               private wpNotificationsService:WorkPackageNotificationService,
               private wpRelations:WorkPackageRelationsService,
-              private wpTableHierarchies:WorkPackageTableHierarchiesService) {
-
+              private wpTableHierarchies:WorkPackageTableHierarchiesService,
+              private I18n:op.I18n) {
     "ngInject";
   }
 
   $onInit() {
+    this.text = {
+      selectionMode: this.I18n.t('js.timelines.selection_mode.notification')
+    };
+
+    // Get the outer container for width computation
+    this.outerContainer = this.$element.find('.wp-table-timeline--outer');
+
     // Register this instance to the table
     this.wpTableDirective.registerTimeline(this, this.timelineBody[0]);
 
@@ -144,6 +161,10 @@ export class WorkPackageTimelineTableController {
     }
 
     debugLog("refreshView() in timeline container");
+
+    // Reset the width of the outer container if its content shrinks
+    this.outerContainer.css('width', 'auto');
+
     this.calculateViewParams(this._viewParameters);
     this.updateAllWorkPackagesSubject.next(true);
 
@@ -151,6 +172,11 @@ export class WorkPackageTimelineTableController {
       debugLog(`Refreshing timeline member ${key}`);
       cb(this._viewParameters);
     });
+
+    // Calculate overflowing width to set to outer container
+    // required to match width in all child divs
+    const currentWidth = this.outerContainer.closest(selectorTimelineSide)[0].scrollWidth;
+    this.outerContainer.width(currentWidth);
   }
 
   addWorkPackage(wpId: string): Observable<RenderInfo> {
@@ -204,20 +230,30 @@ export class WorkPackageTimelineTableController {
     });
   }
 
+  private resetSelectionMode() {
+    this._viewParameters.activeSelectionMode = null;
+    this._viewParameters.selectionModeStart = null;
+
+    this.NotificationsService.remove(this.selectionParams.notification);
+
+    Mousetrap.unbind('esc');
+
+    this.$element.removeClass("active-selection-mode");
+    jQuery("." + timelineMarkerSelectionStartClass).removeClass(timelineMarkerSelectionStartClass);
+    this.refreshView();
+  }
+
   private activateSelectionMode(start: string, callback: (wp: WorkPackageResourceInterface) => any) {
     start = start.toString(); // old system bug: ID can be a 'number'
 
     this._viewParameters.activeSelectionMode = (wp: WorkPackageResourceInterface) => {
       callback(wp);
-
-      this._viewParameters.activeSelectionMode = null;
-      this._viewParameters.selectionModeStart = null;
-
-      this.$element.removeClass("active-selection-mode");
-      jQuery("." + timelineMarkerSelectionStartClass).removeClass(timelineMarkerSelectionStartClass);
-      this.refreshView();
+      this.resetSelectionMode();
     };
+
     this._viewParameters.selectionModeStart = start;
+    Mousetrap.bind('esc', () => this.resetSelectionMode());
+    this.selectionParams.notification = this.NotificationsService.addNotice(this.text.selectionMode);
 
     this.$element.addClass("active-selection-mode");
     this.refreshView();

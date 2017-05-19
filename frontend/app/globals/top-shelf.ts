@@ -26,13 +26,52 @@
 // See doc/COPYRIGHT.rdoc for more details.
 //++
 
-angular.module('openproject.helpers')
-  .constant('CUSTOM_FIELD_PREFIX', 'cf_')
-  .service('AutoCompleteHelper', ['$http', 'PathHelper', require('./auto-complete-helper')])
-  .service('CustomFieldHelper', ['CUSTOM_FIELD_PREFIX', 'I18n', require(
-    './custom-field-helper')])
-  .factory('SvgHelper', require('./svg-helper'))
-  .service('UrlParamsHelper', ['PaginationService',
-    require('./url-params-helper')])
-  .service('WorkPackageLoadingHelper', ['$timeout', require(
-    './work-package-loading-helper')]);
+
+
+(function($:JQueryStatic) {
+
+  function mergeOptions(options:any) {
+    if (typeof options === "string") {
+      options = { message: options };
+    }
+    return $.extend({}, $.fn.topShelf.defaults, options);
+  }
+
+  $.fn.topShelf = function(this:any, options:any) {
+    var opts = mergeOptions(options);
+    var message = this;
+    var topShelf = $("<div/>").addClass(opts.className);
+    var link = $("<a/>").append(' ' + opts.link).attr({"href": opts.url});
+
+    if (window.localStorage.getItem(opts.id)) {
+      return;
+    }
+
+    var closeLink = $("<a/>").append(opts.close);
+    closeLink.click(function() {
+      window.localStorage.setItem(opts.id, '1');
+      topShelf.remove();
+    });
+
+    if (message.length === 0) {
+      topShelf.append($("<h1/>").append(opts.title))
+              .append($("<p/>").append(opts.message).append(link))
+              .append($("<h2/>").append(closeLink));
+    } else {
+      topShelf.append(message);
+    }
+
+    $("body").prepend(topShelf);
+
+    return this;
+  };
+
+  $.fn.topShelf.defaults = {
+    className: "top-shelf icon icon-warning",
+    title: "",
+    message: "",
+    link: "",
+    url: ""
+  };
+
+}(jQuery));

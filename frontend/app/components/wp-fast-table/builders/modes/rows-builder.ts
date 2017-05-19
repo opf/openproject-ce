@@ -9,7 +9,6 @@ export abstract class RowsBuilder {
   public states:States;
 
   protected refreshBuilder:RowRefreshBuilder;
-  protected stopExisting$ = new Subject<undefined>();
 
   constructor(public workPackageTable:WorkPackageTable) {
     this.refreshBuilder = new RowRefreshBuilder(this.workPackageTable);
@@ -31,7 +30,7 @@ export abstract class RowsBuilder {
    * Refresh a single row after structural changes.
    * Will perform dirty checking for when a work package is currently being edited.
    */
-  public refreshRow(row:WorkPackageTableRow):HTMLElement | null {
+  public refreshRow(row:WorkPackageTableRow):[HTMLElement, boolean]|null {
     let editing = this.states.editing.get(row.workPackageId).value;
     return this.refreshBuilder.refreshRow(row, editing);
   }

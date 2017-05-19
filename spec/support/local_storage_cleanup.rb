@@ -26,25 +26,8 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-class Services::CreateWatcher
-  def initialize(work_package, user)
-    @work_package = work_package
-    @user = user
-
-    @watcher = Watcher.new(user: user, watchable: work_package)
-  end
-
-  def run(success: -> {}, failure: -> {})
-    if @work_package.watcher_users.include?(@user)
-      success.(created: false)
-    elsif @watcher.valid?
-      @work_package.watchers << @watcher
-      success.(created: true)
-      OpenProject::Notifications.send('watcher_added',
-                                      watcher: @watcher,
-                                      watcher_setter: User.current)
-    else
-      failure.(@watcher)
-    end
+RSpec.configure do |config|
+  config.after(:each, js: true) do
+    Capybara.current_session.driver.execute_script('window.localStorage.clear()')
   end
 end
