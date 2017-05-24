@@ -1,5 +1,3 @@
-#-- encoding: UTF-8
-
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
@@ -28,42 +26,35 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-class Queries::WorkPackages::Filter::CategoryFilter <
-  Queries::WorkPackages::Filter::WorkPackageFilter
-  def allowed_values
-    all_project_categories.map { |s| [s.name, s.id.to_s] }
+require 'spec_helper'
+
+describe ::API::V3::Queries::QueryPayloadRepresenter do
+  include ::API::V3::Utilities::PathHelper
+
+  let(:query) { FactoryGirl.build_stubbed(:query, project: project) }
+  let(:project) { FactoryGirl.build_stubbed(:project) }
+  let(:user) { double('current_user') }
+  let(:representer) do
+    described_class.new(query, current_user: user)
   end
 
-  def available?
-    project &&
-      project.categories.exists?
-  end
+  subject { representer.to_json }
 
-  def type
-    :list_optional
-  end
+  describe 'generation' do
+    context 'properties' do
+      context 'showHierarchies' do
+        it 'is true if query.show_hierarchies is true' do
+          query.show_hierarchies = true
 
-  def order
-    6
-  end
+          is_expected.to be_json_eql(true.to_json).at_path('showHierarchies')
+        end
 
-  def self.key
-    :category_id
-  end
+        it 'is false if query.show_hierarchies is false' do
+          query.show_hierarchies = false
 
-  def value_objects
-    int_values = values.map(&:to_i)
-
-    all_project_categories.select { |c| int_values.include?(c.id) }
-  end
-
-  def ar_object_filter?
-    true
-  end
-
-  private
-
-  def all_project_categories
-    @all_project_categories ||= project.categories
+          is_expected.to be_json_eql(false.to_json).at_path('showHierarchies')
+        end
+      end
+    end
   end
 end

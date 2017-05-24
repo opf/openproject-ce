@@ -28,6 +28,7 @@
 
 import {WorkPackageEditModeStateService} from '../wp-edit/wp-edit-mode-state.service';
 import {openprojectModule} from '../../angular-modules';
+import {debugLog} from "../../helpers/debug_output";
 
 const panels = {
   get overview() {
@@ -211,6 +212,7 @@ openprojectModule
 
   .run(($location:ng.ILocationService,
         $rootElement:ng.IRootElementService,
+        $timeout:ng.ITimeoutService,
         $rootScope:ng.IRootScopeService,
         $state:ng.ui.IStateService,
         $window:ng.IWindowService) => {
@@ -219,22 +221,25 @@ openprojectModule
     // Angular's HTML5-mode turns on.
     $rootElement.off('click');
     $rootElement.on('click', 'a[data-ui-route]', (event) => {
-      if (!jQuery('body').has('div[ui-view]').length || event.ctrlKey || event.metaKey
+      if (jQuery('div[ui-view]').length === 0
+        || event.shiftKey || event.ctrlKey || event.metaKey
         || event.which === 2) {
-
-        return;
-
+        return true;
       }
 
-      // NOTE: making use of event delegation, thus jQuery-only.
-      var elm = jQuery(event.target);
-      var absHref = elm.prop('href');
+      // Find the potential parent (or self) with the data attribute
+      const el = jQuery(event.target).closest('a[data-ui-route]');
 
-      if (absHref && !elm.attr('target') && !event.isDefaultPrevented()) {
+      try {
+        const stateName = el.data('uiRoute');
+        const params = $rootScope.$eval(el.data('uiRouteParams')) || {};
+
+        $timeout(() => $state.go(stateName, params));
         event.preventDefault();
-        var targetUrl = URI(absHref);
-        $location.url(targetUrl.path() + targetUrl.search());
-        $rootScope.$apply();
+        return false;
+      } catch(e) {
+        console.error("Tried to parse ui-route link but failed with: " + e);
+        return true;
       }
     });
 
