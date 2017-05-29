@@ -1,4 +1,4 @@
-import {Component, createNewContext, input, inputStateCache} from "reactivestates";
+import {createNewContext, input, multiInput, StatesGroup} from "reactivestates";
 import {Subject} from "rxjs";
 import {opServicesModule} from "../angular-modules";
 import {QueryFormResource} from "./api/api-v3/hal-resources/query-form-resource.service";
@@ -6,9 +6,11 @@ import {QueryResource} from "./api/api-v3/hal-resources/query-resource.service";
 import {SchemaResource} from "./api/api-v3/hal-resources/schema-resource.service";
 import {TypeResource} from "./api/api-v3/hal-resources/type-resource.service";
 import {WorkPackageResource} from "./api/api-v3/hal-resources/work-package-resource.service";
-import {GroupObject, WorkPackageCollectionResource} from "./api/api-v3/hal-resources/wp-collection-resource.service";
+import {
+  GroupObject,
+  WorkPackageCollectionResource
+} from "./api/api-v3/hal-resources/wp-collection-resource.service";
 import {WorkPackageEditForm} from "./wp-edit-form/work-package-edit-form";
-import {WorkPackageTable} from "./wp-fast-table/wp-fast-table";
 import {WorkPackageTableColumns} from "./wp-fast-table/wp-table-columns";
 import {WorkPackageTableFilters} from "./wp-fast-table/wp-table-filters";
 import {WorkPackageTableGroupBy} from "./wp-fast-table/wp-table-group-by";
@@ -19,34 +21,41 @@ import {WPTableRowSelectionState} from "./wp-fast-table/wp-table.interfaces";
 import {whenDebugging} from "../helpers/debug_output";
 import {WorkPackageTableHierarchies} from "./wp-fast-table/wp-table-hierarchies";
 import {WorkPackageTableTimelineState} from "./wp-fast-table/wp-table-timeline";
-import {TableRenderResult} from './wp-fast-table/builders/modes/table-render-pass';
+import {TableRenderResult} from "./wp-fast-table/builders/modes/table-render-pass";
+import {SwitchState} from "./states/switch-state";
 
-export class States extends Component {
+export class States extends StatesGroup {
 
   name = "MainStore";
   /* /api/v3/work_packages */
-  workPackages = inputStateCache<WorkPackageResource>();
+  workPackages = multiInput<WorkPackageResource>();
 
   /* /api/v3/schemas */
-  schemas = inputStateCache<SchemaResource>();
+  schemas = multiInput<SchemaResource>();
 
   /* /api/v3/types */
-  types = inputStateCache<TypeResource>();
+  types = multiInput<TypeResource>();
 
   // Work package table states
   table = new TableState();
+
+  // Updater states on user input
+  updates = new UserUpdaterStates(this.table);
 
   // Current focused work package (e.g, row preselected for details button)
   focusedWorkPackage = input<string>();
 
   // Open editing forms
-  editing = inputStateCache<WorkPackageEditForm>();
+  editing = multiInput<WorkPackageEditForm>();
 
 }
 
 export class TableState {
 
   name = "TableStore";
+
+  // Current context of table loading
+  context = new SwitchState<'Query loaded'>();
 
   // the query associated with the table
   query = input<QueryResource>();
@@ -60,6 +69,7 @@ export class TableState {
   groups = input<GroupObject[]>();
   // Set of columns in strict order of appearance
   columns = input<WorkPackageTableColumns>();
+
   // Set of filters
   filters = input<WorkPackageTableFilters>();
   // Active and available sort by
@@ -84,6 +94,17 @@ export class TableState {
   stopAllSubscriptions = new Subject();
   // Fire when table refresh is required
   refreshRequired = input<boolean>();
+}
+
+export class UserUpdaterStates {
+
+  constructor(private table:TableState) {
+  }
+
+  columnsUpdates = this.table.context.fireOnStateChange(this.table.columns, 'Query loaded');
+
+  hierarchyUpdates = this.table.context.fireOnStateChange(this.table.hierarchies, 'Query loaded');
+
 }
 
 
