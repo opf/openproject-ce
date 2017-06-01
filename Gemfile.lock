@@ -102,7 +102,7 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 040e5a280b6885774d2c2c1144cd288b8586d170
+  revision: 3bcd3abe181cd42ec39167a9fd4221ee7319845e
   branch: dev
   specs:
     openproject-translations (6.2.0)
@@ -322,6 +322,14 @@ GEM
       execjs
     awesome_nested_set (3.1.3)
       activerecord (>= 4.0.0, < 5.2)
+    aws-sdk (2.9.25)
+      aws-sdk-resources (= 2.9.25)
+    aws-sdk-core (2.9.25)
+      aws-sigv4 (~> 1.0)
+      jmespath (~> 1.0)
+    aws-sdk-resources (2.9.25)
+      aws-sdk-core (= 2.9.25)
+    aws-sigv4 (1.0.0)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
@@ -482,6 +490,7 @@ GEM
     interception (0.5)
     ipaddress (0.8.3)
     iso8601 (0.9.1)
+    jmespath (1.3.1)
     jquery-tablesorter (1.22.7)
       railties (>= 3.2, < 6)
     json (1.8.6)
@@ -828,6 +837,7 @@ DEPENDENCIES
   airbrake (~> 5.1.0)
   autoprefixer-rails (~> 6.7.7.2)
   awesome_nested_set (~> 3.1.3)
+  aws-sdk (~> 2.9.25)
   bcrypt (~> 3.1.6)
   bourbon (~> 4.3.4)
   capybara (~> 2.13.0)

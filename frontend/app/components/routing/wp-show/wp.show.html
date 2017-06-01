@@ -1,6 +1,7 @@
 <div class="work-packages--show-view"
      ng-class="{'edit-all-mode': $ctrl.wpEditModeState.active}"
      wp-edit-form="$ctrl.workPackage"
+     wp-edit-form-on-save="$ctrl.onWorkPackageSave()"
      has-edit-mode="true"
      ng-if="$ctrl.workPackage">
   <div class="toolbar-container">
@@ -21,7 +22,7 @@
                             state-name="work-packages.new"></wp-create-button>
         </li>
         <li class="toolbar-item">
-          <button class="button edit-all-button"
+          <button class="button edit-all-button toolbar-icon"
                   ng-disabled="$ctrl.wpEditModeState.active"
                   ng-click="$ctrl.wpEditModeState.start()"
                   ng-disabled="!$ctrl.wpEditModeState.form.isEditable"
@@ -37,7 +38,7 @@
           </wp-zen-mode-toggle-button>
         </li>
         <li class="toolbar-item action_menu_main" id="action-show-more-dropdown-menu">
-          <button class="button dropdown-relative"
+          <button class="button dropdown-relative toolbar-icon"
                   ng-disabled="!actionsAvailable || $ctrl.wpEditModeState.active"
                   has-dropdown-menu
                   target="ShowMoreDropdownMenu"
