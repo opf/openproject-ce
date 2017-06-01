@@ -1,5 +1,3 @@
-CORE_VERSION = 'dev'
-
 # the dependencies from the gemspec from a git repo are ignored
 # see also https://github.com/bundler/bundler/issues/1041
 gem "pdf-inspector", "~>1.0.0", group: [:development, :test]
@@ -31,7 +29,6 @@ group :opf_plugins do
 
   gem "openproject-backlogs", path: "vendored-plugins/openproject-backlogs"
 
-  gem "openproject-themes-dark", path: "vendored-plugins/openproject-themes-dark"
   gem "openproject-local_avatars", path: "vendored-plugins/openproject-local_avatars"
   gem "openproject-webhooks", path: "vendored-plugins/openproject-webhooks"
   gem "openproject-github_integration", path: "vendored-plugins/openproject-github_integration"
