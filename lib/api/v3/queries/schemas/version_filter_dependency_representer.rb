@@ -36,17 +36,25 @@ module API
           FilterDependencyRepresenter
 
           def href_callback
+            order = "sortBy=#{to_query [%i(name asc)]}"
+
             if filter.project.nil?
               filter_params = [{ sharing: { operator: '=', values: ['system'] } }]
 
-              "#{api_v3_paths.types}?filters=#{CGI.escape(::JSON.dump(filter_params))}"
+              "#{api_v3_paths.versions}?filters=#{to_query filter_params}&#{order}"
             else
-              api_v3_paths.versions_by_project(filter.project.id)
+              "#{api_v3_paths.versions_by_project(filter.project.id)}?#{order}"
             end
           end
 
           def type
             "[]Version"
+          end
+
+          private
+
+          def to_query(param)
+            CGI.escape(::JSON.dump(param))
           end
         end
       end
