@@ -488,7 +488,7 @@ GEM
     jquery-tablesorter (1.22.7)
       railties (>= 3.2, < 6)
     json (1.8.6)
-    json-jwt (1.7.1)
+    json-jwt (1.7.2)
       activesupport
       bindata
       multi_json (>= 1.3)
@@ -536,6 +536,7 @@ GEM
     nokogiri (1.7.2)
       mini_portile2 (~> 2.1.0)
     oj (3.0.6)
+    okcomputer (1.16.0)
     openid_connect (0.8.3)
       activemodel
       attr_required (>= 0.0.5)
@@ -877,6 +878,7 @@ DEPENDENCIES
   newrelic_rpm
   nokogiri (~> 1.7.2)
   oj (~> 3.0.6)
+  okcomputer (~> 1.16.0)
   omniauth!
   omniauth-openid-connect!
   omniauth-openid_connect-providers!
