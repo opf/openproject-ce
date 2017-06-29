@@ -102,10 +102,10 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 8444a411240546e5abd36319bf4c627f71c7763c
+  revision: 04af925b27f647bb45c23244d5d40e5f27d81761
   branch: stable/7
   specs:
-    openproject-translations (7.0.2)
+    openproject-translations (7.0.3)
       crowdin-api (~> 0.4.1)
       mixlib-shellout (~> 2.1.0)
       rails (~> 5.0.0)
@@ -140,67 +140,67 @@ GIT
 PATH
   remote: vendored-plugins/openproject-auth_plugins
   specs:
-    openproject-auth_plugins (7.0.2)
+    openproject-auth_plugins (7.0.3)
       omniauth (~> 1.0)
       rails (~> 5.0)
 
 PATH
   remote: vendored-plugins/openproject-backlogs
   specs:
-    openproject-backlogs (7.0.2)
+    openproject-backlogs (7.0.3)
       acts_as_silent_list (~> 3.0.0)
-      openproject-pdf_export (= 7.0.2)
+      openproject-pdf_export (= 7.0.3)
       rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-costs
   specs:
-    openproject-costs (7.0.2)
+    openproject-costs (7.0.3)
       rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-documents
   specs:
-    openproject-documents (7.0.2)
+    openproject-documents (7.0.3)
       rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-github_integration
   specs:
-    openproject-github_integration (7.0.2)
-      openproject-webhooks (~> 7.0.2)
+    openproject-github_integration (7.0.3)
+      openproject-webhooks (~> 7.0.3)
       rails (~> 5.0)
 
 PATH
   remote: vendored-plugins/openproject-global_roles
   specs:
-    openproject-global_roles (7.0.2)
+    openproject-global_roles (7.0.3)
       rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-local_avatars
   specs:
-    openproject-local_avatars (7.0.2)
+    openproject-local_avatars (7.0.3)
       rails (~> 5.0)
       rmagick (~> 2.15.4)
 
 PATH
   remote: vendored-plugins/openproject-meeting
   specs:
-    openproject-meeting (7.0.2)
+    openproject-meeting (7.0.3)
       icalendar (~> 2.3.0)
       rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-my_project_page
   specs:
-    openproject-my_project_page (7.0.2)
+    openproject-my_project_page (7.0.3)
       rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-openid_connect
   specs:
-    openproject-openid_connect (7.0.2)
+    openproject-openid_connect (7.0.3)
       lobby_boy (~> 0.1)
       omniauth-openid_connect-providers (~> 0.1)
       openproject-auth_plugins (~> 7.0)
@@ -209,36 +209,36 @@ PATH
 PATH
   remote: vendored-plugins/openproject-pdf_export
   specs:
-    openproject-pdf_export (7.0.2)
+    openproject-pdf_export (7.0.3)
       prawn (~> 2.2)
       rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-reporting
   specs:
-    openproject-reporting (7.0.2)
+    openproject-reporting (7.0.3)
       jquery-tablesorter (~> 1.22.3)
-      openproject-costs (= 7.0.2)
+      openproject-costs (= 7.0.3)
       rails (~> 5.0.0)
       reporting_engine (>= 1.1.0)
 
 PATH
   remote: vendored-plugins/openproject-webhooks
   specs:
-    openproject-webhooks (7.0.2)
+    openproject-webhooks (7.0.3)
       rails (~> 5.0)
 
 PATH
   remote: vendored-plugins/openproject-xls_export
   specs:
-    openproject-xls_export (7.0.2)
+    openproject-xls_export (7.0.3)
       rails (~> 5.0.0)
       spreadsheet (~> 0.8.9)
 
 PATH
   remote: vendored-plugins/reporting_engine
   specs:
-    reporting_engine (7.0.2)
+    reporting_engine (7.0.3)
       json
       rails (~> 5.0.0)
 
