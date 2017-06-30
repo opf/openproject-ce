@@ -26,26 +26,47 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-module API
-  module V3
-    module Principals
-      class PrincipalsAPI < ::API::OpenProjectAPI
-        resource :principals do
-          get do
-            scope = Principal.in_visible_project(current_user)
-                             .or(Principal.me)
-                             .includes(:preference)
-                             .order_by_name
+require 'spec_helper'
 
-            representer = Users::UserCollectionRepresenter
+describe 'Session TTL',
+         with_settings: {session_ttl_enabled?: true, session_ttl: '10'},
+         type: :feature do
+  let!(:user) {FactoryGirl.create :admin}
+  let!(:work_package) {FactoryGirl.create :work_package}
 
-            ::API::V3::Utilities::ParamsToQuery.collection_response(scope,
-                                                                    current_user,
-                                                                    params,
-                                                                    representer: representer)
-          end
-        end
-      end
+  before do
+    login_with(user.login, user.password)
+  end
+
+  def expire!
+    page.set_rack_session(updated_at: Time.now - 1.hour)
+  end
+
+  describe 'outdated TTL on Rails request' do
+    it 'expires on the next Rails request' do
+      visit '/my/account'
+      expect(page).to have_selector('.form--field-container', text: user.login)
+
+      # Expire the session
+      expire!
+
+      visit '/'
+      expect(page).to have_selector('.action-login')
+    end
+  end
+
+  describe 'outdated TTL on API request' do
+    it 'expires on the next APIv3 request' do
+      visit "/api/v3/work_packages/#{work_package.id}"
+
+      body = JSON.parse(page.body)
+      expect(body['id']).to eq(work_package.id)
+
+      # Expire the session
+      expire!
+      visit "/api/v3/work_packages/#{work_package.id}"
+
+      expect(page.body).to eq('unauthorized')
     end
   end
 end
