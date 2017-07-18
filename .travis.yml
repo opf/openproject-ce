@@ -62,6 +62,11 @@ env:
     - "TEST_SUITE=features          DB=mysql     GROUP_SIZE=4  GROUP=2"
     - "TEST_SUITE=features          DB=mysql     GROUP_SIZE=4  GROUP=3"
     - "TEST_SUITE=features          DB=mysql     GROUP_SIZE=4  GROUP=4"
+    - "TEST_SUITE=plugins:specs     DB=mysql     GROUP_SIZE=1  GROUP=1"
+    - "TEST_SUITE=plugins:features  DB=mysql     GROUP_SIZE=1  GROUP=1"
+    - "TEST_SUITE=plugins:cucumber  DB=mysql     GROUP_SIZE=1  GROUP=1"
+
+
 
     - "TEST_SUITE=spec_legacy       DB=postgres"
     - "TEST_SUITE=cucumber          DB=postgres  GROUP_SIZE=1  GROUP=1"
@@ -73,6 +78,10 @@ env:
     - "TEST_SUITE=features          DB=postgres  GROUP_SIZE=4  GROUP=2"
     - "TEST_SUITE=features          DB=postgres  GROUP_SIZE=4  GROUP=3"
     - "TEST_SUITE=features          DB=postgres  GROUP_SIZE=4  GROUP=4"
+    - "TEST_SUITE=plugins:specs     DB=postgres  GROUP_SIZE=1  GROUP=1"
+    - "TEST_SUITE=plugins:features  DB=postgres  GROUP_SIZE=1  GROUP=1"
+    - "TEST_SUITE=plugins:cucumber  DB=postgres  GROUP_SIZE=1  GROUP=1"
+
 
 before_install:
   - "echo `firefox -v`"

@@ -1,0 +1,47 @@
+<%#-- copyright
+OpenProject My Project Page Plugin
+
+Copyright (C) 2011-2014 the OpenProject Foundation (OPF)
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+See doc/COPYRIGHT.md for more details.
+
+++#%>
+
+<% if defined? block_name_id %>
+  <%= content_for block_name_id %>
+<% end %>
+
+<h3 class="widget-box--header">
+  <%= op_icon('icon-context icon-calendar') %>
+  <span class="widget-box--header-title"><%=l(:label_calendar)%></span>
+</h3>
+
+<%
+  calendar = Redmine::Helpers::Calendar.new(Date.today, current_language, :week)
+  wps = WorkPackage.table_name
+
+  calendar.events = WorkPackage.visible
+    .where(project: current_user.projects)
+    .where(
+      "
+        (#{wps}.start_date >= ? AND #{wps}.start_date <= ?) OR
+        (#{wps}.due_date >= ? AND #{wps}.due_date <= ?)
+      ",
+      calendar.startdt, calendar.enddt, calendar.startdt, calendar.enddt
+    )
+    .includes(:project, :type, :priority, :assigned_to) unless current_user.projects.empty?
+%>
+
+<%= render :partial => 'common/calendar', :locals => {:calendar => calendar } %>
