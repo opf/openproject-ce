@@ -53,15 +53,16 @@ describe "WorkPackageXlsExport Custom Fields" do
   end
 
   let(:sheet) do
+    login_as(current_user)
     work_packages
+    query
 
     load_sheet export
   end
 
   let(:export) do
     OpenProject::XlsExport::WorkPackageXlsExport.new(
-      project: project, work_packages: work_packages, query: query,
-      current_user: current_user
+      query
     )
   end
 
@@ -69,7 +70,7 @@ describe "WorkPackageXlsExport Custom Fields" do
     f = Tempfile.new 'result.xls'
     begin
       f.binmode
-      f.write export.to_xls
+      f.write export.list.content
     ensure
       f.close
     end

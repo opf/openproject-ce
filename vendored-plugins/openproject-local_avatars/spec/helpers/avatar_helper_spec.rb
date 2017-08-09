@@ -1,12 +1,10 @@
 require 'spec_helper'
 
-describe AvatarHelper, :type => :helper do
+describe AvatarHelper, type: :helper, with_settings: { protocol: 'http' }  do
   let(:user) { FactoryGirl.build_stubbed(:user) }
   let(:avatar_stub) { FactoryGirl.build_stubbed(:avatar_attachment) }
 
   before do
-    AvatarHelper.configure!
-    allow(GravatarImageTag.configuration).to receive(:secure).and_return(false)
     allow(user).to receive(:local_avatar_attachment).and_return avatar_stub
   end
 
