@@ -26,38 +26,28 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require 'support/pages/page'
-require 'support/pages/abstract_work_package_create'
+module Components
+  module WorkPackages
+    class QueryMenu
+      include Capybara::DSL
+      include RSpec::Matchers
 
-module Pages
-  class SplitWorkPackageCreate < AbstractWorkPackageCreate
-    attr_reader :project
+      def select(query)
+        page.find(selector).click
 
-    def initialize(project:, original_work_package: nil, parent_work_package: nil)
-      @project = project
+        page.fill_in 'query-title-filter', with: query.name
 
-      super(original_work_package: original_work_package,
-            parent_work_package: parent_work_package)
-    end
+        page.within(results_container) do
+          page.find('.ui-menu-item-wrapper', text: query.name).click
+        end
+      end
 
-    def edit_field(attribute)
-      super(attribute, container)
-    end
+      def selector
+        '.wp-table--query-menu-link'
+      end
 
-    def container
-      find('.work-packages--new')
-    end
-
-    private
-
-    def path
-      if original_work_package
-        project_work_packages_path(project) + "/details/#{original_work_package.id}/copy"
-      else
-        path = project_work_packages_path(project) + '/create_new'
-        path += "?parent_id=#{parent_work_package.id}" if parent_work_package
-
-        path
+      def results_container
+        '.search-query-wrapper'
       end
     end
   end
