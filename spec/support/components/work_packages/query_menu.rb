@@ -1,15 +1,12 @@
 #-- copyright
-# OpenProject Documents Plugin
-#
-# Former OpenProject Core functionality extracted into a plugin.
-#
-# Copyright (C) 2009-2014 the OpenProject Foundation (OPF)
+# OpenProject is a project management system.
+# Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
 #
 # OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-# Copyright (C) 2006-2013 Jean-Philippe Lang
+# Copyright (C) 2006-2017 Jean-Philippe Lang
 # Copyright (C) 2010-2013 the ChiliProject Team
 #
 # This program is free software; you can redistribute it and/or
@@ -29,8 +26,29 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject
-  module Documents
-    VERSION = "7.2.1"
+module Components
+  module WorkPackages
+    class QueryMenu
+      include Capybara::DSL
+      include RSpec::Matchers
+
+      def select(query)
+        page.find(selector).click
+
+        page.fill_in 'query-title-filter', with: query.name
+
+        page.within(results_container) do
+          page.find('.ui-menu-item-wrapper', text: query.name).click
+        end
+      end
+
+      def selector
+        '.wp-table--query-menu-link'
+      end
+
+      def results_container
+        '.search-query-wrapper'
+      end
+    end
   end
 end
