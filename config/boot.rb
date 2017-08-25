@@ -40,7 +40,7 @@ require 'bundler/setup' # Set up gems listed in the Gemfile.
 
 # Rails is not yet loaded here
 if ENV['RAILS_ENV'] == 'development'
-  $stderr.puts "Starting with bootstnap."
+  $stderr.puts "Starting with bootsnap."
 
   require 'bootsnap'
 
