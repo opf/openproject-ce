@@ -1,10 +1,15 @@
+#-- encoding: UTF-8
+
 #-- copyright
-# OpenProject PDF Export Plugin
+# OpenProject is a project management system.
+# Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
 #
-# Copyright (C)2014 the OpenProject Foundation (OPF)
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License version 3.
 #
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License version 3.
+# OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
+# Copyright (C) 2006-2017 Jean-Philippe Lang
+# Copyright (C) 2010-2013 the ChiliProject Team
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,11 +25,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-# See doc/COPYRIGHT.md for more details.
+# See doc/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject
-  module PdfExport
-    VERSION = "7.2.3"
+module API
+  module V3
+    module Queries
+      module Schemas
+        class AssigneeOrGroupFilterDependencyRepresenter <
+          AssignedToFilterDependencyRepresenter
+        end
+      end
+    end
   end
 end
