@@ -1,12 +1,12 @@
-//-- copyright
+// -- copyright
 // OpenProject is a project management system.
-// Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
+// Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License version 3.
 //
 // OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-// Copyright (C) 2006-2017 Jean-Philippe Lang
+// Copyright (C) 2006-2013 Jean-Philippe Lang
 // Copyright (C) 2010-2013 the ChiliProject Team
 //
 // This program is free software; you can redistribute it and/or
@@ -24,34 +24,16 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-//++
+// ++
 
-jQuery(function() {
-  if (bowser.chrome && bowser.version >= '58') {
-    document.documentElement.classList.add('-browser-chrome', '-supports-sticky-headers');
-  }
+import {DisplayField} from '../wp-display-field/wp-display-field.module';
+import {ProgressDisplayField} from './wp-display-progress-field.module';
 
-  if (bowser.safari) {
-    document.documentElement.classList.add('-browser-safari');
+export class ProgressTextDisplayField extends ProgressDisplayField {
+  public render(element:HTMLElement, displayText:string):void {
+    const label = this.percentLabel;
+    element.setAttribute('title', label);
+    element.innerHTML = '';
+    element.textContent = label;
   }
-
-  if (bowser.msedge) {
-    document.documentElement.classList.add('-browser-edge');
-  }
-
-  if (bowser.firefox) {
-    document.documentElement.classList.add('-browser-firefox');
-  }
-
-  if (bowser.windows) {
-    document.documentElement.classList.add('-browser-windows');
-  }
-
-  if (bowser.ios) {
-    document.documentElement.classList.add('-browser-ios');
-  }
-
-  if (bowser.mobile || bowser.ios || bowser.android) {
-    document.documentElement.classList.add('-browser-mobile');
-  }
-});
+}
