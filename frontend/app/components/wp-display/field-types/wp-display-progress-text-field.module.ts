@@ -1,12 +1,12 @@
-//-- copyright
+// -- copyright
 // OpenProject is a project management system.
-// Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
+// Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License version 3.
 //
 // OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-// Copyright (C) 2006-2017 Jean-Philippe Lang
+// Copyright (C) 2006-2013 Jean-Philippe Lang
 // Copyright (C) 2010-2013 the ChiliProject Team
 //
 // This program is free software; you can redistribute it and/or
@@ -24,48 +24,16 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-//++
+// ++
 
-.attributes-group
-  margin-top: 1.6875rem
+import {DisplayField} from '../wp-display-field/wp-display-field.module';
+import {ProgressDisplayField} from './wp-display-progress-field.module';
 
-.attributes-group--header
-  @include grid-block
-  margin:  0 0 0.5rem 0
-  border-bottom: 1px solid #ddd
-  align-items: flex-end
-
-
-.attributes-group--header-container
-  @include grid-content
-  padding: 0 1rem 0.4rem 0
-
-  // Exclusive toggleable attribute groups
-  // include a radio input to toggle them,
-  // but the positioning is off.
-  .attributes-group.-toggleable &
-    cursor: pointer
-    padding-left: 5px
-
-.attributes-group--header-control
-  @include grid-content(shrink)
-  padding: 0 0 0.4rem 0
-
-.attributes-group--header-toggle
-  @include grid-content(shrink)
-  padding: 0 0 0 1rem
-  overflow-y: hidden
-
-  .button
-    margin: 0 0 5px 0
-
-// HACK. TODO: Remove H3 element rules in various places.
-.attributes-group--header-text,
-#content h3.attributes-group--header-text
-  font-size: 1rem
-  font-weight: bold
-  text-transform: uppercase
-  // properties to reset h3
-  margin: 0
-  padding: 0
-  border: 0
+export class ProgressTextDisplayField extends ProgressDisplayField {
+  public render(element:HTMLElement, displayText:string):void {
+    const label = this.percentLabel;
+    element.setAttribute('title', label);
+    element.innerHTML = '';
+    element.textContent = label;
+  }
+}
