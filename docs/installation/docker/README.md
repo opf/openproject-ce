@@ -35,7 +35,7 @@ the logs to your terminal, which helps with debugging if anything goes wrong.
 For normal usage you probably want to start it in the background, which can be
 achieved with the `-d` flag:
 
-    docker run -d -p 8080:80 -e SECRET_KEY_BASE=secret openproject/community:7
+    docker run -d -p 8080:80 -e SECRET_KEY_BASE=secret openproject/community:5.0
 
 ### Recommended usage
 
@@ -46,7 +46,7 @@ your host machine in case something goes wrong.
 
 To achieve this, we recommend that you create a directory on your host system
 where the Docker Engine is installed (for instance: `/var/lib/openproject`)
-where all those data will be stored.
+where all this data will be stored.
 
 You can use the following commands to create the local directories where the
 data will be stored across container restarts, and start the container with
@@ -58,7 +58,7 @@ those directories mounted:
       -v /var/lib/openproject/pgdata:/var/lib/postgresql/9.4/main \
       -v /var/lib/openproject/logs:/var/log/supervisor \
       -v /var/lib/openproject/static:/var/db/openproject \
-      openproject/community:6
+      openproject/community:7
 
 Since we named the container, you can now stop it by running:
 
@@ -143,7 +143,7 @@ Yes. You can simply pass a custom `DATABASE_URL` environment variable on the
 command-line, which could point to an external database. You can even choose to
 use MySQL instead of PostgreSQL if you wish. Here is how you would do it:
 
-    docker run -d ... -e DATABASE_URL=mysql2://user:pass@host:port/dbname openproject/community:7
+    docker run -d ... -e DATABASE_URL=mysql2://user:pass@host:port/dbname openproject/community:5.0
 
 The container will make sure that the database gets the migrations and demo
 data as well.

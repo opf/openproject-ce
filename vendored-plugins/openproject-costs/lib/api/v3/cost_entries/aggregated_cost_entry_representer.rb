@@ -44,9 +44,21 @@ module API
                  },
                  setter: ->(*) {}
 
+        property :cost_object_id,
+                 exec_context: :decorator,
+                 getter: ->(*) {
+                   @cost_type.id
+                 }
+
         property :spent_units,
                  exec_context: :decorator,
                  getter: ->(*) { @spent_units }
+
+        link :staticPath do
+          {
+              href: cost_object_path(@cost_type.id)
+          }
+        end
 
         def _type
           'AggregatedCostEntry'
