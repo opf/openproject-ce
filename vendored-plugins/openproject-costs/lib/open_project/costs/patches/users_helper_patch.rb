@@ -19,21 +19,19 @@
 
 module OpenProject::Costs::Patches::UsersHelperPatch
   def self.included(base) # :nodoc:
-    base.send(:include, InstanceMethods)
+    base.prepend(InstanceMethods)
 
-    # Same as typing in the class
     base.class_eval do
-      alias_method_chain :user_settings_tabs, :rate_tab
+      alias_method :user_settings_tabs_without_rates, :user_settings_tabs
+      alias_method :user_settings_tabs, :user_settings_tabs_with_rates
     end
   end
 
   module InstanceMethods
     # Adds a rates tab to the user administration page
-    def user_settings_tabs_with_rate_tab
+    def user_settings_tabs_with_rates
       # Core defined data
-      tabs = user_settings_tabs_without_rate_tab
-      tabs << { name: 'rates', partial: 'users/rates', label: :caption_rate_history }
-      tabs
+      user_settings_tabs_without_rates + [{ name: 'rates', partial: 'users/rates', label: :caption_rate_history }]
     end
   end
 end
