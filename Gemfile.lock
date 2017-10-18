@@ -94,7 +94,7 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: 1adbcf87f5a8190556bcb0cb1b9ce1367b91d095
+  revision: 2e0808789d8d70d8107b355553db0bfd2491bb3e
   branch: release/7.3
   specs:
     openproject-translations (7.3.1)
@@ -768,6 +768,8 @@ GEM
     tilt (2.0.7)
     timecop (0.9.1)
     ttfunk (1.5.0)
+    typed_dag (1.0.0)
+      rails (>= 5.0.4)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
     tzinfo-data (1.2017.2)
@@ -954,6 +956,7 @@ DEPENDENCIES
   thin (~> 1.7.2)
   timecop (~> 0.9.0)
   transactional_lock!
+  typed_dag (~> 1.0.0)
   tzinfo-data (~> 1.2017.2)
   unicorn
   unicorn-worker-killer
