@@ -1,3 +1,4 @@
+#-- encoding: UTF-8
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
@@ -25,13 +26,17 @@
 #
 # See doc/COPYRIGHT.rdoc for more details.
 #++
+class DevelopmentDataSeeder < CompositeSeeder
+  def data_seeder_classes
+    [
+      DevelopmentData::UsersSeeder,
+      DevelopmentData::CustomFieldsSeeder,
+      DevelopmentData::ProjectsSeeder,
+      #DevelopmentData::WorkPackageSeeder
+    ]
+  end
 
-<%
-rerun_file  = "tmp/cucumber-rerun.txt"
-rerun       = File.file?(rerun_file) ? IO.read(rerun_file) : ""
-rerun_opts  = rerun.to_s.strip.empty? ? "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} features" : "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} #{rerun}"
-std_opts    = "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} --tags 'not @wip'"
-%>
-default: <%= std_opts %> features
-wip: --tags @wip:3 --wip features
-rerun: <%= rerun_opts %> --format rerun --out <%= rerun_file %> --tags 'not @wip'
+  def namespace
+    'DevelopmentData'
+  end
+end
