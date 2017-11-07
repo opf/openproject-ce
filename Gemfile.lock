@@ -94,7 +94,7 @@ GIT
 
 GIT
   remote: https://github.com/opf/openproject-translations.git
-  revision: cac59d587d9da992c0fe1854dfe71782964ca708
+  revision: 2d1817faaec0efa37ef7134ddbe5bddaa3c66dbf
   branch: release/7.3
   specs:
     openproject-translations (7.3.2)
@@ -125,6 +125,14 @@ PATH
   specs:
     openproject-auth_plugins (7.4.0)
       omniauth (~> 1.0)
+      rails (~> 5.0)
+
+PATH
+  remote: vendored-plugins/openproject-avatars
+  specs:
+    openproject-avatars (7.4.0)
+      fastimage (~> 2.1.0)
+      gravatar_image_tag (~> 1.2.0)
       rails (~> 5.0)
 
 PATH
@@ -159,13 +167,6 @@ PATH
   specs:
     openproject-global_roles (7.4.0)
       rails (~> 5.0.0)
-
-PATH
-  remote: vendored-plugins/openproject-local_avatars
-  specs:
-    openproject-local_avatars (7.4.0)
-      rails (~> 5.0)
-      rmagick (~> 2.15.4)
 
 PATH
   remote: vendored-plugins/openproject-meeting
@@ -424,6 +425,7 @@ GEM
       railties (>= 3.0.0)
     faker (1.8.4)
       i18n (~> 0.5)
+    fastimage (2.1.0)
     ffi (1.9.18)
     fog-aws (0.11.0)
       fog-core (~> 1.38)
@@ -675,7 +677,6 @@ GEM
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
     retriable (3.0.2)
-    rmagick (2.15.4)
     roar (1.1.0)
       representable (~> 3.0.0)
     rspec (3.5.0)
@@ -871,7 +872,6 @@ DEPENDENCIES
   globalize!
   gon (~> 6.2.0)
   grape (~> 1.0)
-  gravatar_image_tag (~> 1.2.0)
   health_check
   htmldiff
   i18n-js (~> 3.0.0)
@@ -894,12 +894,12 @@ DEPENDENCIES
   omniauth-saml!
   openproject-auth_plugins!
   openproject-auth_saml!
+  openproject-avatars!
   openproject-backlogs!
   openproject-costs!
   openproject-documents!
   openproject-github_integration!
   openproject-global_roles!
-  openproject-local_avatars!
   openproject-meeting!
   openproject-my_project_page!
   openproject-openid_connect!
@@ -976,4 +976,4 @@ RUBY VERSION
    ruby 2.4.2p198
 
 BUNDLED WITH
-   1.15.4
+   1.16.0
