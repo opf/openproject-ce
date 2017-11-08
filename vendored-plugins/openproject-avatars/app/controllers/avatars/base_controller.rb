@@ -1,5 +1,6 @@
 module ::Avatars
   class BaseController < ::ApplicationController
+    helper :avatar
     before_action :ensure_enabled
 
     include AttachmentsHelper
