@@ -119,7 +119,7 @@ module OpenProject::Avatars
 
         def default_gravatar_options
           options = { secure: Setting.protocol == 'https' }
-          default_value = Setting.plugin_openproject_avatars['gravatar_default'] || Setting.gravatar_default
+          default_value = Setting.plugin_openproject_avatars['gravatar_default'] || Setting[:gravatar_default]
           options[:default] = default_value if default_value.present?
 
           options
@@ -138,3 +138,5 @@ module OpenProject::Avatars
     end
   end
 end
+
+::AvatarHelper.send :include, OpenProject::Avatars::Patches::AvatarHelperPatch
