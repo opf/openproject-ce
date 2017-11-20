@@ -22,40 +22,18 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
+# along with this program::Type.translated_work_package_form_attributes; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 # See doc/COPYRIGHT.rdoc for more details.
 #++
-require_relative '../legacy_spec_helper'
-require 'account_controller'
 
-describe AccountController, type: :controller do
-  render_views
-
-  fixtures :all
-
-  before do
-    User.current = nil
+module AuthenticationStagePathHelper
+  def authentication_stage_complete_path(identifier)
+    OpenProject::Authentication::Stage.complete_path identifier, session: session
   end
 
-  it 'should login with wrong password' do
-    post :login, params: { username: 'admin', password: 'bad' }
-    assert_response :success
-    assert_template 'login'
-    assert_select 'div.flash.error.icon.icon-error', /Invalid user or password/
-  end
-
-  it 'should login' do
-    get :login
-    assert_template 'login'
-  end
-
-  it 'should logout should reset session' do
-    expect(@controller).to receive(:reset_session).once
-
-    session[:user_id] = 2
-    get :logout
-    assert_response 302
+  def authentication_stage_failure_path(identifier)
+    OpenProject::Authentication::Stage.failure_path identifier
   end
 end
