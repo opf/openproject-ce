@@ -1,5 +1,3 @@
-#-- encoding: UTF-8
-
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
@@ -27,35 +25,48 @@
 #
 # See doc/COPYRIGHT.rdoc for more details.
 #++
-require_relative '../legacy_spec_helper'
-require 'account_controller'
 
-describe AccountController, type: :controller do
-  render_views
+require 'spec_helper'
 
-  fixtures :all
+describe 'random password generation', type: :feature, js: true do
+  let(:admin) { FactoryGirl.create :admin }
+  let(:auth_source) { FactoryGirl.build :dummy_auth_source }
+  let(:user) { FactoryGirl.create :user }
+  let(:user_page) { ::Pages::Admin::User.new(user.id) }
 
   before do
-    User.current = nil
+    login_with admin.login, 'adminADMIN!'
   end
 
-  it 'should login with wrong password' do
-    post :login, params: { username: 'admin', password: 'bad' }
-    assert_response :success
-    assert_template 'login'
-    assert_select 'div.flash.error.icon.icon-error', /Invalid user or password/
-  end
+  it 'can log in with a random generated password' do
+    user_page.visit!
 
-  it 'should login' do
-    get :login
-    assert_template 'login'
-  end
+    expect(page).to have_selector('#user_password')
+    expect(page).to have_selector('#user_password_confirmation')
 
-  it 'should logout should reset session' do
-    expect(@controller).to receive(:reset_session).once
+    check 'user_assign_random_password'
 
-    session[:user_id] = 2
-    get :logout
-    assert_response 302
+    expect(page).to have_selector('#user_password[disabled]')
+    expect(page).to have_selector('#user_password_confirmation[disabled]')
+
+    # Remember password for login
+    password = nil
+    expect(OpenProject::Passwords::Generator)
+      .to receive(:random_password)
+      .and_wrap_original { |m, *args| password = m.call(*args) }
+
+    click_on 'Save'
+
+    expect(page).to have_selector('.flash', text: I18n.t(:notice_successful_update))
+    expect(password).to be_present
+
+    # Logout
+    visit signout_path
+
+    # Login using the new password
+    login_with user.login, password
+
+    # Expect password change
+    expect(page).to have_selector('#new_password')
   end
 end
