@@ -26,50 +26,57 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-module Components
-  module WorkPackages
-    class GroupBy
-      include Capybara::DSL
-      include RSpec::Matchers
+require 'support/pages/page'
 
-      def enable_via_header(name)
-        open_table_column_context_menu(name)
+module Pages
+  class ProjectSettings < Page
+    attr_accessor :project
 
-        within_column_context_menu do
-          click_link('Group by')
-        end
-      end
+    def initialize(project)
+      super()
 
-      def enable_via_menu(name)
-        SettingsMenu.new.open_and_choose('Group by ...')
+      self.project = project
+    end
 
-        select name, from: 'selected_columns_new'
-        click_button 'Apply'
-      end
+    def visit_tab!(name)
+      visit settings_project_path(project, tab: name)
+    end
 
-      def disable_via_menu
-        enable_via_menu '-'
-      end
+    # only notice is used as opposed to notification-box
+    def expect_notification(type: :notice, message:)
+      expect(page).to have_selector(".flash.#{type}", text: message, wait: 10)
+    end
 
-      def expect_not_grouped_by(name)
-        open_table_column_context_menu(name)
+    def expect_type_active(type)
+      expect_type(type, true)
+    end
 
-        within_column_context_menu do
-          expect(page).to have_content('Group by')
-        end
-      end
+    def expect_type_inactive(type)
+      expect_type(type, false)
+    end
 
-      private
+    def expect_type(type, active = true)
+      expect(page)
+        .to have_field("project_planning_element_type_ids_#{type.id}", checked: active)
+    end
 
-      def open_table_column_context_menu(name)
-        page.find(".generic-table--sort-header ##{name.downcase}").click
-      end
+    def expect_wp_custom_field_active(custom_field)
+      expect_wp_custom_field(custom_field, true)
+    end
 
-      def within_column_context_menu
-        page.within('#column-context-menu') do
-          yield
-        end
-      end
+    def expect_wp_custom_field_inactive(custom_field)
+      expect_wp_custom_field(custom_field, false)
+    end
+
+    def expect_wp_custom_field(custom_field, active = true)
+      expect(page)
+        .to have_field(custom_field.name, checked: active)
+    end
+
+    private
+
+    def path
+      settings_project_path(project)
     end
   end
 end
