@@ -75,7 +75,6 @@ class ::Query::Results
       .where(query.statement)
       .where(options[:conditions])
       .includes(all_includes)
-      .joins(all_joins)
       .order(order_option)
       .references(:projects)
   end
@@ -85,7 +84,7 @@ class ::Query::Results
   # If there is a reason: This is a somewhat DRY way of using the sort criteria.
   # If there is no reason: The :work_package method can die over time and be replaced by this one.
   def sorted_work_packages
-    work_packages.order(sort_criteria_sql)
+    work_packages.order(sort_criteria_array)
   end
 
   def versions
@@ -142,10 +141,6 @@ class ::Query::Results
     (%i(status project) +
       includes_for_columns(include_columns) +
       (options[:include] || [])).uniq
-  end
-
-  def all_joins
-    query.sort_criteria_columns.map { |column, _direction| column.sortable_join }.compact
   end
 
   def includes_for_columns(column_names)
@@ -219,11 +214,11 @@ class ::Query::Results
     columns.compact.uniq.map(&:to_sym)
   end
 
-  def sort_criteria_sql
+  def sort_criteria_array
     criteria = SortHelper::SortCriteria.new
     criteria.available_criteria = aliased_sorting_by_column_name
     criteria.criteria = query.sort_criteria
-    criteria.to_sql
+    criteria.to_a
   end
 
   def aliased_sorting_by_column_name
