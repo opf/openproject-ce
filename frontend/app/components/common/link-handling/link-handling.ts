@@ -1,12 +1,12 @@
 //-- copyright
 // OpenProject is a project management system.
-// Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
+// Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License version 3.
 //
 // OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-// Copyright (C) 2006-2017 Jean-Philippe Lang
+// Copyright (C) 2006-2013 Jean-Philippe Lang
 // Copyright (C) 2010-2013 the ChiliProject Team
 //
 // This program is free software; you can redistribute it and/or
@@ -26,49 +26,12 @@
 // See doc/COPYRIGHT.rdoc for more details.
 //++
 
-@include breakpoint(680px down)
-  #login-form,
-  #content .login-auth-providers,
-  .login_notice_div
-    width: 100%
+export namespace LinkHandling {
 
-  #content .login-auth-providers
-    margin-top: 114px
+  export function isClickedWithModifier(event:JQueryEventObject) {
+    const modifier = event.ctrlKey || event.shiftKey || event.metaKey;
+    const middleButton = event.button === 1;
 
-    h3:before
-      top: -14px
-
-  #login-form
-    .form--field-container
-      @include grid-content(12)
-      padding: 0
-
-    .login-options-container
-      position: relative
-
-      .login-links
-        float: none
-        position: absolute
-        text-align: center
-        width: 100%
-        margin-top: 0
-
-        a
-          display: block
-
-    .button
-      width: 100%
-
-  #new_user
-    .login-auth-providers
-      margin: 60px 0
-
-      h3 span
-        background: transparent
-
-  .form--label,
-  .form--field-container,
-  .form--field-instructions
-    @include grid-content(12)
-    margin-left: 0
-    padding: 0
+    return modifier || middleButton;
+  }
+}
