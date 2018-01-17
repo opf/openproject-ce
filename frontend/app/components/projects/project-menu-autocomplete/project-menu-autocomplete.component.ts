@@ -145,7 +145,7 @@ export class ProjectMenuAutocompleteController extends ILazyAutocompleterBridge<
       return this.$q.resolve(this.results);
     }
 
-    const url = this.PathHelper.apiV2ProjectsList();
+    const url = this.PathHelper.projectLevelListPath();
     return this.$http
       .get(url)
       .then((result:{ data:{ projects:IProjectMenuEntry[] } }) => {
@@ -180,6 +180,7 @@ export class ProjectMenuAutocompleteController extends ILazyAutocompleterBridge<
    */
   protected augmentedResultSet(items:ProjectAutocompleteItem[], matched:ProjectAutocompleteItem[]) {
     const matches = matched.map(el => el.object.identifier);
+    console.log(matches);
     const matchedParents = _.flatten(matched.map(el => el.object.parents));
 
     const results:ProjectAutocompleteItem[] = [];
