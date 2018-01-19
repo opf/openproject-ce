@@ -1,5 +1,4 @@
 #-- encoding: UTF-8
-
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
@@ -28,33 +27,40 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-require 'relations/base_contract'
+module OpenProject
+  module Ui
+    class ExtensibleTabs
+      class << self
+        def tabs
+          @@tabs ||= {
+            user: core_user_tabs
+          }
+        end
 
-module Relations
-  class UpdateContract < BaseContract
-    validate :from_immutable
-    validate :to_immutable
+        ##
+        # Get all enabled tabs for the given key
+        def enabled_tabs(key, context = {})
+          tabs[key].select { |entry| entry[:only_if].nil? || entry[:only_if].call(context) }
+        end
 
-    private
+        # Add a new tab for the given key
+        def add(key, **entry)
+          tabs[key] = [] if tabs[key].nil?
 
-    def from_immutable
-      errors.add :from, :error_readonly if from_id_changed_and_not_swapped?
-    end
+          raise ArgumentError.new "Invalid entry for tab #{key}" unless entry[:name] && entry[:partial]
+          tabs[key] << entry
+        end
 
-    def to_immutable
-      errors.add :to, :error_readonly if to_id_changed_and_not_swapped?
-    end
+        private
 
-    def from_id_changed_and_not_swapped?
-      model.from_id_changed? && !from_and_to_swapped?
-    end
-
-    def to_id_changed_and_not_swapped?
-      model.to_id_changed? && !from_and_to_swapped?
-    end
-
-    def from_and_to_swapped?
-      model.to_id == model.from_id_was && model.from_id == model.to_id_was
+        def core_user_tabs
+          [
+            { name: 'general', partial: 'users/general', label: :label_general },
+            { name: 'memberships', partial: 'users/memberships', label: :label_project_plural },
+            { name: 'groups', partial: 'users/groups', label: :label_group_plural, if: ->(*) { Group.all.any? } }
+          ]
+        end
+      end
     end
   end
 end
