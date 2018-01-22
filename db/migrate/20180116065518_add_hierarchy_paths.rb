@@ -27,33 +27,19 @@
 #
 # See doc/COPYRIGHT.rdoc for more details.
 #++
-require_relative '../legacy_spec_helper'
-require 'mail_handler_controller'
 
-describe MailHandlerController, type: :controller do
-  fixtures :all
+class AddHierarchyPaths < ActiveRecord::Migration[5.0]
+  def change
+    create_table :hierarchy_paths do |t|
+      t.belongs_to :work_package, index: { unique: true }
+      # (255 * 3) = ca 767 bytes is the max length for an index in mysql 5.6 InnoDB
+      t.string :path, null: false, limit: 255
 
-  FIXTURES_PATH = File.dirname(__FILE__) + '/../fixtures/mail_handler'
+      t.index :path
+    end
 
-  before do
-    User.current = nil
-  end
-
-  it 'should _create_issue' do
-    # Enable API and set a key
-    Setting.mail_handler_api_enabled = 1
-    Setting.mail_handler_api_key = 'secret'
-
-    post :index, params: { key: 'secret', email: IO.read(File.join(FIXTURES_PATH, 'ticket_on_given_project.eml')) }
-    assert_response 201
-  end
-
-  it 'should _not_allow' do
-    # Disable API
-    Setting.mail_handler_api_enabled = 0
-    Setting.mail_handler_api_key = 'secret'
-
-    post :index, params: { key: 'secret', email: IO.read(File.join(FIXTURES_PATH, 'ticket_on_given_project.eml')) }
-    assert_response 403
+    reversible do |dir|
+      dir.up { Relation.rebuild_hierarchy_paths! }
+    end
   end
 end
