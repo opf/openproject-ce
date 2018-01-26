@@ -1,12 +1,12 @@
-// -- copyright
+//-- copyright
 // OpenProject is a project management system.
-// Copyright (C) 2012-2015 the OpenProject Foundation (OPF)
+// Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License version 3.
 //
 // OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-// Copyright (C) 2006-2013 Jean-Philippe Lang
+// Copyright (C) 2006-2017 Jean-Philippe Lang
 // Copyright (C) 2010-2013 the ChiliProject Team
 //
 // This program is free software; you can redistribute it and/or
@@ -24,33 +24,44 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // See doc/COPYRIGHT.rdoc for more details.
-// ++
+//++
 
-import {DisplayField} from '../wp-display-field/wp-display-field.module';
-import {HalResource} from '../../api/api-v3/hal-resources/hal-resource.service';
-import {$injectFields} from '../../angular/angular-injector-bridge.functions';
+import {wpServicesModule} from '../../angular-modules';
+import {input} from 'reactivestates';
 
-import * as angular from 'angular';
+export type QueryMenuEvent = {
+  event:'add'|'remove'|'rename';
+  queryId:string;
+  path?:string;
+  label?:string;
+};
 
-export class FloatDisplayField extends DisplayField {
+export class QueryMenuService {
+  private events = input<QueryMenuEvent>();
 
-  private $locale:angular.ILocaleService;
-
-  constructor(public resource:HalResource,
-              public name:string,
-              public schema:op.FieldSchema) {
-    super(resource, name, schema);
-    $injectFields(this, '$locale');
+  /**
+   * Add a query menu item
+   * @param {string} queryId
+   * @param {string} name
+   */
+  public add(name:string, path:string, queryId:string) {
+    this.events.putValue({ event: 'add', queryId: queryId, path: path, label: name });
   }
 
-  public get valueString():string {
-    if (this.value == null) {
-      return '';
-    }
+  public rename(queryId:string, name:string) {
+    this.events.putValue({ event: 'rename', queryId: queryId, label: name });
+  }
 
-    return this.value.toLocaleString(
-      this.$locale.id,
-      { useGrouping: true, maximumFractionDigits: 20 }
-    );
+  public remove(queryId:string) {
+    this.events.putValue({ event: 'remove', queryId: queryId, label: queryId });
+  }
+
+  public on(type:string) {
+    return this.events
+      .values$()
+      .filter((e:QueryMenuEvent) => e.event === type)
+      .distinctUntilChanged();
   }
 }
+
+wpServicesModule.service('queryMenu', QueryMenuService)
