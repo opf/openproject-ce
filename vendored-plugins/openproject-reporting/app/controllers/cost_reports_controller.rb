@@ -18,6 +18,20 @@
 #++
 
 class CostReportsController < ApplicationController
+  module QueryPreperation
+    ##
+    # Make sure to add cost type filter after the
+    # query filters have been reset by .prepare_query
+    # from the Report::Controller.
+    def prepare_query
+      query = super
+
+      set_cost_type if @unit_id.present?
+
+      query
+    end
+  end
+
   rescue_from Exception do |exception|
     session.delete(CostQuery.name.underscore.to_sym)
     raise exception
@@ -29,12 +43,15 @@ class CostReportsController < ApplicationController
 
   Widget::Base.dont_cache!
 
-  before_filter :check_cache
-  before_filter :load_all
-  before_filter :find_optional_project
-  before_filter :find_optional_user
+  before_action :check_cache
+  before_action :load_all
+  before_action :find_optional_project
+  before_action :find_optional_user
+
   include Report::Controller
-  before_filter :set_cost_types # has to be set AFTER the Report::Controller filters run
+  prepend QueryPreperation
+
+  before_action :set_cost_types # has to be set AFTER the Report::Controller filters run
 
   verify method: :delete, only: %w[destroy]
   verify method: :post, only: %w[create, update, rename]
@@ -95,14 +112,52 @@ class CostReportsController < ApplicationController
   ##
   # Set a default query to cut down initial load time
   def default_filter_parameters
-    { operators: { user_id: '=', spent_on: '>d' },
+    {
+      operators: { user_id: '=', spent_on: '>d' },
       values: { user_id: [User.current.id], spent_on: [30.days.ago.strftime('%Y-%m-%d')] }
     }.tap do |hash|
       if @project
-        hash[:operators].merge! project_id: '='
-        hash[:values].merge! project_id: [@project.id]
+        set_project_filter(hash, @project.id)
       end
     end
+  end
+
+  ##
+  # Get the filter params with an optional project context
+  def filter_params
+    filters = super
+    update_project_context!(filters)
+
+    filters
+  end
+
+  ##
+  # Clear the query if the project context changed
+  def update_project_context!(filters)
+
+    # Only in project context
+    return unless @project
+
+    # Only if the project context changed
+    context = filters[:project_context]
+
+    # Context is same, don't set project (allow override)
+    return if context == @project.id
+
+    # Reset context if project missing
+    if context.nil?
+      filters[:project_context] = @project.id
+      return
+    end
+
+    # Update the project context and project_id filter
+    set_project_filter(filters, @project.id)
+  end
+
+  def set_project_filter(filters, project_id)
+    filters[:project_context] = project_id
+    filters[:operators].merge! project_id: '='
+    filters[:values].merge! project_id: [project_id]
   end
 
   ##
@@ -115,23 +170,6 @@ class CostReportsController < ApplicationController
         h[:rows] << :project_id
       end
     end
-  end
-
-  ##
-  # We apply a project filter, except when we are just applying a brand new query
-  def ensure_project_scope!(filters)
-    return unless ensure_project_scope?
-    if @project
-      filters[:operators].merge! project_id: '='
-      filters[:values].merge! project_id: @project.id.to_s
-    else
-      filters[:operators].delete :project_id
-      filters[:values].delete :project_id
-    end
-  end
-
-  def ensure_project_scope?
-    !(set_filter? or set_unit?)
   end
 
   ##
@@ -159,10 +197,10 @@ class CostReportsController < ApplicationController
   # Determine the active cost type, if it is not labor or money, and add a hidden filter to the query
   #   sets the @cost_type -> this is used to select the proper units for display
   def set_cost_type
-    if @unit_id != 0 && @query
-      @query.filter :cost_type_id, operator: '=', value: @unit_id.to_s, display: false
-      @cost_type = CostType.find(@unit_id) if @unit_id > 0
-    end
+    return unless @query
+
+    @query.filter :cost_type_id, operator: '=', value: @unit_id.to_s, display: false
+    @cost_type = CostType.find(@unit_id) if @unit_id > 0
   end
 
   #   set the @cost_types -> this is used to determine which tabs to display

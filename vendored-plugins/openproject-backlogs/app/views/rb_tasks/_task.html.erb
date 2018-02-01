@@ -34,7 +34,7 @@ See doc/COPYRIGHT.rdoc for more details.
 
 ++#%>
 
-<% prevent_edit = User.current.allowed_to?(:update_tasks, defined?(project) ? project : task.project) ? '' : 'prevent_edit'%>
+<% prevent_edit = User.current.allowed_to?(:edit_work_packages, defined?(project) ? project : task.project) ? '' : 'prevent_edit'%>
 <div class="model work_package task <%= color_contrast_class(task) %> <%= prevent_edit %> <%= mark_if_closed(task) %>" id="work_package_<%= task.id %>" <%= build_inline_style(task) %>>
   <div class="id">
     <div class="t"><%= work_package_link_or_empty(task) %></div>
@@ -50,7 +50,6 @@ See doc/COPYRIGHT.rdoc for more details.
   <div class="meta">
     <div class="story_id"><%= task.parent_id %></div>
     <div class="status_id"><%= task.status_id %></div>
-    <div class="previous"><%= task.right_sibling.blank? ? '' : task.right_sibling.id %></div>
     <%= render :partial => "shared/model_errors", :object => task.errors %>
   </div>
 </div>
