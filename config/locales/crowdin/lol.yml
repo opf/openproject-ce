@@ -927,6 +927,8 @@ lol:
       blog: crwdns93021:0crwdne93021:0
       boards: crwdns93022:0crwdne93022:0
       newsletter: crwdns93023:0crwdne93023:0
+  links:
+    configuration_guide: crwdns95570:0crwdne95570:0
   instructions_after_registration: crwdns93024:0%{signin}crwdne93024:0
   instructions_after_logout: crwdns93025:0%{signin}crwdne93025:0
   instructions_after_error: crwdns93026:0%{signin}crwdne93026:0
