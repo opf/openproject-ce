@@ -131,7 +131,6 @@ PATH
     openproject-backlogs (8.0.0)
       acts_as_silent_list (~> 3.0.0)
       openproject-pdf_export (= 8.0.0)
-      rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-costs
@@ -156,20 +155,17 @@ PATH
   remote: vendored-plugins/openproject-global_roles
   specs:
     openproject-global_roles (8.0.0)
-      rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-meeting
   specs:
     openproject-meeting (8.0.0)
       icalendar (~> 2.3.0)
-      rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-my_project_page
   specs:
     openproject-my_project_page (8.0.0)
-      rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-openid_connect
@@ -206,7 +202,6 @@ PATH
   remote: vendored-plugins/openproject-xls_export
   specs:
     openproject-xls_export (8.0.0)
-      rails (~> 5.0.0)
       spreadsheet (~> 0.8.9)
 
 PATH
