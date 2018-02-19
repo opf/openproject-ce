@@ -189,7 +189,6 @@ PATH
     openproject-reporting (8.0.0)
       jquery-tablesorter (~> 1.22.3)
       openproject-costs (= 8.0.0)
-      rails (~> 5.0.0)
       reporting_engine (>= 1.1.0)
 
 PATH
@@ -524,7 +523,7 @@ GEM
     netrc (0.11.0)
     newrelic_rpm (4.5.0.337)
     nio4r (2.1.0)
-    nokogiri (1.8.1)
+    nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     oj (3.3.8)
     okcomputer (1.16.0)
@@ -867,7 +866,7 @@ DEPENDENCIES
   mysql2 (~> 0.4.4)
   net-ldap (~> 0.16.0)
   newrelic_rpm
-  nokogiri (~> 1.8.1)
+  nokogiri (~> 1.8.2)
   oj (~> 3.3.2)
   okcomputer (~> 1.16.0)
   omniauth!
