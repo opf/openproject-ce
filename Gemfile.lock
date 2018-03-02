@@ -142,7 +142,6 @@ PATH
   remote: vendored-plugins/openproject-documents
   specs:
     openproject-documents (8.0.0)
-      rails (~> 5.0.0)
 
 PATH
   remote: vendored-plugins/openproject-github_integration
