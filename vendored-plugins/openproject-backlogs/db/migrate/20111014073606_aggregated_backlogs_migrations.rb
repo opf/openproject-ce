@@ -76,7 +76,7 @@ class AggregatedBacklogsMigrations < ActiveRecord::Migration
         t.integer 'issue_status_id'
       end
 
-      if @issues_table_exists
+      if @issues_table_exists && !issues_migrated?
         change_table 'issues' do |t|
           t.integer 'position'
           t.integer 'story_points'
@@ -104,6 +104,12 @@ class AggregatedBacklogsMigrations < ActiveRecord::Migration
   end
 
   private
+
+  def issues_migrated?
+    [:position, :story_points, :remaining_hours].all? do |col|
+      column_exists? :issues, col
+    end
+  end
 
   def replace(hash, mapping)
     Hash[hash.map { |k, v| [mapping[k] || k, v] }]
