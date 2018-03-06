@@ -855,7 +855,6 @@ DEPENDENCIES
   launchy (~> 2.4.3)
   letter_opener
   livingstyleguide (~> 2.0.1)
-  mail (~> 2.6.6)
   meta-tags (~> 2.6.0)
   multi_json (~> 1.12.1)
   mysql2 (~> 0.4.4)
