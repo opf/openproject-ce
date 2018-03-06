@@ -16,13 +16,13 @@ GIT
 
 GIT
   remote: https://github.com/finnlabs/omniauth-openid-connect.git
-  revision: c3bce4c9e9ac5412b36b00f80a44e3f1f7817222
+  revision: 73275c58f0b2271a908a8cd47b00af5cd414c1bb
   branch: dev
   specs:
     omniauth-openid-connect (0.2.0)
       addressable (~> 2.3)
       omniauth (~> 1.1)
-      openid_connect (~> 0.8.0)
+      openid_connect (~> 1.1.3)
 
 GIT
   remote: https://github.com/finnlabs/omniauth-openid_connect-providers.git
@@ -260,6 +260,7 @@ GEM
       activerecord (>= 3.0.0)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
+    aes_key_wrap (1.0.1)
     afm (0.2.2)
     airbrake (5.1.0)
       airbrake-ruby (~> 1.1)
@@ -285,7 +286,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     backports (3.10.3)
     bcrypt (3.1.11)
-    bindata (2.4.0)
+    bindata (2.4.2)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     bootsnap (1.1.5)
@@ -445,7 +446,7 @@ GEM
     gravatar_image_tag (1.2.0)
     hashdiff (0.3.7)
     hashery (2.1.2)
-    hashie (3.5.6)
+    hashie (3.5.7)
     health_check (2.6.0)
       rails (>= 4.0)
     htmldiff (0.0.1)
@@ -465,10 +466,10 @@ GEM
     jquery-tablesorter (1.22.7)
       railties (>= 3.2, < 6)
     json (1.8.6)
-    json-jwt (1.7.2)
+    json-jwt (1.9.2)
       activesupport
+      aes_key_wrap
       bindata
-      multi_json (>= 1.3)
       securecompare
       url_safe_base64
     json_spec (1.1.5)
@@ -520,17 +521,16 @@ GEM
       mini_portile2 (~> 2.3.0)
     oj (3.3.8)
     okcomputer (1.16.0)
-    openid_connect (0.8.3)
+    openid_connect (1.1.5)
       activemodel
-      attr_required (>= 0.0.5)
-      json (>= 1.4.3)
-      json-jwt (>= 0.5.5)
-      rack-oauth2 (>= 1.0.0)
-      swd (>= 0.1.2)
+      attr_required (>= 1.0.0)
+      json-jwt (>= 1.5.0)
+      rack-oauth2 (>= 1.6.1)
+      swd (>= 1.0.0)
       tzinfo
       validate_email
       validate_url
-      webfinger (>= 0.0.2)
+      webfinger (>= 1.0.1)
     openproject-token (1.0.1)
       activemodel (~> 5.0)
     parallel (1.12.0)
@@ -576,7 +576,7 @@ GEM
     pry-stack_explorer (0.4.9.2)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (3.0.0)
+    public_suffix (3.0.2)
     rabl (0.13.1)
       activesupport (>= 2.3.14)
     rack (2.0.4)
@@ -584,12 +584,12 @@ GEM
       rack (>= 0.4)
     rack-attack (5.0.1)
       rack
-    rack-oauth2 (1.6.2)
-      activesupport (>= 2.3)
-      attr_required (>= 0.0.5)
-      httpclient (>= 2.4)
-      multi_json (>= 1.3.6)
-      rack (>= 1.1)
+    rack-oauth2 (1.9.0)
+      activesupport
+      attr_required
+      httpclient
+      json-jwt (>= 1.9.0)
+      rack
     rack-protection (2.0.0)
       rack
     rack-test (0.6.3)
@@ -740,12 +740,10 @@ GEM
     sqlite3 (1.3.13)
     stringex (2.7.1)
     svg-graph (2.1.1)
-    swd (1.0.1)
+    swd (1.1.2)
       activesupport (>= 3)
       attr_required (>= 0.0.5)
       httpclient (>= 2.4)
-      i18n
-      json (>= 1.4.3)
     syck (1.3.0)
     sys-filesystem (1.1.8)
       ffi
@@ -792,10 +790,9 @@ GEM
       rack (>= 1.0)
     warden-basic_auth (0.2.1)
       warden (~> 1.2)
-    webfinger (1.0.2)
+    webfinger (1.1.0)
       activesupport
       httpclient (>= 2.4)
-      multi_json
     webmock (3.1.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -858,6 +855,7 @@ DEPENDENCIES
   launchy (~> 2.4.3)
   letter_opener
   livingstyleguide (~> 2.0.1)
+  mail (~> 2.6.6)
   meta-tags (~> 2.6.0)
   multi_json (~> 1.12.1)
   mysql2 (~> 0.4.4)
