@@ -158,7 +158,6 @@ PATH
   remote: vendored-plugins/openproject-openid_connect
   specs:
     openproject-openid_connect (8.0.0)
-      lobby_boy (~> 0.1)
       omniauth-openid_connect-providers (~> 0.1)
       openproject-auth_plugins (~> 8.0)
       rails (~> 5.0)
@@ -486,10 +485,6 @@ GEM
       sass
       thor
       tilt
-    lobby_boy (0.1.2)
-      omniauth (~> 1.1)
-      omniauth-openid-connect (>= 0.2)
-      rails (>= 3.2.21)
     loofah (2.2.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
