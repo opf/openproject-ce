@@ -25,7 +25,13 @@ group :opf_plugins do
 
   gem "openproject-backlogs", path: "vendored-plugins/openproject-backlogs"
 
-  gem "openproject-local_avatars", path: "vendored-plugins/openproject-local_avatars"
+  gem "openproject-avatars", path: "vendored-plugins/openproject-avatars"
+  gem "openproject-two_factor_authentication", path: "vendored-plugins/openproject-two_factor_authentication"
+  gem "openproject-ldap_groups", path: "vendored-plugins/openproject-ldap_groups"
   gem "openproject-webhooks", path: "vendored-plugins/openproject-webhooks"
   gem "openproject-github_integration", path: "vendored-plugins/openproject-github_integration"
+end
+
+group :development, :test do
+    gem 'ladle'
 end
