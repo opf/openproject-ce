@@ -29,7 +29,7 @@
 language: ruby
 
 rvm:
-  - 2.4.4
+  - 2.4.2
 
 sudo: required
 dist: trusty
@@ -79,6 +79,15 @@ env:
     - "TEST_SUITE=features       DB=mysql     GROUP_SIZE=4 GROUP=4"
     - "TEST_SUITE=features       DB=postgres  GROUP_SIZE=4 GROUP=4"
 
+    - "TEST_SUITE=plugins:specs       DB=mysql     GROUP_SIZE=1 GROUP=1"
+    - "TEST_SUITE=plugins:specs       DB=postgres  GROUP_SIZE=1 GROUP=1"
+
+    - "TEST_SUITE=plugins:features       DB=mysql     GROUP_SIZE=1 GROUP=1"
+    - "TEST_SUITE=plugins:features       DB=postgres  GROUP_SIZE=1 GROUP=1"
+
+    - "TEST_SUITE=plugins:cucumber       DB=mysql     GROUP_SIZE=1 GROUP=1"
+    - "TEST_SUITE=plugins:cucumber       DB=postgres  GROUP_SIZE=1 GROUP=1"
+
 
 before_install:
 
@@ -95,8 +104,6 @@ before_install:
   - echo `geckodriver --version`
   # Install Node LTS Boron (6.9.1)
   - "nvm install 6.9.1"
-  # work around https://github.com/travis-ci/travis-ci/issues/8969
-  - travis_retry gem update --system
 
 bundler_args: --binstubs --without development production docker
 
@@ -124,5 +131,5 @@ addons:
   # Setting latest here due to the switch from old selenium bindings
   # to Marionette. At the date of this writing, ESR is Firefox 52 and has
   # bad support for it. Thus we use latest (57.0 as of this writing)
-  firefox: "57.0"
+  firefox: "latest"
   postgresql: "9.6"
