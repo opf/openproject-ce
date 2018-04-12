@@ -1,5 +1,4 @@
 import * as Fuse from 'fuse.js';
-import {timeOutput} from '../../../../helpers/debug_output';
 
 export interface IAutocompleteItem<T> {
   label:string;
@@ -59,7 +58,7 @@ export abstract class ILazyAutocompleterBridge<T> {
       return items;
     }
 
-    return this.fuseInstance.search(term) as any;
+    return this.fuseInstance.search(term);
   }
 
   /**

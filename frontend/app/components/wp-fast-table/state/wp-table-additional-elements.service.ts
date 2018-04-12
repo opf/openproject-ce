@@ -40,17 +40,20 @@ import {
 } from '../../wp-relations/wp-relations.service';
 import {WorkPackageTableHierarchiesService} from './wp-table-hierarchy.service';
 import {WorkPackageNotificationService} from 'core-components/wp-edit/wp-notification.service';
+import {TableState} from 'core-components/wp-table/table-state/table-state';
+import {Inject, Injectable} from '@angular/core';
+import {halRequestToken} from 'core-app/angular4-transition-utils';
 
+@Injectable()
 export class WorkPackageTableAdditionalElementsService {
 
-  constructor(public states:States,
-              public wpTableHierarchies:WorkPackageTableHierarchiesService,
-              public wpTableColumns:WorkPackageTableColumnsService,
-              public wpNotificationsService:WorkPackageNotificationService,
-              public $q:IQService,
-              public halRequest:HalRequestService,
-              public wpCacheService:WorkPackageCacheService,
-              public wpRelations:WorkPackageRelationsService) {
+  constructor(readonly tableState:TableState,
+              readonly wpTableHierarchies:WorkPackageTableHierarchiesService,
+              readonly wpTableColumns:WorkPackageTableColumnsService,
+              readonly wpNotificationsService:WorkPackageNotificationService,
+              @Inject(halRequestToken) readonly halRequest:HalRequestService,
+              readonly wpCacheService:WorkPackageCacheService,
+              readonly wpRelations:WorkPackageRelationsService) {
   }
 
   public initialize(rows:WorkPackageResourceInterface[]) {
@@ -66,10 +69,10 @@ export class WorkPackageTableAdditionalElementsService {
   private loadAdditional(wpIds:string[]) {
     this.wpCacheService.requireAll(wpIds)
       .then(() => {
-        this.states.globalTable.additionalRequiredWorkPackages.putValue(null, 'All required work packages are loaded');
+        this.tableState.additionalRequiredWorkPackages.putValue(null, 'All required work packages are loaded');
       })
       .catch((e) => {
-        this.states.globalTable.additionalRequiredWorkPackages.putValue(null, 'Failure loading required work packages');
+        this.tableState.additionalRequiredWorkPackages.putValue(null, 'Failure loading required work packages');
         this.wpNotificationsService.handleErrorResponse(e);
       });
   }
@@ -78,7 +81,7 @@ export class WorkPackageTableAdditionalElementsService {
    * Requires both the relation resource of the given work package ids as well
    * as the `to` work packages returned from the relations
    */
-  private requireInvolvedRelations(rows:string[]):Promise<string[]> {
+  private async requireInvolvedRelations(rows:string[]):Promise<string[]> {
 
     if (!this.wpTableColumns.hasRelationColumns()) {
       return Promise.resolve([]);
@@ -98,7 +101,7 @@ export class WorkPackageTableAdditionalElementsService {
    * @param rows
    * @return {string[]}
    */
-  private requireHierarchyElements(rows:WorkPackageResourceInterface[]):Promise<string[]> {
+  private async requireHierarchyElements(rows:WorkPackageResourceInterface[]):Promise<string[]> {
     if (!this.wpTableHierarchies.isEnabled) {
       return Promise.resolve([]);
     }

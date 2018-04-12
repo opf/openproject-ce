@@ -40,7 +40,7 @@ export class RelationRowBuilder extends SingleRowBuilder {
    * @param column
    * @return {any}
    */
-  public buildCell(workPackage:WorkPackageResourceInterface, column:QueryColumn):HTMLElement {
+  public buildCell(workPackage:WorkPackageResourceInterface, column:QueryColumn):HTMLElement|null {
 
     // handle relation types
     if (isRelationColumn(column)) {
@@ -56,7 +56,7 @@ export class RelationRowBuilder extends SingleRowBuilder {
   public buildEmptyRelationRow(from:WorkPackageResourceInterface, relation:RelationResource, type:RelationColumnType):[HTMLElement, WorkPackageResourceInterface] {
     const denormalized = relation.denormalized(from);
 
-    const to = this.states.workPackages.get(denormalized.targetId).value! as WorkPackageResourceInterface;
+    const to = this.states.workPackages.get(denormalized.targetId).value!;
 
     // Let the primary row builder build the row
     const row = this.createEmptyRelationRow(from, to);

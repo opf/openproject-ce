@@ -77,6 +77,7 @@ interface Function {
 interface JQuery {
   topShelf:any;
   atwho:any;
+  mark:any;
 }
 
 declare var Factory:any;
@@ -87,7 +88,7 @@ declare namespace op {
    */
   interface I18n {
     t(translateId:string, parameters?:any):string;
-    lookup(translateId:string):boolean;
+    lookup(translateId:string):boolean|undefined;
     locale:string;
   }
 
@@ -118,13 +119,5 @@ declare namespace op {
     groupBy?:string;
     showSums?:boolean;
     sortBy?:any[];
-  }
-
-  interface PathHelper {
-    workPackagePath(id:any):string;
-  }
-
-  interface WorkPackagesHelper {
-    formatValue(value:any, type:any):string;
   }
 }

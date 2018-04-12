@@ -28,10 +28,12 @@
 
 import ExpressionService from 'core-components/common/xss/expression.service';
 
+// Require vendors for global exposes. DLL handles the extraction
+// into a separate bundle
 require('./vendors');
 
 // Styles for global dependencies
-require('at.js/jquery.atwho.min.css');
+require('at.js/dist/css/jquery.atwho.min.css');
 require('select2/select2.css');
 require('ui-select/dist/select.min.css');
 require('ng-dialog/css/ngDialog.min.css');
@@ -95,7 +97,7 @@ openprojectModule
               //   * when the path is already appended
               //   * when we are getting a template
               if (!config.url.match('(^/templates|\\.html$|^' + window.appBasePath + ')')) {
-                config.url = window.appBasePath + config.url;
+                config.url = window.appBasePath + (config.url as string);
               }
 
               return config || $q.when(config);

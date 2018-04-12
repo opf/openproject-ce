@@ -26,6 +26,8 @@
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
 
+import {TableState} from 'core-components/wp-table/table-state/table-state';
+
 require('../../../angular4-test-setup');
 
 import {async, inject, TestBed} from '@angular/core/testing';
@@ -38,8 +40,8 @@ import {IPaginationOptions, PaginationService} from 'core-components/table-pagin
 import {WorkPackageTablePaginationService} from 'core-components/wp-fast-table/state/wp-table-pagination.service';
 import {WorkPackageTablePaginationComponent} from 'core-components/wp-table/table-pagination/wp-table-pagination.component';
 
-function setupMocks(paginationService:PaginationService) {
-  sinon.stub(paginationService, 'loadPaginationOptions', () => {
+async function setupMocks(paginationService:PaginationService) {
+  sinon.stub(paginationService, 'loadPaginationOptions', async () => {
     const options:IPaginationOptions = {
       perPage: 0,
       perPageOptions: [10, 100, 500, 1000],
@@ -68,6 +70,7 @@ describe('wpTablePagination Directive', () => {
         PaginationService,
         WorkPackageTablePaginationService,
         ConfigurationDmService,
+        TableState,
         HalRequestService,
         {provide: I18nToken, useValue: (window as any).I18n},
         {provide: v3PathToken, useValue: {}},

@@ -67,11 +67,14 @@ export class PaginationService {
   }
 
   public getCachedPerPage(initialPageOptions:number[]):number {
-    const value = window.OpenProject.guardedLocalStorage('pagination.perPage');
-    const perPage = parseInt(value!, 10);
+    const value = window.OpenProject.guardedLocalStorage('pagination.perPage') as string;
 
-    if (perPage > 0) {
-      return perPage;
+    if (value !== undefined) {
+      const perPage = parseInt(value, 10);
+
+      if (perPage > 0) {
+        return perPage;
+      }
     }
 
     if (initialPageOptions.length > 0) {

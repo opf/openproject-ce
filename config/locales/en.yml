@@ -404,6 +404,7 @@ en:
       work_package:
         begin_insertion: "Begin of the insertion"
         begin_deletion: "Begin of the deletion"
+        children: "Subelements"
         done_ratio: "Progress (%)"
         end_insertion: "End of the insertion"
         end_deletion: "End of the deletion"
@@ -1309,6 +1310,7 @@ en:
   label_open_menu: "Open menu"
   label_open_work_packages: "open"
   label_open_work_packages_plural: "open"
+  label_openproject_website: "OpenProject website"
   label_optional_description: "Description"
   label_options: "Options"
   label_other: "Other"
@@ -2027,6 +2029,11 @@ en:
     passwords: "Passwords"
     session: "Session"
     brute_force_prevention: "Automated user blocking"
+
+  text_formatting:
+    textile: 'Textile'
+    markdown: 'Markdown'
+    plain: 'Plain text'
 
   show_hide_project_menu: "Expand/Collapse project menu"
 

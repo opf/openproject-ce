@@ -27,13 +27,16 @@
 // ++
 
 import {Component, ElementRef, Injector, OnDestroy, OnInit} from '@angular/core';
-import {TableStateHolder} from 'core-components/wp-table/table-state/table-state';
+import {TableState} from 'core-components/wp-table/table-state/table-state';
 import {componentDestroyed} from 'ng2-rx-componentdestroyed';
 import {State} from 'reactivestates';
 import {combineLatest} from 'rxjs/observable/combineLatest';
 import {filter, map, take, takeUntil} from 'rxjs/operators';
 import {States} from '../../../states.service';
-import {RelationsStateValue, WorkPackageRelationsService} from '../../../wp-relations/wp-relations.service';
+import {
+  RelationsStateValue,
+  WorkPackageRelationsService
+} from '../../../wp-relations/wp-relations.service';
 import {WorkPackageTimelineCell} from '../cells/wp-timeline-cell';
 import {WorkPackageTimelineTableController} from '../container/wp-timeline-container.directive';
 import {timelineElementCssClass, TimelineViewParameters} from '../wp-timeline';
@@ -67,9 +70,7 @@ function newSegment(vp:TimelineViewParameters,
 
   if (DEBUG_DRAW_RELATION_LINES_WITH_COLOR && color !== undefined) {
     segment.style.zIndex = '9999999';
-    if (color !== undefined) {
-      segment.style.backgroundColor = color;
-    }
+    segment.style.backgroundColor = color;
   }
   return segment;
 }
@@ -80,7 +81,7 @@ function newSegment(vp:TimelineViewParameters,
 })
 export class WorkPackageTableTimelineRelations implements OnInit, OnDestroy {
 
-  private readonly tableState = this.injector.get(TableStateHolder);
+  private readonly tableState:TableState = this.injector.get(TableState);
 
   private container:JQuery;
 
@@ -121,8 +122,8 @@ export class WorkPackageTableTimelineRelations implements OnInit, OnDestroy {
   private setupRelationSubscription() {
     // for all visible WorkPackage rows...
     combineLatest(
-      this.tableState.get().renderedWorkPackages.values$(),
-      this.tableState.get().timelineVisible.values$()
+      this.tableState.renderedWorkPackages.values$(),
+      this.tableState.timelineVisible.values$()
     )
       .pipe(
         filter(([rendered, timeline]) => timeline.isVisible),
@@ -153,7 +154,7 @@ export class WorkPackageTableTimelineRelations implements OnInit, OnDestroy {
     this.states.workPackages.observeChange()
       .pipe(
         takeUntil(componentDestroyed(this)),
-        filter(() => this.tableState.get().timelineVisible.mapOr(v => v.visible, false))
+        filter(() => this.tableState.timelineVisible.mapOr(v => v.visible, false))
       )
       .subscribe(([workPackageId]) => {
         this.renderWorkPackagesRelations([workPackageId]);
@@ -174,7 +175,7 @@ export class WorkPackageTableTimelineRelations implements OnInit, OnDestroy {
       relationsList.forEach(relation => {
 
         if (!(relation.type === 'precedes'
-            || relation.type === 'follows')) {
+          || relation.type === 'follows')) {
           return;
         }
 

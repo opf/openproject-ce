@@ -37,11 +37,8 @@ import {scopedObservable} from '../../../helpers/angular-rx-utils';
 import {QueryResource} from '../../api/api-v3/hal-resources/query-resource.service';
 
 export abstract class WorkPackageTableBaseService<T> {
-  protected tableState:TableState;
 
-  constructor(protected states:States) {
-    // TODO Remove global references
-    this.tableState = states.globalTable;
+  constructor(readonly tableState:TableState) {
   }
 
   /**
@@ -81,7 +78,7 @@ export abstract class WorkPackageTableBaseService<T> {
     return this.state.values$().pipe(takeUntil(unsubscribe));
   }
 
-  public onReady(scope:ng.IScope) {
+  public async onReady(scope:ng.IScope) {
     return scopedObservable(scope, this.state.values$())
       .pipe(
         take(1),

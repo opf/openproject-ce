@@ -31,7 +31,6 @@ import {WorkPackageChangeset} from '../../../wp-edit-form/work-package-changeset
 import {WorkPackageTableTimelineService} from '../../../wp-fast-table/state/wp-table-timeline.service';
 import {DisplayFieldRenderer} from '../../../wp-edit-form/display-field-renderer';
 import Moment = moment.Moment;
-import WorkPackagesHelper = op.WorkPackagesHelper;
 
 export interface CellDateMovement {
   // Target values to move work package to
@@ -55,7 +54,7 @@ export class TimelineCellRenderer {
   protected dateDisplaysOnMouseMove:{ left?:HTMLElement; right?:HTMLElement } = {};
 
   constructor(public workPackageTimeline:WorkPackageTimelineTableController) {
-    $injectFields(this, 'TimezoneService', 'wpTableTimeline', 'WorkPackagesHelper');
+    $injectFields(this, 'TimezoneService', 'wpTableTimeline');
   }
 
   public get type():string {
@@ -101,8 +100,8 @@ export class TimelineCellRenderer {
                           labels:WorkPackageCellLabels,
                           dates:any):void {
 
-    this.assignDate(changeset, 'startDate', dates.startDate!);
-    this.assignDate(changeset, 'dueDate', dates.dueDate!);
+    this.assignDate(changeset, 'startDate', dates.startDate);
+    this.assignDate(changeset, 'dueDate', dates.dueDate);
 
     this.updateLabels(true, labels, changeset);
   }
@@ -141,9 +140,9 @@ export class TimelineCellRenderer {
 
     // avoid negative "overdrag" if only start or due are changed
     if (direction !== 'both') {
-      if (dates.startDate != undefined && dates.startDate.isAfter(dueDate)) {
+      if (dates.startDate !== undefined && dates.startDate.isAfter(dueDate)) {
         dates.startDate = dueDate;
-      } else if (dates.dueDate != undefined && dates.dueDate.isBefore(startDate)) {
+      } else if (dates.dueDate !== undefined && dates.dueDate.isBefore(startDate)) {
         dates.dueDate = startDate;
       }
     }
@@ -168,14 +167,14 @@ export class TimelineCellRenderer {
     let direction:'left' | 'right' | 'both' | 'dragright';
 
     // Update the cursor and maybe set start/due values
-    if (jQuery(ev.target).hasClass(classNameLeftHandle)) {
+    if (jQuery(ev.target!).hasClass(classNameLeftHandle)) {
       // only left
       direction = 'left';
       this.workPackageTimeline.forceCursor('col-resize');
       if (changeset.value('startDate') === null) {
         changeset.setValue('startDate', changeset.value('dueDate'));
       }
-    } else if (jQuery(ev.target).hasClass(classNameRightHandle) || dateForCreate) {
+    } else if (jQuery(ev.target!).hasClass(classNameRightHandle) || dateForCreate) {
       // only right
       direction = 'right';
       this.workPackageTimeline.forceCursor('col-resize');

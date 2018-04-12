@@ -3,14 +3,15 @@ import {wpDirectivesModule} from '../../../angular-modules';
 import {WorkPackageRelationsHierarchyService} from '../wp-relations-hierarchy/wp-relations-hierarchy.service';
 import {WorkPackageCacheService} from '../../work-packages/work-package-cache.service';
 import {WorkPackageNotificationService} from '../../wp-edit/wp-notification.service';
-import {scopeDestroyed$, scopedObservable} from '../../../helpers/angular-rx-utils';
+import {scopedObservable} from '../../../helpers/angular-rx-utils';
+import {PathHelperService} from 'core-components/common/path-helper/path-helper.service';
 
 class WpRelationsHierarchyRowDirectiveController {
   public workPackage:WorkPackageResourceInterface;
   public relatedWorkPackage:WorkPackageResourceInterface;
   public relationType:any;
   public showEditForm:boolean = false;
-  public workPackagePath = this.PathHelper.workPackagePath;
+  public workPackagePath = this.PathHelper.workPackagePath.bind(this.PathHelper);
   public canModifyHierarchy:boolean = false;
 
   constructor(protected $scope:ng.IScope,
@@ -18,7 +19,7 @@ class WpRelationsHierarchyRowDirectiveController {
               protected wpRelationsHierarchyService:WorkPackageRelationsHierarchyService,
               protected wpCacheService:WorkPackageCacheService,
               protected wpNotificationsService:WorkPackageNotificationService,
-              protected PathHelper:op.PathHelper,
+              protected PathHelper:PathHelperService,
               protected I18n:op.I18n,
               protected $q:ng.IQService) {
 

@@ -300,7 +300,7 @@ en:
       relation_type: "relation type"
 
     relations_hierarchy:
-      hierarchy_headline: "hierarchy"
+      parent_headline: "Parent"
 
     relation_buttons:
       change_parent: "Change parent"

@@ -35,10 +35,16 @@ import {QueryFilterResource} from '../api/api-v3/hal-resources/query-filter-reso
 import {QueryFilterInstanceResource} from '../api/api-v3/hal-resources/query-filter-instance-resource.service';
 import {QueryFilterInstanceSchemaResource} from '../api/api-v3/hal-resources/query-filter-instance-schema-resource.service';
 import {QueryColumn} from '../wp-query/query-column';
+import {Inject, Injectable} from '@angular/core';
+import {
+  QueryFilterInstanceResourceToken,
+  QueryResourceToken
+} from 'core-app/angular4-transition-utils';
 
+@Injectable()
 export class WorkPackagesListInvalidQueryService {
-  constructor(protected QueryResource:QueryResource,
-              protected QueryFilterInstanceResource:QueryFilterInstanceResource) {}
+  constructor(@Inject(QueryResourceToken) protected QueryResource:QueryResource,
+              @Inject(QueryFilterInstanceResourceToken) protected QueryFilterInstanceResource:QueryFilterInstanceResource) {}
 
   public restoreQuery(query:QueryResource, form:QueryFormResource) {
     let payload = new (this.QueryResource as any)(form.payload);
@@ -51,7 +57,7 @@ export class WorkPackagesListInvalidQueryService {
   }
 
   private restoreFilters(query:QueryResource, payload:QueryResource, querySchema:SchemaResource) {
-    let filters = _.map((payload.filters as QueryFilterInstanceResource[]), filter => {
+    let filters = _.map((payload.filters), filter => {
       let filterInstanceSchema = _.find(querySchema.filtersSchemas.elements, (schema:QueryFilterInstanceSchemaResource) => {
         return (schema.filter.allowedValues as QueryFilterResource[])[0].$href === filter.filter.$href;
       })
@@ -97,7 +103,7 @@ export class WorkPackagesListInvalidQueryService {
   }
 
   private restoreSortBy(query:QueryResource, stubQuery:QueryResource, schema:SchemaResource) {
-    let sortBys = _.map((stubQuery.sortBy as QuerySortByResource[]), sortBy => {
+    let sortBys = _.map((stubQuery.sortBy), sortBy => {
       return _.find((schema.sortBy.allowedValues as QuerySortByResource[]), candidate => {
         return candidate.$href === sortBy.$href;
       })!;
@@ -127,7 +133,3 @@ export class WorkPackagesListInvalidQueryService {
     });
   }
 }
-
-angular
-  .module('openproject.workPackages.services')
-  .service('wpListInvalidQueryService', WorkPackagesListInvalidQueryService);
