@@ -35,7 +35,9 @@ def scroll_to_element(element)
 end
 
 def scroll_to_and_click(element)
-  scroll_to_element(element)
-  sleep 0.2
-  element.native.click
+  retry_block do
+    scroll_to_element(element)
+    sleep 0.2
+    element.click
+  end
 end
