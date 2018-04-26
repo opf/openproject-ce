@@ -1,4 +1,5 @@
 #-- encoding: UTF-8
+
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
@@ -26,23 +27,33 @@
 #
 # See docs/COPYRIGHT.rdoc for more details.
 #++
-require 'legacy_spec_helper'
 
-describe IssuePriority do
-  fixtures :all
+module API
+  module V3
+    module Principals
+      module GroupOrUserElements
+        extend ::ActiveSupport::Concern
 
-  it 'should be an enumeration' do
-    assert IssuePriority.ancestors.include?(Enumeration)
-  end
+        included do
+          collection :elements,
+                     getter: ->(*) {
+                       represented.map do |model|
+                         representer_class = case model
+                                             when User
+                                               ::API::V3::Users::UserRepresenter
+                                             when Group
+                                               ::API::V3::Groups::GroupRepresenter
+                                             else
+                                               raise "unsupported type"
+                                             end
 
-  it 'should objects_count' do
-    # low priority
-    assert_equal 6, IssuePriority.find(4).objects_count
-    # urgent
-    assert_equal 0, IssuePriority.find(7).objects_count
-  end
-
-  it 'should option_name' do
-    assert_equal :enumeration_work_package_priorities, IssuePriority.new.option_name
+                         representer_class.new(model, current_user: current_user)
+                       end
+                     },
+                     exec_context: :decorator,
+                     embedded: true
+        end
+      end
+    end
   end
 end

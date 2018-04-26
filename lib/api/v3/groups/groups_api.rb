@@ -26,27 +26,39 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-class NgConfirmationDialog
-  include Capybara::DSL
-  include RSpec::Matchers
+module API
+  module V3
+    module Groups
+      class GroupsAPI < ::API::OpenProjectAPI
+        helpers ::API::Utilities::ParamsHelper
 
-  def container
-    '.ngdialog-content'
-  end
+        resources :groups do
+          params do
+            requires :id, desc: 'Group\'s id'
+          end
+          route_param :id do
+            helpers do
+              def group_scope
+                if current_user.allowed_to_globally?(:manage_members)
+                  Group.all
+                else
+                  Group
+                    .in_project(Project.allowed_to(current_user, :view_members))
+                end
+              end
 
-  def expect_open
-    expect(page).to have_selector(container)
-  end
+              def requested_user
+                group_scope.find(params[:id])
+              end
+            end
 
-  def confirm
-    page.within(container) do
-      page.find('.confirm-form-submit--continue').click
-    end
-  end
-
-  def cancel
-    page.within(container) do
-      page.find('.ngdialog-close').click
+            get do
+              GroupRepresenter
+                .new(requested_user, current_user: current_user)
+            end
+          end
+        end
+      end
     end
   end
 end
