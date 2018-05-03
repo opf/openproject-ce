@@ -26,33 +26,31 @@
 // See docs/COPYRIGHT.rdoc for more details.
 //++
 
-module.exports = function() {
-  'use strict';
+import {AfterViewInit, Directive, ElementRef, Input} from "@angular/core";
+import {FocusHelperService} from "core-components/common/focus/focus-helper";
+import {opUiComponentsModule} from "core-app/angular-modules";
+import {downgradeAttributeDirective} from "core-components/angular/downgrade-attribute-directive";
 
-  return {
-    restrict: 'A',
-    link: function(scope, element, attr) {
-      var doIfWatchedKey = function(keyEvent, callback) {
-        if (attr.clickOnKeypress.indexOf(keyEvent.which) !== -1){
-          keyEvent.stopPropagation();
-          keyEvent.preventDefault();
+@Directive({
+  selector: '[focus]'
+})
+export class FocusDirective implements AfterViewInit {
+  @Input('focus') condition:boolean;
+  @Input('focusPriority') priority?:number = 0;
 
-          if (callback !== undefined) {
-            callback(keyEvent);
-          }
-        }
-      };
+  constructor(readonly FocusHelper:FocusHelperService,
+              readonly elementRef:ElementRef) {
+  }
 
-      element.on('keydown', function(keyEvent) {
-        doIfWatchedKey(keyEvent);
-      });
+  ngAfterViewInit() {
+    this.updateFocus();
+  }
 
-      element.on('keyup', function(keyEvent) {
-        doIfWatchedKey(keyEvent, function() {
-          angular.element(keyEvent.target).click();
-        });
-      });
+  private updateFocus() {
+    if (this.condition) {
+      this.FocusHelper.focusElement(this.elementRef.nativeElement, this.priority);
     }
-  };
-};
+  }
+}
 
+opUiComponentsModule. directive('focus', downgradeAttributeDirective(FocusDirective));

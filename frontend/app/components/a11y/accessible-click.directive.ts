@@ -1,6 +1,6 @@
 //-- copyright
 // OpenProject is a project management system.
-// Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
+// Copyright (C) 2012-2017 the OpenProject Foundation (OPF)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License version 3.
@@ -23,46 +23,26 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
-// See docs/COPYRIGHT.rdoc for more details.
+// See doc/COPYRIGHT.rdoc for more details.
 //++
 
-// TODO move to UI components
-module.exports = function(FocusHelper) {
+import {Directive, EventEmitter, HostListener, Output} from '@angular/core';
+import {keyCodes} from "core-components/common/keyCodes.enum";
 
-  function isSelect2Element(attrs) {
-    var select2attributes = Object.keys(attrs).filter(function(attribute) {
-      return attribute.search(/select2/i) >= 0;
-    });
+@Directive({
+  selector: '[accessibleClick]',
+})
+export class AccessibleClickDirective {
+  @Output('accessibleClick') onClick = new EventEmitter<JQueryEventObject>();
 
-    return select2attributes.length > 0;
-  }
-
-  function updateFocus(scope, element, attrs) {
-    var condition = (attrs.focus) ? scope.$eval(attrs.focus) : true;
-
-    if (condition) {
-      var prio = 0;
-      if (attrs.focusPriority) {
-        prio = scope.$eval(attrs.focusPriority);
-        // Special case: Treat 'true' as 1 for convenience
-        if (prio === true) {
-          prio = 1;
-        } else {
-          prio = Number.parseInt(prio);
-        }
-      }
-      FocusHelper.focusElement(element, prio);
+  @HostListener('click', ['$event'])
+  @HostListener('keyup', ['$event'])
+  public handleClick(event:JQueryEventObject) {
+    if (event.type === 'click' || event.which === keyCodes.ENTER || event.which === keyCodes.SPACE) {
+      this.onClick.emit(event);
     }
+
+    event.preventDefault();
+    event.stopPropagation();
   }
-
-  return {
-    link: function(scope, element, attrs) {
-
-      updateFocus(scope, element, attrs);
-
-      scope.$on('updateFocus', function() {
-        updateFocus(scope, element, attrs);
-      });
-    }
-  };
-};
+}

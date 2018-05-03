@@ -36,15 +36,10 @@ angular.module('openproject.uiComponents')
   ])
   .constant('ENTER_KEY', 13)
   .directive('expandableSearch', ['ENTER_KEY', require('./expandable-search')])
-  .directive('focus', [
-    'FocusHelper',
-    require('./focus-directive')
-  ])
   .service('I18n', [require('./i18n')])
   .directive('persistentToggle', [
     '$timeout',
     require('./persistent-toggle-directive')]
   )
   .directive('wikiToolbar', [require('./wiki-toolbar-directive')])
-  .directive('highlightCol', [require('./highlight-col-directive')])
-  .directive('clickOnKeypress', [require('./click-on-keypress-directive')]);
+  .directive('highlightCol', [require('./highlight-col-directive')]);
