@@ -1,13 +1,14 @@
 #-- encoding: UTF-8
+
 #-- copyright
 # OpenProject is a project management system.
-# Copyright (C) 2012-2014 the OpenProject Foundation (OPF)
+# Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3.
 #
 # OpenProject is a fork of ChiliProject, which is a fork of Redmine. The copyright follows:
-# Copyright (C) 2006-2013 Jean-Philippe Lang
+# Copyright (C) 2006-2017 Jean-Philippe Lang
 # Copyright (C) 2010-2013 the ChiliProject Team
 #
 # This program is free software; you can redistribute it and/or
@@ -24,11 +25,38 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-# See doc/COPYRIGHT.rdoc for more details.
+# See docs/COPYRIGHT.rdoc for more details.
 #++
 
-module OpenProject
-  module AuthPlugins
-    VERSION = "7.4.4"
+module Queries
+  module Relations
+    module Filters
+      module VisibilityChecking
+        def visibility_checked?
+          true
+        end
+
+        def where
+          integer_values = values.map(&:to_i)
+
+          visible_sql = WorkPackage.visible(User.current).select(:id).to_sql
+
+          operator_string = case operator
+                            when "="
+                              "IN"
+                            when "!"
+                              "NOT IN"
+                            end
+
+          visibility_checked_sql(operator_string, values, visible_sql)
+        end
+
+        private
+
+        def visibility_checked_sql(_operator, _values, _visible_sql)
+          raise NotImplementedError
+        end
+      end
+    end
   end
 end
