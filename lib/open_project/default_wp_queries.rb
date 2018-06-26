@@ -1,4 +1,5 @@
 #-- encoding: UTF-8
+
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
@@ -27,42 +28,8 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-require 'open_project/assets'
-
-# The ng build task must run before assets:environment task.
-# Otherwise Sprockets cannot find the files that webpack produces.
-Rake::Task['assets:precompile']
-  .clear_prerequisites
-  .enhance(%w[ assets:compile_environment assets:prepare_op])
-
-namespace :assets do
-  # In this task, set prerequisites for the assets:precompile task
-  task compile_environment: :prepare_op do
-    Rake::Task['assets:environment'].invoke
-  end
-
-  desc 'Prepare locales and angular assets'
-  task prepare_op: ['openproject:plugins:register_frontend', :angular, :export_locales]
-
-  desc 'Compile assets with webpack'
-  task :angular do
-    OpenProject::Assets.clear!
-
-    puts "Building angular frontend"
-    Dir.chdir Rails.root.join('frontend') do
-      sh 'npm run build' do |ok, res|
-        raise "Failed to compile angular frontend: #{res.exitstatus}" if !ok
-      end
-    end
-
-    puts "Writing angular assets manifest"
-    OpenProject::Assets.rebuild_manifest!
-  end
-
-  desc 'Export frontend locale files'
-  task export_locales: ['i18n:js:export']
-
-  task :clobber do
-    rm_rf FileList["#{Rails.root}/app/assets/javascripts/bundles/*"]
+module OpenProject
+  module DefaultWpQueries
+    GANTT = '{"tv":true}'.freeze
   end
 end
