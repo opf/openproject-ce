@@ -187,6 +187,8 @@ pl:
       no_results_title_text: Nie ma jeszcze żadnego obiegu pracy.
   work_packages:
     move:
+      no_common_statuses_exists: There is no status available for all selected work
+        packages. Their status cannot be changed.
       unsupported_for_multiple_projects: Hurtowe przenoszenie / kopiowanie nie jest
         obsługiwane dla Zestawu zadań z różnych projektów
     list_simple:
@@ -314,7 +316,7 @@ pl:
         expires_at: Wygasa
         subscriber: Subskrybent
         encoded_token: Token wsparcia Enterprise
-        active_user_count_restriction: Maximum active users
+        active_user_count_restriction: Maksymalna liczba aktywnych użytkowników
       relation:
         delay: Opóźnienie
         from: Pakiet roboczy
@@ -367,7 +369,7 @@ pl:
         mail_notification: Powiadomienia e-mail
         new_password: Nowe hasło
         password_confirmation: Potwierdzenie
-        consented_at: Consented at
+        consented_at: Zgodę na
       user_preference:
         comments_sorting: Wyświetlanie komentarzy
         hide_mail: Ukryj mój adres e-mail
@@ -680,7 +682,7 @@ pl:
   button_create: Utwórz
   button_create_and_continue: Utwórz i kontynuuj
   button_delete: Usuń
-  button_decline: Decline
+  button_decline: Odrzuć
   button_delete_watcher: Usunąć obserwatora %{name}
   button_download: Pobierz
   button_duplicate: Duplikat
@@ -715,7 +717,7 @@ pl:
   button_unlock: Odblokuj
   button_unwatch: Nie obserwuj
   button_update: Aktualizacja
-  button_upgrade: Upgrade
+  button_upgrade: Aktualizuj
   button_upload: Wyślij
   button_view: Widok
   button_watch: Obserwuj
@@ -724,22 +726,23 @@ pl:
   button_configure_menu_entry: Konfigurowanie elementu menu
   button_delete_menu_entry: Usuń element menu
   consent:
-    checkbox_label: I have noted and do consent to the above.
-    failure_message: Consent failed, cannot proceed.
-    title: User Consent
-    decline_warning_message: You have declined to consent and have been logged out.
-    user_has_consented: User has consented to your configured statement at the given
-      time.
-    not_yet_consented: User has not consented yet, will be requested upon next login.
-    contact_mail_instructions: Define the mail address that users can reach a data
-      controller to perform data change or removal requests.
-    contact_your_administrator: Please contact your administrator if you want to have
-      your account deleted.
-    contact_this_mail_address: Please contact %{mail_address} if you want to have
-      your account deleted.
-    text_update_consent_time: Check this box to force users to consent again. Enable
-      when you have changed the legal aspect of the consent information above.
-    update_consent_last_time: 'Last update of consent: %{update_time}'
+    checkbox_label: Odnotowałem i zgadzam się na powyższe.
+    failure_message: Zgoda nie powiodła się, nie można kontynuować.
+    title: Zgoda użytkownika
+    decline_warning_message: Odrzuciłeś zgodę i wylogowano Cię.
+    user_has_consented: Użytkownik wyraził zgodę na twoje skonfigurowane oświadczenie
+      w określonym czasie.
+    not_yet_consented: Użytkownik nie wyraził zgody, zostanie o to poproszony przy
+      następnym logowaniu.
+    contact_mail_instructions: Zdefiniuj adres e-mail, na który użytkownicy mogą skontaktować
+      się z administratorem danych w celu wykonania żądań zmiany lub usunięcia danych.
+    contact_your_administrator: Jeśli chcesz usunąć swoje konto, skontaktuj się z
+      administratorem.
+    contact_this_mail_address: Jeśli chcesz usunąć swoje konto, skontaktuj się z %{mail_address}.
+    text_update_consent_time: Zaznacz to pole, aby zmusić użytkowników do ponownego
+      wyrażenia zgody. Włącz, gdy zmieniłeś aspekt prawny powyższych informacji o
+      udzieleniu zgody.
+    update_consent_last_time: 'Ostatnia aktualizacja: zgody: %{update_time}'
   copy_project:
     started: Rozpoczęto kopiowanie projektu "%{source_project_name}" do "%{target_project_name}".
       Poinformujemy Cię przez e-mail tak szybko jak "%{target_project_name}" będzie
@@ -993,16 +996,18 @@ pl:
     plików cookie jest włączona, ponieważ bez tego aplikacja nie będzie funkcjonować
     prawidłowo.
   error_custom_option_not_found: Opcja nie istnieje.
-  error_dependent_work_package: 'Error in dependent work package #%{related_id} %{related_subject}:
-    %{error}'
-  error_enterprise_activation_user_limit: Your account could not be activated (user
-    limit reached). Please contact your administrator to gain access.
+  error_dependent_work_package: 'Błąd w zależnym pakiecie roboczym #%{related_id}
+    %{related_subject}: %{error}'
+  error_enterprise_activation_user_limit: Twoje konto nie mogło zostać aktywowane
+    (osiągnięty limit użytkownika). Skontaktuj się z administratorem, aby uzyskać
+    dostęp.
   error_failed_to_delete_entry: Nie udało się usunąć tego wpisu.
   error_invalid_group_by: 'Nie można grupować przez: %{value}'
   error_invalid_query_column: 'Nieprawidłowa kolumna zapytań: %{value}'
   error_invalid_sort_criterion: 'Nie można sortować według kolumny: %{value}'
   error_pdf_export_too_many_columns: Wybrano zbyt dużo kolumn do eksportu PDF. Zmniejsz
     liczbę kolumn.
+  error_pdf_failed_to_export: 'The PDF export could not be saved: %{error}'
   error_token_authenticity: Nie można zweryfikować tokenu Cross-Site Request Forgery.
   error_work_package_done_ratios_not_updated: Nie zaktualizowane wskaźniki wykonania
     pakietu roboczego.
@@ -1054,6 +1059,8 @@ pl:
       csv: CSV
       pdf: PDF
       pdf_with_descriptions: PDF z opisami
+      pdf_with_descriptions_and_attachments: PDF with descriptions and attachments
+      pdf_with_attachments: PDF with attachments
   extraction:
     available:
       pdftotext: Pdftotext available (optional)
@@ -1183,7 +1190,7 @@ pl:
   label_calendar: Kalendarz
   label_calendar_show: Pokaż kalendarz
   label_category: Kategoria
-  label_consent_settings: User Consent
+  label_consent_settings: Zgoda użytkownika
   label_wiki_menu_item: Element menu Wiki
   label_select_main_menu_item: Wybierz nową pozycję menu głównego
   label_select_project: Wybierz projekt
@@ -1745,6 +1752,17 @@ pl:
     ciągu %{days} dni
   mail_subject_wiki_content_added: "'%{id}' wiki page has been added"
   mail_subject_wiki_content_updated: "'%{id}' wiki page has been updated"
+  mail_user_activation_limit_reached:
+    subject: Osiągnięto limit aktywacji użytkownika
+    message: 'Nowy użytkownik (%{email}) próbował utworzyć konto w środowisku OpenProject
+      na (%{host}). Użytkownik nie może aktywować swojego konta ponieważ został osiągnięty
+      limit użytkowników.
+
+'
+    steps:
+      label: 'Aby zezwolić użytkownikowi na logowanie, możesz albo: '
+      a: Zaktualizuj swój plan płatności ([here] (upgrade_url))
+      b: Zablokuj lub usuń istniejącego użytkownika ([here] (users_url))
   more_actions: Więcej funkcji
   noscript_description: Musisz aktywować JavaScript, aby korzystać z OpenProject!
   noscript_heading: Wyłączona obsługa JavaScript
@@ -2131,7 +2149,6 @@ pl:
     nieudanych prób zalogowania
   setting_brute_force_block_minutes: Czas, kiedy użytkownik jest zablokowany
   setting_cache_formatted_text: Tekst sformatowany w pamięci podręcznej
-  setting_use_wysiwyg: WYSIWYG editor
   setting_use_wysiwyg_description: Select to enable CKEditor5 WYSIWYG editor for all
     users by default. CKEditor has limited functionality for GFM Markdown.
   setting_column_options: Dostosuj wygląd list pakietów roboczych
@@ -2140,10 +2157,10 @@ pl:
   setting_commit_logtime_activity_id: Aktywność dla logowania czasu pracy
   setting_commit_logtime_enabled: Włącz logowanie czasu pracy
   setting_commit_ref_keywords: Referencing keywords
-  setting_consent_time: Consent time
-  setting_consent_info: Consent information text
-  setting_consent_required: Consent required
-  setting_consent_decline_mail: Consent contact mail address
+  setting_consent_time: Rejestr spędzonego czasu
+  setting_consent_info: Tekst informacji o zezwoleniu
+  setting_consent_required: Wymagana zgoda
+  setting_consent_decline_mail: Adres kontaktowy zgody
   setting_cross_project_work_package_relations: Zezwól na powiązania pakietów roboczych
     pomiędzy projektami
   setting_date_format: Format daty
@@ -2222,7 +2239,6 @@ pl:
   setting_sys_api_enabled: Uaktywnij zarządzanie repozytoriami przez www
   setting_sys_api_description: Zarządzanie repozytoriami przez www umożliwia integrację
     i autoryzację użytkowników do dostępu do repozytoriów.
-  setting_text_formatting: Formatowanie tekstu
   setting_time_format: Format czasu
   setting_accessibility_mode_for_anonymous: Włącz tryb dostępu dla użytkowników anonimowych
   setting_user_format: Format wyświetlania nazwy użytkownika
@@ -2246,9 +2262,9 @@ pl:
       default_preferences: Default preferences
       deletion: Deletion
   text_formatting:
-    textile: Textile
     markdown: Markdown
     plain: Plain text
+    textile: Textile
   status_active: aktywne
   status_archived: w archiwum
   status_invited: zaproszony
@@ -2600,7 +2616,7 @@ pl:
       years: Lata
   title_remove_and_delete_user: Usuń dotychczasowego użytkownika z projektu i usuń
     go.
-  title_enterprise_upgrade: Upgrade to unlock more users.
+  title_enterprise_upgrade: Uaktualnij, aby odblokować więcej użytkowników.
   tooltip_user_default_timezone: 'The default time zone for new users. Can be changed
     in a user''s settings.
 
@@ -2673,11 +2689,26 @@ pl:
   note_password_login_disabled: Logowanie poprzez hasło zostało wyłączone przez %{configuration}.
   warning: Ostrzeżenie
   warning_attachments_not_saved: "%{count} plik(ów) nie może być zapisany."
-  warning_user_limit_reached: User limit reached. Please <a href="%{upgrade_url}">upgrade</a>
-    to allow for additional users.
+  warning_imminent_user_limit: 'Zaprosiłeś więcej użytkowników niż jest to obsługiwane
+    przez Twój obecny abonament. Zaproszeni użytkownicy mogą nie być w stanie dołączyć
+    do twojego środowiska OpenProject. <a href="%{upgrade_url}"> uaktualnij swój plan
+    </a> lub zablokuj istniejących użytkowników, aby umożliwić zaproszonym i zarejestrowanym
+    użytkownikom dołączenie.
+
+'
   warning_registration_token_expired: |
     The activation email has expired. We sent you a new one to %{email}.
     Please click the link inside of it to activate your account.
+  warning_user_limit_reached: 'Osiągnięto limit użytkowników. Nie możesz aktywować
+    kolejnych użytkowników. <a href="%{upgrade_url}"> uaktualnij swój plan </a> lub
+    zablokuj członków, aby umożliwić korzystanie z dodatkowych użytkowników.
+
+'
+  warning_user_limit_reached_instructions: 'Osiągnięto limit użytkownika (%{current}/%{max}
+    aktywnych użytkowników). Skontaktuj się z sales@openproject.com do uaktualnienia
+    planu Enterprise Edition i dodać więcej kont użytkowników.
+
+'
   menu_item: Element menu
   menu_item_setting: Widoczność
   wiki_menu_item_for: Element menu dla strony wiki "%{title}"
@@ -2747,3 +2778,5 @@ pl:
       writing_read_only_attributes: Nie możesz zapisać atrybutu tylko do odczytu.
     resources:
       schema: Schemat
+  setting_use_wysiwyg: WYSIWYG editor
+  setting_text_formatting: Formatowanie tekstu

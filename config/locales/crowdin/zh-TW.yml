@@ -168,6 +168,8 @@ zh-TW:
       no_results_title_text: 目前沒有工作流程
   work_packages:
     move:
+      no_common_statuses_exists: There is no status available for all selected work
+        packages. Their status cannot be changed.
       unsupported_for_multiple_projects: 工作項目不支援從多個專案的大區塊的移動/複製
     list_simple:
       assigned:
@@ -901,6 +903,7 @@ zh-TW:
   error_invalid_query_column: 無效的查詢欄：%{value}
   error_invalid_sort_criterion: 無法按照 %{value} 排序
   error_pdf_export_too_many_columns: 為 PDF 匯出選擇的列太多。請減少列數。
+  error_pdf_failed_to_export: 'The PDF export could not be saved: %{error}'
   error_token_authenticity: 無法確認跨網域請求權杖
   error_work_package_done_ratios_not_updated: 工作項目完成比例未更新
   error_work_package_not_found_in_project: 工作項目找不到或是不屬於這個專案
@@ -941,6 +944,8 @@ zh-TW:
       csv: CSV
       pdf: PDF
       pdf_with_descriptions: 有說明的 PDF 檔
+      pdf_with_descriptions_and_attachments: PDF with descriptions and attachments
+      pdf_with_attachments: PDF with attachments
   extraction:
     available:
       pdftotext: Pdftotext 可用 (非必要)
@@ -1598,6 +1603,15 @@ zh-TW:
   mail_subject_reminder: "%{count} 個工作項目將在 %{days} 天後到期"
   mail_subject_wiki_content_added: Wiki 頁面 '%{id}' 已經被增加
   mail_subject_wiki_content_updated: Wiki 頁面 '%{id}' 已經被更新
+  mail_user_activation_limit_reached:
+    subject: 已達到用戶激活限制
+    message: '新用戶(%{email}) 試圖在您管理的 OpenProject 環境 (%{host}) 上創建賬戶。用戶無法激活其賬戶, 因爲已達到用戶限制。
+
+'
+    steps:
+      label: '要允許用戶登錄，您可以： '
+      a: "([在這裏](upgrade_url)) 升級付款計劃"
+      b: "([在這裏](users_url)) 鎖定或刪除現有用戶"
   more_actions: 更多功能
   noscript_description: 您必須啟用 Javascript 才能使用 OpenProject!
   noscript_heading: JavaScript 已停用
@@ -1922,7 +1936,6 @@ zh-TW:
   setting_brute_force_block_after_failed_logins: 禁止使用者當嘗試登入失敗這個次數後
   setting_brute_force_block_minutes: 使用者被禁止的時間
   setting_cache_formatted_text: 快取格式化文字
-  setting_use_wysiwyg: 所見即所得 (WYSIWYG) 編輯器
   setting_use_wysiwyg_description: 勾選此選項可在預設情況下為所有使用者啟用 CKEditor5 所見即所得 (WYSIWYG)
     編輯器。CKEditor 對 GFM Markdown的功能有限。
   setting_column_options: 自訂工作項目清單的外觀
@@ -1998,7 +2011,6 @@ zh-TW:
   setting_start_of_week: 一週起始於
   setting_sys_api_enabled: 啟用版控容器管理網路服務
   setting_sys_api_description: 版控容器管理網路服務提供容器存取管理和使用者認證
-  setting_text_formatting: 文字格式
   setting_time_format: 時間格式
   setting_accessibility_mode_for_anonymous: 啟用匿名使用者存取模式
   setting_user_format: 使用者顯示格式
@@ -2021,9 +2033,9 @@ zh-TW:
       default_preferences: 默認偏好設置
       deletion: 消除
   text_formatting:
-    textile: 紡織
     markdown: Markdown
     plain: 純文字
+    textile: 紡織
   status_active: 啟用
   status_archived: 已封存
   status_invited: 已邀請
@@ -2385,10 +2397,20 @@ zh-TW:
   note_password_login_disabled: 密碼登錄已被 %{configuration} 禁用。
   warning: 警告
   warning_attachments_not_saved: 無法儲存 %{count} 檔。
-  warning_user_limit_reached: 已達到使用者限制。請 <a href="%{upgrade_url}">升級</a> 以允許其他使用者使用。
+  warning_imminent_user_limit: '您邀請的用戶數超過了當前計劃支持的用戶數。受邀用戶可能無法加入您的OpenProject環境。 請<a
+    href="%{upgrade_url}">升級您的計劃</a>或阻止現有用戶，以允許受邀和注冊用戶加入。
+
+'
   warning_registration_token_expired: |
     帳號啟用 email 已經逾期。我們已經寄了一封新的 email 至您的 %{email}。
     請點擊 email 內的連結來啟用您的帳號。
+  warning_user_limit_reached: '達到用戶限制。 您無法再激活任何用戶。 請<a href="%{upgrade_url}">升級您的計劃</a>或阻止會員以允許其他用戶。
+
+'
+  warning_user_limit_reached_instructions: '您達到了用戶限制（%{current}/%{max}活躍用戶）。 請聯係sales@openproject.com以升級Enterprise
+    Edition計劃並添加其他用戶。
+
+'
   menu_item: 選單項目
   menu_item_setting: 可見度
   wiki_menu_item_for: Wikipage "%{title}" 的功能表項目
@@ -2456,3 +2478,5 @@ zh-TW:
         您不可寫入唯讀的屬性。
     resources:
       schema: 架構
+  setting_use_wysiwyg: 所見即所得 (WYSIWYG) 編輯器
+  setting_text_formatting: 文字格式

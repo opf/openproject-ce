@@ -183,6 +183,8 @@ hu:
       no_results_title_text: Jelenleg nincsenek munkafolyamatok.
   work_packages:
     move:
+      no_common_statuses_exists: There is no status available for all selected work
+        packages. Their status cannot be changed.
       unsupported_for_multiple_projects: Tömeges mozgatás/másolás nem támogatott a
         különböző projektekből származó munkacsomagokhoz
     list_simple:
@@ -975,6 +977,7 @@ hu:
   error_invalid_sort_criterion: 'Nem lehet rendezni ezen oszlop szerint: %{value}'
   error_pdf_export_too_many_columns: Túl sok oszlop lett kiválasztva a PDF exportáláshoz.
     Kérlek csökkentsd a sorok számát.
+  error_pdf_failed_to_export: 'The PDF export could not be saved: %{error}'
   error_token_authenticity: A CSRF token nem ellenőrizhető.
   error_work_package_done_ratios_not_updated: A munkacsomag a megtett arányokat nem
     frissítette.
@@ -1026,6 +1029,8 @@ hu:
       csv: CSV
       pdf: PDF
       pdf_with_descriptions: PDF leírásokkal
+      pdf_with_descriptions_and_attachments: PDF with descriptions and attachments
+      pdf_with_attachments: PDF with attachments
   extraction:
     available:
       pdftotext: Pdftotext elérhető (opcionális)
@@ -1708,6 +1713,15 @@ hu:
   mail_subject_reminder: "%{count} munkacsomag(ok) miatt a következő %{days} nap"
   mail_subject_wiki_content_added: "'%{id}' wiki oldal hozzáadva"
   mail_subject_wiki_content_updated: "'%{id}' wiki oldal frissítve"
+  mail_user_activation_limit_reached:
+    subject: User activation limit reached
+    message: |
+      A new user (%{email}) tried to create an account on an OpenProject environment that you manage (%{host}).
+      The user cannot activate their account since the user limit has been reached.
+    steps:
+      label: 'To allow the user to sign in you can either: '
+      a: Upgrade your payment plan ([here](upgrade_url))
+      b: Lock or delete an existing user ([here](users_url))
   more_actions: További funkciók
   noscript_description: Engedélyezze a JavaScriptet, hogy használni tudja az OpenProjectet
     !
@@ -2083,7 +2097,6 @@ hu:
     után tiltsa a felhasználót
   setting_brute_force_block_minutes: Mennyi időre tiltsa ki
   setting_cache_formatted_text: Gyorsítótárazott formázott szöveg
-  setting_use_wysiwyg: WYSIWYG editor
   setting_use_wysiwyg_description: Select to enable CKEditor5 WYSIWYG editor for all
     users by default. CKEditor has limited functionality for GFM Markdown.
   setting_column_options: A munkacsomag listák megjelenésének testreszabása
@@ -2171,7 +2184,6 @@ hu:
   setting_sys_api_enabled: Csomagtároló webszolgáltatás bekapcsolva
   setting_sys_api_description: A csomagtároló webszolgáltatás integrációt és felhasználói
     hozzáférést biztosít a tároló eléréséhez.
-  setting_text_formatting: Szövegformázás
   setting_time_format: Időformátum
   setting_accessibility_mode_for_anonymous: Engedélyezi a kisegítő módot a névtelen
     felhasználók számára
@@ -2196,9 +2208,9 @@ hu:
       default_preferences: Default preferences
       deletion: Deletion
   text_formatting:
-    textile: Textile
     markdown: Markdown
     plain: Plain text
+    textile: Textile
   status_active: aktív
   status_archived: archivált
   status_invited: meghívott
@@ -2629,11 +2641,25 @@ hu:
   note_password_login_disabled: Bejelentkezési jelszót a %{configuration} letiltotta.
   warning: Figyelem
   warning_attachments_not_saved: "%{count} fájl nem menthető."
-  warning_user_limit_reached: User limit reached. Please <a href="%{upgrade_url}">upgrade</a>
-    to allow for additional users.
+  warning_imminent_user_limit: 'You invited more users than are supported by your
+    current plan. Invited users may not be able to join your OpenProject environment.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block existing users
+    in order to allow invited and registered users to join.
+
+'
   warning_registration_token_expired: |
     Az aktiváló e-mail lejárt. Új levelet küldtünk Önnek %{email} részére.
     Kérjük, kattintson a belsejében lévő linkre a fiók aktiválásához.
+  warning_user_limit_reached: 'User limit reached. You cannot activate any more users.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block members to allow
+    for additional users.
+
+'
+  warning_user_limit_reached_instructions: 'You reached your user limit (%{current}/%{max}
+    active users). Please contact sales@openproject.com to upgrade your Enterprise
+    Edition plan and add additional users.
+
+'
   menu_item: Menüpont
   menu_item_setting: Látható
   wiki_menu_item_for: Wikipage "%{title}" menüeleme
@@ -2699,3 +2725,5 @@ hu:
       writing_read_only_attributes: Nem írhat egy csak olvasható tulajdonságot.
     resources:
       schema: Séma
+  setting_use_wysiwyg: WYSIWYG editor
+  setting_text_formatting: Szövegformázás

@@ -26,12 +26,10 @@
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
 
-import {ConfigurationService} from 'core-app/modules/common/config/configuration.service';
-import {TextileService} from "core-app/modules/common/textile/textile-service";
 import {ICkeditorStatic} from "core-components/ckeditor/op-ckeditor-form.component";
 import {EditField} from "core-app/modules/fields/edit/edit.field.module";
-import {FormattableTextareaEditFieldComponent} from "core-app/modules/fields/edit/field-types/formattable-textarea-edit-field.component";
-import {FormattableWysiwygEditFieldComponent} from "core-app/modules/fields/edit/field-types/formattable-wysiwyg-edit-field.component";
+import {PathHelperService} from "core-app/modules/common/path-helper/path-helper.service";
+import {FormattableEditFieldComponent} from "core-app/modules/fields/edit/field-types/formattable-edit-field.component";
 
 declare global {
   interface Window {
@@ -41,9 +39,7 @@ declare global {
 }
 
 export class FormattableEditField extends EditField {
-  // Dependencies
-  readonly textileService:TextileService = this.$injector.get(TextileService);
-  readonly ConfigurationService:ConfigurationService = this.$injector.get(ConfigurationService);
+  readonly pathHelper:PathHelperService = this.$injector.get(PathHelperService);
 
   // Values used in template
   public isBusy:boolean = false;
@@ -55,63 +51,52 @@ export class FormattableEditField extends EditField {
     cancel: this.I18n.t('js.inplace.button_cancel', { attribute: this.schema.name })
   };
 
-  public wysiwig:boolean;
-
   // CKEditor instance
   public ckeditor:any;
 
-  protected initialize() {
-    const configurationService:ConfigurationService = this.$injector.get(ConfigurationService);
-    this.wysiwig = configurationService.textFormat() === 'markdown' && configurationService.useWysiwyg();
-  }
-
   public get component() {
-    if (this.wysiwig) {
-      return FormattableWysiwygEditFieldComponent;
-    } else {
-      return FormattableTextareaEditFieldComponent;
-    }
-  }
-
-  public onSubmit() {
-    if (this.wysiwig && this.ckeditor) {
-      this.rawValue = this.ckeditor.getData();
-    }
+    return FormattableEditFieldComponent;
   }
 
   public $onInit(container:HTMLElement) {
-    if (this.wysiwig) {
-      this.setupMarkdownEditor(container);
-    }
+    this.setupMarkdownEditor(container);
   }
 
   public setupMarkdownEditor(container:HTMLElement) {
     const element = container.querySelector('.op-ckeditor-element') as HTMLElement;
+
     window.OPBalloonEditor
-      .create(element)
-      .then((editor:any) => {
-        editor.config['openProject'] = {
+      .create(element, {
+        openProject: {
           context: this.resource,
+          helpURL: this.pathHelper.textFormattingHelp(),
           element: element,
           pluginContext: window.OpenProject.pluginContext.value
-        };
-
+        }
+      })
+      .then((editor:any) => {
         this.ckeditor = editor;
         if (this.rawValue) {
           this.reset();
         }
 
         setTimeout(() => editor.editing.view.focus());
+
+        this.updateValueOnEditorChange(editor);
       })
       .catch((error:any) => {
         console.error(error);
       });
   }
 
+  private updateValueOnEditorChange(editor:any) {
+    editor.model.document.on('change', () => {
+      this.rawValue = this.ckeditor.getData();
+    } );
+  }
+
   public reset() {
-    if (this.wysiwig) {
-      this.ckeditor.setData(this.rawValue);
-    }
+    this.ckeditor.setData(this.rawValue);
   }
 
   public get rawValue() {
@@ -131,7 +116,7 @@ export class FormattableEditField extends EditField {
   }
 
   public isEmpty():boolean {
-    if (this.wysiwig && this.ckeditor) {
+    if (this.ckeditor) {
       return this.ckeditor.getData() === '';
     } else {
       return !(this.value && this.value.raw);
@@ -144,30 +129,5 @@ export class FormattableEditField extends EditField {
         form.submit();
       }
     });
-  }
-
-  public togglePreview() {
-    this.isPreview = !this.isPreview;
-    this.previewHtml = '';
-
-    if (!this.rawValue) {
-      return;
-    }
-
-    if (this.isPreview) {
-      this.isBusy = true;
-      this.changeset.getForm().then((form:any) => {
-        const link = form.previewMarkup.$link;
-
-        this.textileService.render(link, this.rawValue)
-          .then((result:string) => {
-            this.isBusy = false;
-            this.previewHtml = result;
-          })
-          .catch(() => {
-            this.isBusy = false;
-          });
-      });
-    }
   }
 }

@@ -188,6 +188,8 @@ cs:
       no_results_title_text: V současné době neexistují žádné pracovní postupy.
   work_packages:
     move:
+      no_common_statuses_exists: There is no status available for all selected work
+        packages. Their status cannot be changed.
       unsupported_for_multiple_projects: Bulk move/copy is not supported for work
         packages from multiple projects
     list_simple:
@@ -1006,6 +1008,7 @@ cs:
   error_invalid_sort_criterion: 'Can''t sort by column: %{value}'
   error_pdf_export_too_many_columns: Příliš mnoho sloupců vybraných pro PDF export.
     Snižte počet sloupců.
+  error_pdf_failed_to_export: 'The PDF export could not be saved: %{error}'
   error_token_authenticity: Unable to verify Cross-Site Request Forgery token.
   error_work_package_done_ratios_not_updated: Work package done ratios not updated.
   error_work_package_not_found_in_project: The work package was not found or does
@@ -1056,6 +1059,8 @@ cs:
       csv: CSV
       pdf: PDF
       pdf_with_descriptions: PDF s popisem
+      pdf_with_descriptions_and_attachments: PDF with descriptions and attachments
+      pdf_with_attachments: PDF with attachments
   extraction:
     available:
       pdftotext: Pdftotext k dispozici (volitelné)
@@ -1740,6 +1745,17 @@ cs:
   mail_subject_reminder: "%{count} work package(s) due in the next %{days} days"
   mail_subject_wiki_content_added: "'%{id}' wiki page has been added"
   mail_subject_wiki_content_updated: "'%{id}' wiki page has been updated"
+  mail_user_activation_limit_reached:
+    subject: Dosažen limit aktivace uživatelů
+    message: 'Nový uživatel (%{email}) se pokusil vytvořit účet v prostředí OpenProject
+      spravovaném vámi (%{host}). Uživatel nemůže aktivovat svůj účet, protože bylo
+      dosaženo limitu v počtu uživatelů.
+
+'
+    steps:
+      label: 'Chcete-li umožnit uživateli přihlášení můžete buď: '
+      a: Upgrade plánu plateb ([here](upgrade_url))
+      b: Zamknutí nebo odstranění existujícího uživatele ([here](users_url))
   more_actions: Další funkce
   noscript_description: You need to activate JavaScript in order to use OpenProject!
   noscript_heading: Javascript zakázán
@@ -2119,7 +2135,6 @@ cs:
     login attempts
   setting_brute_force_block_minutes: Time the user is blocked for
   setting_cache_formatted_text: Ukládat formátovaný text do vyrovnávací paměti
-  setting_use_wysiwyg: WYSIWYG editor
   setting_use_wysiwyg_description: Zaškrtnutím tohoto políčka povolíte CKEditor5 WYSIWYG
     editor pro všechny uživatele ve výchozím nastavení. Aplikaci CKEditor má omezenou
     funkčnost pro GFM Markdown.
@@ -2207,7 +2222,6 @@ cs:
   setting_sys_api_enabled: Enable repository management web service
   setting_sys_api_description: The repository management web service provides integration
     and user authorization for accessing repositories.
-  setting_text_formatting: Formátování textu
   setting_time_format: Formát času
   setting_accessibility_mode_for_anonymous: Povolit režim usnadnění pro anonymní uživatele
   setting_user_format: Formát zobrazení uživatelů
@@ -2230,9 +2244,9 @@ cs:
       default_preferences: Výchozí předvolby
       deletion: Odstranění
   text_formatting:
-    textile: Textil
     markdown: Zmenšení
     plain: Obyčejný text
+    textile: Textil
   status_active: active
   status_archived: archivováno
   status_invited: invited
@@ -2657,10 +2671,24 @@ cs:
   note_password_login_disabled: Password login has been disabled by %{configuration}.
   warning: Varování
   warning_attachments_not_saved: "%{count} file(s) could not be saved."
-  warning_user_limit_reached: Dosažel limit počtu uživatelů. Prosím <a href="%{upgrade_url}">upgradujte</a>
-    pro přidání více uživatelů.
+  warning_imminent_user_limit: 'You invited more users than are supported by your
+    current plan. Invited users may not be able to join your OpenProject environment.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block existing users
+    in order to allow invited and registered users to join.
+
+'
   warning_registration_token_expired: 'Platnost aktivačního emailu vypršela. Poslali
     jsme vám nový %{email}. Klikněte prosím na odkaz uvnitř pro aktivaci vašeho účtu.
+
+'
+  warning_user_limit_reached: 'User limit reached. You cannot activate any more users.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block members to allow
+    for additional users.
+
+'
+  warning_user_limit_reached_instructions: 'Limit počtu uživatelů (%{current}/%{max}
+    aktivních uživatelů) dosažen. Prosím kontaktujte sales@openproject.com a upgradujte
+    vaši Enterprise Edition a přidejte další uživatele.
 
 '
   menu_item: Položka nabídky
@@ -2730,3 +2758,5 @@ cs:
       writing_read_only_attributes: You must not write a read-only attribute.
     resources:
       schema: Schema
+  setting_use_wysiwyg: WYSIWYG editor
+  setting_text_formatting: Formátování textu

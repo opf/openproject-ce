@@ -187,6 +187,8 @@ da:
       no_results_title_text: There are currently no workflows.
   work_packages:
     move:
+      no_common_statuses_exists: There is no status available for all selected work
+        packages. Their status cannot be changed.
       unsupported_for_multiple_projects: Bulk move/copy is not supported for work
         packages from multiple projects
     list_simple:
@@ -972,6 +974,7 @@ da:
   error_invalid_sort_criterion: 'Can''t sort by column: %{value}'
   error_pdf_export_too_many_columns: Too many columns selected for the PDF export.
     Please reduce the number of columns.
+  error_pdf_failed_to_export: 'The PDF export could not be saved: %{error}'
   error_token_authenticity: Unable to verify Cross-Site Request Forgery token.
   error_work_package_done_ratios_not_updated: Fremgang for arbejdspakken er ikke opdateret.
   error_work_package_not_found_in_project: Arbejdspakken er ikke fundet, eller den
@@ -1023,6 +1026,8 @@ da:
       csv: CSV
       pdf: PDF
       pdf_with_descriptions: PDF med beskrivelse
+      pdf_with_descriptions_and_attachments: PDF with descriptions and attachments
+      pdf_with_attachments: PDF with attachments
   extraction:
     available:
       pdftotext: Pdftotext available (optional)
@@ -1698,6 +1703,15 @@ da:
     dage"
   mail_subject_wiki_content_added: "'%{id}' wikisider er blevet tilføjet"
   mail_subject_wiki_content_updated: "'%{id}' wikiside er blevet opdateret"
+  mail_user_activation_limit_reached:
+    subject: User activation limit reached
+    message: |
+      A new user (%{email}) tried to create an account on an OpenProject environment that you manage (%{host}).
+      The user cannot activate their account since the user limit has been reached.
+    steps:
+      label: 'To allow the user to sign in you can either: '
+      a: Upgrade your payment plan ([here](upgrade_url))
+      b: Lock or delete an existing user ([here](users_url))
   more_actions: Flere funktioner
   noscript_description: Du skal aktivere JavaScript for at bruge OpenProject!
   noscript_heading: JavaScript deaktiveret
@@ -2076,7 +2090,6 @@ da:
     forsøg på login
   setting_brute_force_block_minutes: Periode, brugeren vil være blokeret
   setting_cache_formatted_text: Gem tekstformat i cache
-  setting_use_wysiwyg: WYSIWYG editor
   setting_use_wysiwyg_description: Select to enable CKEditor5 WYSIWYG editor for all
     users by default. CKEditor has limited functionality for GFM Markdown.
   setting_column_options: Tilpas udseendet af listen over arbejdspakker
@@ -2161,7 +2174,6 @@ da:
   setting_sys_api_enabled: Aktiver repositorieadministrations-webtjeneste
   setting_sys_api_description: Repositorieadministration-webtjenesten sørger for integration
     og brugertilladelse for adgang til repositorier.
-  setting_text_formatting: Tekstformattering
   setting_time_format: Tidsformat
   setting_accessibility_mode_for_anonymous: Aktivér tilgængelighedstilstand for anonyme
     brugere
@@ -2185,9 +2197,9 @@ da:
       default_preferences: Default preferences
       deletion: Deletion
   text_formatting:
-    textile: Textile
     markdown: Markdown
     plain: Plain text
+    textile: Textile
   status_active: aktiv
   status_archived: archived
   status_invited: inviteret
@@ -2609,11 +2621,25 @@ da:
   note_password_login_disabled: Login med adgangskode er deaktiveret ved %{configuration}.
   warning: Advarsel
   warning_attachments_not_saved: "%{count} file(r) kunne ikke gemmes."
-  warning_user_limit_reached: User limit reached. Please <a href="%{upgrade_url}">upgrade</a>
-    to allow for additional users.
+  warning_imminent_user_limit: 'You invited more users than are supported by your
+    current plan. Invited users may not be able to join your OpenProject environment.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block existing users
+    in order to allow invited and registered users to join.
+
+'
   warning_registration_token_expired: |
     The activation email has expired. We sent you a new one to %{email}.
     Please click the link inside of it to activate your account.
+  warning_user_limit_reached: 'User limit reached. You cannot activate any more users.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block members to allow
+    for additional users.
+
+'
+  warning_user_limit_reached_instructions: 'You reached your user limit (%{current}/%{max}
+    active users). Please contact sales@openproject.com to upgrade your Enterprise
+    Edition plan and add additional users.
+
+'
   menu_item: Menupunkt
   menu_item_setting: Synlighed
   wiki_menu_item_for: Menupunkt for wikipage "%{title}"
@@ -2681,3 +2707,5 @@ da:
       writing_read_only_attributes: Du må ikke skrive til en skrivebeskyttet attribut.
     resources:
       schema: Skema
+  setting_use_wysiwyg: WYSIWYG editor
+  setting_text_formatting: Tekstformattering

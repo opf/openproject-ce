@@ -168,6 +168,8 @@ zh:
       no_results_title_text: 目前没有工作流。
   work_packages:
     move:
+      no_common_statuses_exists: There is no status available for all selected work
+        packages. Their status cannot be changed.
       unsupported_for_multiple_projects: 不支持多个项目工作包的大批量移动/复制
     list_simple:
       assigned:
@@ -899,6 +901,7 @@ zh:
   error_invalid_query_column: 无效的查询列：%{value}
   error_invalid_sort_criterion: 无法按照列 %{value} 排序
   error_pdf_export_too_many_columns: 选择 PDF 导出的列太多。请减少列数。
+  error_pdf_failed_to_export: 'The PDF export could not be saved: %{error}'
   error_token_authenticity: 无法验证跨站域请求伪造令牌。
   error_work_package_done_ratios_not_updated: 工作包完成比率不更新。
   error_work_package_not_found_in_project: 工作包找不到或不属于此项目
@@ -939,6 +942,8 @@ zh:
       csv: CSV
       pdf: PDF
       pdf_with_descriptions: 带描述的PDF
+      pdf_with_descriptions_and_attachments: PDF with descriptions and attachments
+      pdf_with_attachments: PDF with attachments
   extraction:
     available:
       pdftotext: Pdftotext 可用 (可选)
@@ -1596,6 +1601,15 @@ zh:
   mail_subject_reminder: "%{count} 个工作包在 %{days} 天内到期"
   mail_subject_wiki_content_added: "'%{id}' wiki页面已添加"
   mail_subject_wiki_content_updated: "'%{id}' wiki页面已更新"
+  mail_user_activation_limit_reached:
+    subject: 已达到用户激活限制
+    message: '新用户 (%{email}) 试图在您管理的 OpenProject 环境 (%{host}) 上创建帐户。用户无法激活其帐户, 因为已达到用户限制。
+
+'
+    steps:
+      label: '要允许用户登录, 您可以: '
+      a: "([在这里](upgrade_url)) 升级付款计划"
+      b: "([在这里](users_url)) 锁定或删除现有用户"
   more_actions: 更多功能
   noscript_description: 您需要激活JavaScript才能使用 OpenProject！
   noscript_heading: JavaScript 被禁用
@@ -1692,7 +1706,7 @@ zh:
     text_getting_started_description: 开放项目的项目部门和合作团队概览
     text_show_again: 您可以从帮助菜单重新启动此视频
     welcome: 欢迎来到 OpenProject
-    select_language: Please select your language for OpenProject
+    select_language: 请选择您的 OpenProject 语言
   permission_add_work_package_notes: 添加注释
   permission_add_work_packages: 添加工作包
   permission_add_messages: 发布消息
@@ -1911,7 +1925,6 @@ zh:
   setting_brute_force_block_after_failed_logins: 登录失败的尝试次数多于该数字将用户阻止
   setting_brute_force_block_minutes: 用户被阻止的时长
   setting_cache_formatted_text: 缓存带格式的文本
-  setting_use_wysiwyg: 所见即所得（What You See Is What You Get）编辑器
   setting_use_wysiwyg_description: 选择为默认情况下为所有用户启用CKEditor5 所见即所得编辑器。 CKEditor对GFM
     Markdown的功能有限。
   setting_column_options: 自定义工作包列表的外观
@@ -1988,7 +2001,6 @@ zh:
   setting_start_of_week: 一周起始日
   setting_sys_api_enabled: 启用版本库管理 web 服务
   setting_sys_api_description: 版本库管理 web 服务提供了一体化的，以及用户授权来访问版本库。
-  setting_text_formatting: 文本格式
   setting_time_format: 时间格式
   setting_accessibility_mode_for_anonymous: 为匿名用户启用辅助功能模式
   setting_user_format: 用户显示格式
@@ -2011,9 +2023,9 @@ zh:
       default_preferences: 默认偏好设置
       deletion: 删除
   text_formatting:
-    textile: 家纺
     markdown: Markdown
     plain: 纯文本
+    textile: 家纺
   status_active: 激活
   status_archived: 已存档
   status_invited: 已邀请
@@ -2366,8 +2378,18 @@ zh:
   note_password_login_disabled: 密码登录已被 %{configuration} 禁用。
   warning: 警告
   warning_attachments_not_saved: "%{count} 文件不能被保存。"
-  warning_user_limit_reached: 达到用户限制。 请<a href="%{upgrade_url}">升级</a>以允许其他用户。
+  warning_imminent_user_limit: '您邀请的用户数超过了当前计划支持的用户数。 受邀用户可能无法加入您的OpenProject环境。 请<a
+    href="%{upgrade_url}">升级您的计划</a>或阻止现有用户，以允许受邀和注册用户加入。
+
+'
   warning_registration_token_expired: '激活邮件已过期，我们给您发送了一封新邮件到%{email}。请单击内部的链接以激活您的帐户。
+
+'
+  warning_user_limit_reached: '达到用户限制。 您无法再激活任何用户。 请<a href="%{upgrade_url}">升级您的计划</a>或阻止会员以允许其他用户。
+
+'
+  warning_user_limit_reached_instructions: '您达到了用户限制（%{current}/%{max}活跃用户）。 请联系sales@openproject.com以升级您的Enterprise
+    Edition计划并添加其他用户。
 
 '
   menu_item: 菜单项
@@ -2425,3 +2447,5 @@ zh:
       writing_read_only_attributes: 你不能写入只读属性。
     resources:
       schema: 方案
+  setting_use_wysiwyg: 所见即所得（What You See Is What You Get）编辑器
+  setting_text_formatting: 文本格式

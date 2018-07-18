@@ -187,6 +187,8 @@ lt:
       no_results_title_text: Šiuo metu darbo sekų.
   work_packages:
     move:
+      no_common_statuses_exists: There is no status available for all selected work
+        packages. Their status cannot be changed.
       unsupported_for_multiple_projects: Masinis darbų paketų perkėlimas/kopijavimas
         nėra palaikomas darbui iškart su keliais projektais
     list_simple:
@@ -1006,6 +1008,7 @@ lt:
   error_invalid_sort_criterion: 'Negalima rūšiuoti pagal stulpelį: %{value}'
   error_pdf_export_too_many_columns: PDF eksportavimui pasirinkta per daug stulpelių.
     Prašome sumažinti stulpelių skaičių.
+  error_pdf_failed_to_export: 'The PDF export could not be saved: %{error}'
   error_token_authenticity: Nepavyko patvirtinti Cross-Site Request Forgery rakto.
   error_work_package_done_ratios_not_updated: Darbų paketo atlikimo rodikliai neatnaujinti.
   error_work_package_not_found_in_project: Darbų paketas nerastas arba nepriklauso
@@ -1054,6 +1057,8 @@ lt:
       csv: CSV
       pdf: PDF
       pdf_with_descriptions: PDF su aprašymu
+      pdf_with_descriptions_and_attachments: PDF with descriptions and attachments
+      pdf_with_attachments: PDF with attachments
   extraction:
     available:
       pdftotext: Pdf-į-tekstą pasiekiamas (pasirinktinai)
@@ -1747,6 +1752,15 @@ lt:
     %{days} dienas(-ai, -ų)"
   mail_subject_wiki_content_added: Wiki puslapis '%{id}' buvo pridėtas
   mail_subject_wiki_content_updated: Wiki puslapis '%{id}' buvo atnaujintas
+  mail_user_activation_limit_reached:
+    subject: User activation limit reached
+    message: |
+      A new user (%{email}) tried to create an account on an OpenProject environment that you manage (%{host}).
+      The user cannot activate their account since the user limit has been reached.
+    steps:
+      label: 'To allow the user to sign in you can either: '
+      a: Upgrade your payment plan ([here](upgrade_url))
+      b: Lock or delete an existing user ([here](users_url))
   more_actions: Daugiau funkcijų
   noscript_description: Jums reikia įjungti JavaScript, kad galėtumėte naudoti OpenProject!
   noscript_heading: JavaScript išjungta
@@ -2136,7 +2150,6 @@ lt:
     nesėkmingų prisijungimo bandymų
   setting_brute_force_block_minutes: Laikas, kuriam vartotojas yra blokuojamas
   setting_cache_formatted_text: Atmintyje laikyti formatuotą tekstą
-  setting_use_wysiwyg: WYSIWYG editor
   setting_use_wysiwyg_description: Select to enable CKEditor5 WYSIWYG editor for all
     users by default. CKEditor has limited functionality for GFM Markdown.
   setting_column_options: Pritaikyti sau darbų paketų sąrašų atvaizdavimą
@@ -2227,7 +2240,6 @@ lt:
   setting_sys_api_enabled: Įgalinti repozitorijos valdymo web tarnybą
   setting_sys_api_description: Repozitorijos valdymo web tarnyba teikia integraciją
     ir vartotojų autorizaciją bandant pasiekti repozitorijas.
-  setting_text_formatting: Teksto formatavimas
   setting_time_format: Laiko formatas
   setting_accessibility_mode_for_anonymous: Leisti lengvos prieigos režimą anoniminiams
     vartotojams
@@ -2252,9 +2264,9 @@ lt:
       default_preferences: Default preferences
       deletion: Deletion
   text_formatting:
-    textile: Textile
     markdown: Markdown
     plain: Plain text
+    textile: Textile
   status_active: aktyvus
   status_archived: suarchyvuotas
   status_invited: pakviestas
@@ -2684,11 +2696,25 @@ lt:
   warning: Įspėjimas
   warning_attachments_not_saved: "%{count} failas (-ai, -ų) negali būti išsaugotas
     (-i)."
-  warning_user_limit_reached: User limit reached. Please <a href="%{upgrade_url}">upgrade</a>
-    to allow for additional users.
+  warning_imminent_user_limit: 'You invited more users than are supported by your
+    current plan. Invited users may not be able to join your OpenProject environment.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block existing users
+    in order to allow invited and registered users to join.
+
+'
   warning_registration_token_expired: 'Aktyvavimo el. laiško galiojimas pasibaigė.
     Išsiuntėme jums naują %{email}. Paspauskite laiške duotą nuorodą, kad aktyvuotumėte
     savo paskyrą.
+
+'
+  warning_user_limit_reached: 'User limit reached. You cannot activate any more users.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block members to allow
+    for additional users.
+
+'
+  warning_user_limit_reached_instructions: 'You reached your user limit (%{current}/%{max}
+    active users). Please contact sales@openproject.com to upgrade your Enterprise
+    Edition plan and add additional users.
 
 '
   menu_item: Meniu punktas
@@ -2759,3 +2785,5 @@ lt:
       writing_read_only_attributes: Jūs neturėtumėte įrašyti atributą „tik skaitomas“.
     resources:
       schema: Schema
+  setting_use_wysiwyg: WYSIWYG editor
+  setting_text_formatting: Teksto formatavimas

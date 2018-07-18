@@ -438,7 +438,9 @@ module ApplicationHelper
     # Ensure global AV context exists (when, e.g., called from widget)
     @_request ||= request
     include_calendar_headers_tags
-    nonced_javascript_tag("jQuery(function() { jQuery('##{field_id}').datepicker(); })")
+    nonced_javascript_tag <<-EOS
+      jQuery(function() { jQuery('##{field_id}').attr('autocomplete', 'off').datepicker(); });
+    EOS
   end
 
   def include_calendar_headers_tags
@@ -629,12 +631,6 @@ module ApplicationHelper
     else
       [ll(lang_code.to_s, :general_lang_name), lang_code.to_s]
     end
-  end
-
-  def wiki_helper
-    helper = Redmine::WikiFormatting.helper_for(Setting.text_formatting)
-    extend helper
-    self
   end
 
   def link_to_content_update(text, url_params = {}, html_options = {})

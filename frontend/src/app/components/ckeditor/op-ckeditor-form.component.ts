@@ -29,6 +29,7 @@
 import {Component, ElementRef, OnInit} from "@angular/core";
 import {ConfigurationService} from "core-app/modules/common/config/configuration.service";
 import {CurrentProjectService} from "core-components/projects/current-project.service";
+import {PathHelperService} from "core-app/modules/common/path-helper/path-helper.service";
 
 export interface ICkeditorInstance {
   getData():string;
@@ -56,6 +57,7 @@ const ckEditorReplacementClass = '__op_ckeditor_replacement_container';
 })
 export class OpCkeditorFormComponent implements OnInit {
   public textareaSelector:string;
+  public previewContext:string;
 
   // Which template to include
   public ckeditor:any;
@@ -72,6 +74,7 @@ export class OpCkeditorFormComponent implements OnInit {
 
   constructor(protected elementRef:ElementRef,
               protected currentProject:CurrentProjectService,
+              protected pathHelper:PathHelperService,
               protected ConfigurationService:ConfigurationService) {
 
   }
@@ -80,23 +83,28 @@ export class OpCkeditorFormComponent implements OnInit {
     this.$element = jQuery(this.elementRef.nativeElement);
 
     // Parse the attribute explicitly since this is likely a bootstrapped element
-    this.textareaSelector = this.elementRef.nativeElement.getAttribute('textarea-selector');
+    this.textareaSelector = this.$element.attr('textarea-selector');
+    this.previewContext = this.$element.attr('preview-context');
 
     this.formElement = this.$element.closest('form');
     this.wrappedTextArea = this.formElement.find(this.textareaSelector);
     this.wrappedTextArea.hide();
     const wrapper = this.$element.find(`.${ckEditorReplacementClass}`);
-    window.OPClassicEditor
+    let editorPromise = window.OPClassicEditor
       .create(wrapper[0], {
         openProject: {
           context: null,
-          pluginContext: window.OpenProject.pluginContext.value
+          helpURL: this.pathHelper.textFormattingHelp(),
+          pluginContext: window.OpenProject.pluginContext.value,
+          previewContext: this.previewContext
         }
       })
       .then(this.setup.bind(this))
       .catch((error:any) => {
         console.error(error);
       });
+
+    this.$element.data('editor', editorPromise);
   }
 
   public $onDestroy() {
@@ -120,6 +128,23 @@ export class OpCkeditorFormComponent implements OnInit {
       // Continue with submission
       return true;
     });
+
+    this.setLabel();
+
+    return editor;
+  }
+
+  private setLabel() {
+    let textareaId = this.textareaSelector.substring(1);
+    let label = jQuery(`label[for=${textareaId}`);
+
+    let ckContent = this.$element.find('.ck-content');
+
+    ckContent.attr('aria-label', null);
+    ckContent.attr('aria-labelledby', textareaId);
+
+    label.click(() => {
+      ckContent.focus();
+    });
   }
 }
-

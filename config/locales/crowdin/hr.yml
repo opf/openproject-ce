@@ -184,6 +184,8 @@ hr:
       no_results_title_text: Trenutno ne postoji niti jedan workflow.
   work_packages:
     move:
+      no_common_statuses_exists: There is no status available for all selected work
+        packages. Their status cannot be changed.
       unsupported_for_multiple_projects: Masovno premještanje/kopiranje ne podržava
         radne pakete iz više projekata
     list_simple:
@@ -990,6 +992,7 @@ hr:
   error_invalid_sort_criterion: 'Can''t sort by column: %{value}'
   error_pdf_export_too_many_columns: Too many columns selected for the PDF export.
     Please reduce the number of columns.
+  error_pdf_failed_to_export: 'The PDF export could not be saved: %{error}'
   error_token_authenticity: Unable to verify Cross-Site Request Forgery token.
   error_work_package_done_ratios_not_updated: Omjer učinjenoga radnog paketa nije
     ažuriran.
@@ -1041,6 +1044,8 @@ hr:
       csv: CSV
       pdf: PDF
       pdf_with_descriptions: PDF s opisima
+      pdf_with_descriptions_and_attachments: PDF with descriptions and attachments
+      pdf_with_attachments: PDF with attachments
   extraction:
     available:
       pdftotext: Pdftotext available (optional)
@@ -1730,6 +1735,15 @@ hr:
     %{days} dana"
   mail_subject_wiki_content_added: "'%{id}' wiki stranica je dodana"
   mail_subject_wiki_content_updated: "'%{id}' wiki stranica je ažurirana"
+  mail_user_activation_limit_reached:
+    subject: User activation limit reached
+    message: |
+      A new user (%{email}) tried to create an account on an OpenProject environment that you manage (%{host}).
+      The user cannot activate their account since the user limit has been reached.
+    steps:
+      label: 'To allow the user to sign in you can either: '
+      a: Upgrade your payment plan ([here](upgrade_url))
+      b: Lock or delete an existing user ([here](users_url))
   more_actions: Više funkcija
   noscript_description: Morate omogućiti korištenje JavaScripta da bi ste mogli korisiti
     OpenProject!
@@ -2112,7 +2126,6 @@ hr:
     krivih pokušaja spajanja
   setting_brute_force_block_minutes: Vrijeme u kojem je korisnik blokiran
   setting_cache_formatted_text: Formatirani tekst u međumemoriji
-  setting_use_wysiwyg: WYSIWYG editor
   setting_use_wysiwyg_description: Select to enable CKEditor5 WYSIWYG editor for all
     users by default. CKEditor has limited functionality for GFM Markdown.
   setting_column_options: Prilagodite izgled liste radnih paketa
@@ -2200,7 +2213,6 @@ hr:
   setting_sys_api_enabled: Enable repository management web service
   setting_sys_api_description: Web servis za upravljanje repozitorijom omogućava integraciju
     i autorizaciju za pristup repozitorijima.
-  setting_text_formatting: Formatiranje teksta
   setting_time_format: Format vremena
   setting_accessibility_mode_for_anonymous: Enable accessibility mode for anonymous
     users
@@ -2224,9 +2236,9 @@ hr:
       default_preferences: Default preferences
       deletion: Deletion
   text_formatting:
-    textile: Textile
     markdown: Markdown
     plain: Plain text
+    textile: Textile
   status_active: aktivno
   status_archived: archived
   status_invited: pozvani
@@ -2649,11 +2661,25 @@ hr:
   note_password_login_disabled: Prijava korištenjem lozinke je onemogućena %{configuration}.
   warning: Upozorenje
   warning_attachments_not_saved: "%{count} datoteka(e) ne mogu biti spremljene."
-  warning_user_limit_reached: User limit reached. Please <a href="%{upgrade_url}">upgrade</a>
-    to allow for additional users.
+  warning_imminent_user_limit: 'You invited more users than are supported by your
+    current plan. Invited users may not be able to join your OpenProject environment.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block existing users
+    in order to allow invited and registered users to join.
+
+'
   warning_registration_token_expired: |
     The activation email has expired. We sent you a new one to %{email}.
     Please click the link inside of it to activate your account.
+  warning_user_limit_reached: 'User limit reached. You cannot activate any more users.
+    Please <a href="%{upgrade_url}">upgrade your plan</a> or block members to allow
+    for additional users.
+
+'
+  warning_user_limit_reached_instructions: 'You reached your user limit (%{current}/%{max}
+    active users). Please contact sales@openproject.com to upgrade your Enterprise
+    Edition plan and add additional users.
+
+'
   menu_item: Stavka izbornika
   menu_item_setting: Vidljivost
   wiki_menu_item_for: Stavka izbornika za wiki stranicu "%{title}"
@@ -2723,3 +2749,5 @@ hr:
         je dopušteno samo čitanje.
     resources:
       schema: Shema
+  setting_use_wysiwyg: WYSIWYG editor
+  setting_text_formatting: Formatiranje teksta
