@@ -1,3 +1,5 @@
+#-- encoding: UTF-8
+
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
@@ -73,7 +75,7 @@ describe 'Wysiwyg include wiki page spec',
         visit edit_project_wiki_path(project, :test)
       end
 
-      it 'can add and edit an embedded table widget' do
+      it 'can add and edit an include page widget' do
         editor.in_editor do |container, editable|
           expect(editable).to have_selector('h1', text: 'My page')
 

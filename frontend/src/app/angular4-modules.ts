@@ -215,6 +215,8 @@ import {WpButtonMacroModal} from "core-components/modals/editor/macro-wp-button-
 import {EditorMacrosService} from "core-components/modals/editor/editor-macros.service";
 import {WikiIncludePageMacroModal} from "core-components/modals/editor/macro-wiki-include-page-modal/wiki-include-page-macro.modal";
 import {CodeBlockMacroModal} from "core-components/modals/editor/macro-code-block-modal/code-block-macro.modal";
+import {CKEditorSetupService} from "core-components/ckeditor/ckeditor-setup.service";
+import {ChildPagesMacroModal} from "core-components/modals/editor/macro-child-pages-modal/child-pages-macro.modal";
 
 @NgModule({
   imports: [
@@ -307,6 +309,9 @@ import {CodeBlockMacroModal} from "core-components/modals/editor/macro-code-bloc
     OpModalService,
     WpTableConfigurationService,
     ConfirmDialogService,
+
+    // CKEditor
+    CKEditorSetupService,
     EditorMacrosService,
 
     // Main Menu
@@ -457,6 +462,7 @@ import {CodeBlockMacroModal} from "core-components/modals/editor/macro-code-bloc
     WpButtonMacroModal,
     WikiIncludePageMacroModal,
     CodeBlockMacroModal,
+    ChildPagesMacroModal,
 
     // External query configuration
     ExternalQueryConfigurationComponent,
@@ -541,6 +547,7 @@ import {CodeBlockMacroModal} from "core-components/modals/editor/macro-code-bloc
     WpButtonMacroModal,
     WikiIncludePageMacroModal,
     CodeBlockMacroModal,
+    ChildPagesMacroModal,
 
     // External query configuration
     ExternalQueryConfigurationComponent,
