@@ -89,6 +89,10 @@ export class OverviewTextileBlockController {
    */
   public submitForm(evt:JQueryEventObject) {
     var form = this.$element.find('.textile-form');
+
+    // Update change event
+    form.trigger('change.ckeditor');
+
     var formData = new FormData(form[0] as HTMLFormElement);
 
     // $http fails to serialize the formData correctly,
@@ -110,7 +114,7 @@ export class OverviewTextileBlockController {
     }).fail((error) => {
       deferred.reject();
       this.$timeout(() => {
-        this.pluginContext.context!.services.addError(
+        this.pluginContext.context!.services.notifications.addError(
           I18n.t('js.notification_update_block_failed') + ' ' + error.responseText
         );
       });
