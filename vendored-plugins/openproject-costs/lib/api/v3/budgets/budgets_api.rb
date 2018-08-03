@@ -42,6 +42,8 @@ module API
             get do
               BudgetRepresenter.new(@budget, current_user: current_user)
             end
+
+            mount ::API::V3::Attachments::AttachmentsByBudgetAPI
           end
         end
       end
