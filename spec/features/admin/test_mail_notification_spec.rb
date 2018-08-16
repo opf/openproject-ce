@@ -1,5 +1,3 @@
-#-- encoding: UTF-8
-
 #-- copyright
 # OpenProject is a project management system.
 # Copyright (C) 2012-2018 the OpenProject Foundation (OPF)
@@ -28,26 +26,27 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-module Concerns::Layout
-  extend ActiveSupport::Concern
+require 'spec_helper'
 
-  included do
-    def layout_non_or_no_menu
-      if request.xhr?
-        false
-      elsif @project
-        true
-      else
-        'no_menu'
-      end
-    end
+describe 'Test mail notification', type: :feature do
+  include Redmine::I18n
 
-    def project_or_module_menu
-      if @project
-        :project_menu
-      else
-        :module_menu
-      end
-    end
+  let(:admin) { FactoryBot.create(:admin) }
+
+  before do
+    login_as(admin)
+    visit settings_path(tab: :notifications)
+  end
+
+  it 'shows the correct message on errors in test notification (Regression #28226)' do
+    error_message = '"error" with <strong>Markup?</strong>'
+    expect(UserMailer).to receive(:test_mail).with(admin)
+      .and_raise error_message
+
+    click_link 'Send a test email'
+
+    expected = "An error occurred while sending mail (#{error_message})"
+    expect(page).to have_selector('.flash.error', text: expected)
+    expect(page).to have_no_selector('.flash.error strong')
   end
 end
