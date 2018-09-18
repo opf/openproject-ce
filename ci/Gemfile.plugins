@@ -1,0 +1,37 @@
+#
+# DO NOT CHANGE THE ORDER OF PLUGINS
+#
+group :opf_plugins do
+  gem "openproject-global_roles", path: "vendored-plugins/openproject-global_roles"
+
+  gem "openproject-auth_plugins", path: "vendored-plugins/openproject-auth_plugins"
+  gem "omniauth-saml", github: "omniauth/omniauth-saml"
+  gem "openproject-auth_saml", git: 'https://github.com/finnlabs/openproject-auth_saml', branch: 'dev'
+  gem 'omniauth-openid_connect-providers',  git: 'https://github.com/finnlabs/omniauth-openid_connect-providers.git', branch: 'dev'
+  gem 'omniauth-openid-connect',            git: 'https://github.com/finnlabs/omniauth-openid-connect.git',           branch: 'dev'
+  gem "openproject-openid_connect", path: "vendored-plugins/openproject-openid_connect"
+
+  gem "openproject-documents", path: "vendored-plugins/openproject-documents"
+
+  gem "openproject-my_project_page", path: "vendored-plugins/openproject-my_project_page"
+  gem "openproject-xls_export", path: "vendored-plugins/openproject-xls_export"
+
+  gem "reporting_engine", path: "vendored-plugins/reporting_engine"
+  gem "openproject-costs", path: "vendored-plugins/openproject-costs"
+  gem "openproject-reporting", path: "vendored-plugins/openproject-reporting"
+
+  gem "openproject-meeting", path: "vendored-plugins/openproject-meeting"
+  gem "openproject-pdf_export", path: "vendored-plugins/openproject-pdf_export"
+
+  gem "openproject-backlogs", path: "vendored-plugins/openproject-backlogs"
+
+  gem "openproject-avatars", path: "vendored-plugins/openproject-avatars"
+  gem "openproject-two_factor_authentication", path: "vendored-plugins/openproject-two_factor_authentication"
+  gem "openproject-ldap_groups", path: "vendored-plugins/openproject-ldap_groups"
+  gem "openproject-webhooks", path: "vendored-plugins/openproject-webhooks"
+  gem "openproject-github_integration", path: "vendored-plugins/openproject-github_integration"
+end
+
+group :development, :test do
+    gem 'ladle'
+end
