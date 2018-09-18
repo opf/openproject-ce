@@ -42,6 +42,7 @@ RUN cd /tmp/npm/frontend/ && RAILS_ENV=production npm install && mv /tmp/npm/fro
 
 # Finally, copy over the whole thing
 COPY . /usr/src/app
+RUN chown -R $APP_USER:$APP_USER $APP_PATH
 RUN cp docker/Procfile .
 RUN cp packaging/conf/database.yml config/
 RUN sed -i "s|Rails.groups(:opf_plugins)|Rails.groups(:opf_plugins, :docker)|" config/application.rb
