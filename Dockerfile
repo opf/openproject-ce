@@ -42,6 +42,7 @@ RUN cd /tmp/npm/frontend/ && RAILS_ENV=production npm install && mv /tmp/npm/fro
 
 # Finally, copy over the whole thing
 COPY . /usr/src/app
+RUN mkdir $APP_PATH/tmp
 RUN chown -R $APP_USER:$APP_USER $APP_PATH
 RUN cp docker/Procfile .
 RUN cp packaging/conf/database.yml config/
