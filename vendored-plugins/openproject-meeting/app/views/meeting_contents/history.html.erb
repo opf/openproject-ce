@@ -123,7 +123,9 @@ See doc/COPYRIGHT.md for more details.
 
   </div>
 </div>
-<%= styled_button_tag l(:label_view_diff), class: '-small -highlight' if show_diff %>
+<div class="generic-table--action-buttons">
+  <%= styled_button_tag l(:label_view_diff), class: '-small -highlight' if show_diff %>
+</div>
 <%= pagination_links_full @content_versions %>
 <% end %>
 
