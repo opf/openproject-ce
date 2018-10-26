@@ -2,7 +2,7 @@ id:
   activerecord:
     attributes:
       two_factor_authentication/device:
-        identifier: 'Pengenal'
+        identifier: 'Pengidentifikasi'
         default: 'Digunakan sebagai standar'
       two_factor_authentication/device/sms:
         phone_number: "Nomor telepon"
@@ -143,13 +143,13 @@ id:
       required_to_add_device: 'Kebijakan keamanan aktif mengharuskan Anda untuk mengaktifkan otentikasi dua-faktor. Silakan gunakan formulir berikut untuk mendaftar perangkat.'
     remember:
       active_session_notice: >
-        Account Anda telah aktif ingat cookie yang berlaku hingga %{expires_on}. Cookie ini memungkinkan Anda untuk masuk tanpa faktor kedua ke account Anda sehingga waktu itu.
+        Akun Anda telah aktif ingat cookie yang berlaku hingga %{expires_on}. Cookie ini memungkinkan Anda untuk masuk tanpa faktor kedua ke akun Anda sehingga waktu itu.
       label: 'ingat'
       clear_cookie: 'Tekan disini untuk menghapus cookie'
       cookie_removed: 'Ingat cookie telah dihapus.'
-      dont_ask_again: "Membuat kue untuk mengingat 2FA otentikasi pada klien ini untuk %{days} hari."
+      dont_ask_again: "Membuat cookie untuk mengingat 2FA otentikasi pada klien ini untuk %{days} hari."
   field_phone: "Ponsel"
-  field_otp: "Satu-kali kata sandi"
+  field_otp: "One-time password"
   notice_account_otp_invalid: "Sandi sekali pakai yang tidak valid."
   notice_account_otp_expired: "Kata sandi satu-kali yang anda masukkan kadaluarsa."
   notice_developer_strategy_otp: "Pengembang strategi dihasilkan one-time password berikut: %{token} (saluran: %{channel})"

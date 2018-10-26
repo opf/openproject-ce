@@ -30,7 +30,7 @@ fil:
     notice_pwd_confirmation: "Kailangan mong kumpirmahin ang iyong password sa paggawa ng mga pagbabago sa setting na ito."
     label_device_type: "Ang uri ng aparato"
     label_default_device: "I-Default ang 2FA na aparato"
-    label_device: "Ang 2FA na aparato"
+    label_device: "2Fa na aparato"
     label_devices: "Ang 2FA na mga aparato"
     label_one_time_password: 'Ang isang beses na password'
     label_2fa_enabled: 'Ang Dalawang-dahilan ng aktibo na pagpapatunay'

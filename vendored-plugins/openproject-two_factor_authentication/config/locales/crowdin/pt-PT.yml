@@ -35,7 +35,7 @@ pt:
     label_one_time_password: 'Palavra-passe de uso único'
     label_2fa_enabled: 'Autenticação de dois fatores está ativo'
     label_2fa_disabled: 'Autenticação de dois fatores não ativa'
-    text_otp_delivery_message_sms: "Sua senha de uso único de %{app_title} é %{token}"
+    text_otp_delivery_message_sms: "A sua senha de utilização única de %{app_title} é %{token}"
     text_otp_delivery_message_voice: "A sua senha de utilização única de %{app_title} é: %{pause} %{token}. %{pause} Repito: %{pause} %{token}"
     text_enter_2fa: 'Digite a palavra-passe de utilização única de seu dispositivo.'
     text_2fa_enabled: 'Em cada login, você será solicitado a inserir um token OTP do seu dispositivo 2FA padrão.'
@@ -49,7 +49,7 @@ pt:
       current_configuration: 'Configuração atual'
       label_active_strategies: 'Estratégias 2FA activas'
       label_enforced: 'Forçar 2FA'
-      label_remember: 'Lembrar login 2FA'
+      label_remember: 'Lembrar início de sessão 2FA'
       text_configuration: |
         Nota: Estes valores representam a configuração atual em toda a aplicação. Não pode desativar definições forçadas pela configuração, nem alterar as atuais estratégias ativas, uma vez que requerem um reinício do servidor.
       text_configuration_guide: Para mais informações, consulte o guia de configuração.
@@ -149,7 +149,7 @@ pt:
       active_session_notice: >
         A sua conta tem um cookie de lembrança válido até %{expires_on}. Este cookie permite que inicie a sessão sem um segundo factor na sua conta até essa altura.
       label: 'Lembrar'
-      clear_cookie: 'Clique aqui para remover esta cookie'
+      clear_cookie: 'Clique aqui para remover este cookie'
       cookie_removed: 'O cookie de lembrança foi removido.'
       dont_ask_again: "Criar cookie para lembrar a autenticação 2FA neste cliente durante %{days} dias."
   field_phone: "Telemóvel"

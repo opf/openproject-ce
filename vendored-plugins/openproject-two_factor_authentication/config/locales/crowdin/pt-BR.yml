@@ -34,7 +34,7 @@ pt-BR:
     label_devices: "Dispositivos 2FA"
     label_one_time_password: 'Senha de uso único'
     label_2fa_enabled: 'O segundo fator de autenticação está ativo'
-    label_2fa_disabled: 'O segundo fator de autenticação não está ativo'
+    label_2fa_disabled: 'Autenticação de dois fatores não está ativa'
     text_otp_delivery_message_sms: "Sua senha de uso único de %{app_title} é %{token}"
     text_otp_delivery_message_voice: "Sua senha de uso único de %{app_title} é: %{pause} %{token}. %{pause} repito: %{pause} %{token}"
     text_enter_2fa: 'Por favor digite a senha de uso único do seu dispositivo.'
@@ -134,7 +134,7 @@ pt-BR:
       delivery_failed: 'Falha ao entregar o SNS:'
     message_bird:
       sms_delivery_failed: 'Falha ao enviar o SMS MessageBird.'
-      voice_delivery_failed: 'Falha ao realizar a chamada de voz MessageBird SMS.'
+      voice_delivery_failed: 'Falha ao realizar a chamada de voz MessageBird Sms.'
     restdt:
       delivery_failed_with_code: 'Falha ao entregar o token. (Código do erro %{code})'
     strategies:
@@ -151,7 +151,7 @@ pt-BR:
       label: 'Lembrar-me'
       clear_cookie: 'Clique aqui para remover este cookir'
       cookie_removed: 'O cookie gravado foi removido.'
-      dont_ask_again: "Crie um cookie para lembrar a autenticação 2FA para este cliente por %{days} dias."
+      dont_ask_again: "Crie um cookie para lembrar do 2FA neste cliente por %{days} dias."
   field_phone: "Celular"
   field_otp: "Senha de uso único"
   notice_account_otp_invalid: "Senha de uso único inválida."

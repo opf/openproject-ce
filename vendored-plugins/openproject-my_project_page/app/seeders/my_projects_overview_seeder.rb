@@ -6,7 +6,7 @@ module DemoData
       def seed_data!
         puts "*** Seeding MyProjectsOverview"
 
-        Array(I18n.t("seeders.demo_data.projects")).each do |key, project|
+        Array(translate_with_base_url("seeders.demo_data.projects")).each do |key, project|
           puts "   -Creating overview for #{project[:name]}"
 
           if config = project[:"project-overview"]
@@ -29,13 +29,22 @@ module DemoData
       end
 
       def applicable?
-        MyProjectsOverview.count.zero?
+        MyProjectsOverview.count.zero? && demo_projects_exist?
       end
 
       private
 
+      def demo_projects_exist?
+        identifiers = Array(I18n.t("seeders.demo_data.projects"))
+          .map { |_key, project| project[:identifier] }
+
+        identifiers
+          .all? { |ident| Project.where(identifier: ident).exists? }
+      end
+
       def area(config, project)
         return config if config.is_a? String
+        return config[:block] if config[:block].present?
 
         [config[:id], config[:title], with_references(config[:content], project)]
       end
@@ -49,8 +58,14 @@ module DemoData
           attachment.save!
         end
 
-        area_with_references = Array(my_project_overview.send(area)).map do |tag, title, content|
-          [tag, title, link_attachments(content, my_project_overview.attachments)]
+        area_with_references = Array(my_project_overview.send(area)).map do |data|
+          if data.is_a? String # single string referring to a block
+            data
+          else
+            tag, title, content = data
+
+            [tag, title, link_attachments(content, my_project_overview.attachments)]
+          end
         end
 
         my_project_overview.update area => area_with_references

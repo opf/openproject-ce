@@ -45,11 +45,11 @@ zh-CN:
       enter_backup_code_text: 请从您的代码列表中输入有效的备份代码，以防您无法再访问已注册的 2FA 设备。
       other_device: '使用其他设备或备份代码'
     settings:
-      title: '双重身份验证设置'
+      title: '两步认证设置'
       current_configuration: '当前配置'
-      label_active_strategies: '激活双重身份验证策略'
-      label_enforced: '强制双重身份验证'
-      label_remember: '记住双重身份验证登录信息'
+      label_active_strategies: '激活两步认证策略'
+      label_enforced: '强制两步认证'
+      label_remember: '记住两步认证登录信息'
       text_configuration: |
         注释：这些值表示当前应用级配置。您无法禁用由配置强制的设置或更改当前的有效策略，因为它们需要重启服务器。
       text_configuration_guide: 如需了解更多信息，请参阅配置指南。

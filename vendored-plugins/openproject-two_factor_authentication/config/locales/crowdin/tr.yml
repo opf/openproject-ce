@@ -30,12 +30,12 @@ tr:
     notice_pwd_confirmation: "Bu ayarlarda değişiklikler yaptıktan sonra şifrenizi onaylamanız gerekir."
     label_device_type: "Cihaz türü"
     label_default_device: "Varsayılan 2FA cihazı"
-    label_device: "2FA cihazı"
+    label_device: "2FA aygıtı"
     label_devices: "2FA cihazları"
     label_one_time_password: 'Tek kullanımlık şifre'
     label_2fa_enabled: 'İki faktörlü kimlik doğrulama aktif'
     label_2fa_disabled: 'İki faktörlü kimlik doğrulama aktif değil'
-    text_otp_delivery_message_sms: "Your %{app_title} one-time password is %{token}"
+    text_otp_delivery_message_sms: "Senin %{app_title} one-time şifre %{token}"
     text_otp_delivery_message_voice: "Your %{app_title} one-time password is: %{pause} %{token}. %{pause} I repeat: %{pause} %{token}"
     text_enter_2fa: 'Lütfen cihazınızdaki tek kullanımlık şifreyi giriniz.'
     text_2fa_enabled: 'Her girişte, varsayılan 2FA cihazınızdan bir OTP jetonu girmeniz talep edilir.'
@@ -60,7 +60,7 @@ tr:
       failed_to_save_settings: '2FA ayarları güncelleştirmesi başarısız: %{message}'
     admin:
       self_edit_path: 'Kendi 2FA cihazınızı eklemek yada değiştirmek için, lütfen burdan%{self_edit_link}'
-      self_edit_link_name: 'Hesap sayfanızdaki iki faktörlü kimlik doğrulama'
+      self_edit_link_name: 'Hesap sayfanızdaki iki faktörlü kimlik doğrulayıcı'
       self_edit_forbidden: 'Burada kendi 2FA cihazınızı düzenleyemezsiniz. Bunun yerine Hesabım > İki faktörlü kimlik doğrulama.'
       no_devices_for_user: 'Bu kullanıcı için hiçbir 2FA cihazı kayıtlı değil.'
       all_devices_deleted: 'Bu kullanıcının tüm 2FA cihazları silindi'
@@ -151,7 +151,7 @@ tr:
       cookie_removed: 'Çerezin kaldırıldığını hatırla.'
       dont_ask_again: "Bu kullanıcı da 2FA kimlik doğrulamasını %{days} gün boyunca hatırlamak için çerez oluştur."
   field_phone: "Cep telefonu"
-  field_otp: "Tek kullanımlık şifre"
+  field_otp: "Tek-kullanımlık Şifre"
   notice_account_otp_invalid: "Geçersiz tek kullanımlık şifre."
   notice_account_otp_expired: "Girdiğiniz tek kullanımlık şifrenin süresi dolmuş."
   notice_developer_strategy_otp: "Geliştirici stratejisi aşağıdaki tek seferlik şifreyi oluşturdu: %{token} (Kanal: %{channel})"
