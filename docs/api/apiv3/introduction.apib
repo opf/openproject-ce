@@ -1,8 +1,6 @@
 
 # Group General
 
-This is the current **DRAFT** of the specification for OpenProject APIv3.
-
 Please note that everything in this document might be **subject to change** in a future version of OpenProject. We intend to keep this specification
 as accurate as possible, however as long as the APIv3 is not in a stable state it is possible that there are intermediary differences between
 this specification and the real implementation. While we try to only specify what we want to keep, it might also happen that parts of this
@@ -47,6 +45,8 @@ Otherwise unauthenticated clients have all the permissions of the anonymous user
 
 This means you have to login to OpenProject via the Web-Interface to be authenticated in the API.
 This method is well-suited for clients acting within the browser, like the Angular-Client built into OpenProject.
+
+In this case, you always need to pass the HTTP header `X-Requested-With "XMLHttpRequest"` for authentication.
 
 ## API Key through Basic Auth
 
