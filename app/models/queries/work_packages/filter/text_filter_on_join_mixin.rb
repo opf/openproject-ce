@@ -28,26 +28,36 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-require 'redmine/menu_manager'
-require 'redmine/activity'
-require 'redmine/search'
-require 'open_project/custom_field_format'
-require 'open_project/logging/log_delegator'
-require 'redmine/mime_type'
-require 'redmine/core_ext'
-require 'open_project/design'
-require 'redmine/hook'
-require 'open_project/hooks'
-require 'redmine/plugin'
-require 'redmine/notifiable'
+module Queries::WorkPackages::Filter::TextFilterOnJoinMixin
+  def where
+    case operator
+    when '~'
+      Queries::Operators::All.sql_for_field(values, join_table_alias, 'id')
+    when '!~'
+      Queries::Operators::None.sql_for_field(values, join_table_alias, 'id')
+    else
+      raise 'Unsupported operator'
+    end
+  end
 
-require 'csv'
+  def joins
+    <<-SQL
+     LEFT OUTER JOIN #{join_table} #{join_table_alias}
+     ON #{join_condition}
+    SQL
+  end
 
-module OpenProject
-  ##
-  # Shortcut to the OpenProject log delegator, which extends
-  # default Rails error handling with other error handlers such as sentry.
-  def self.logger
-    ::OpenProject::Logging::LogDelegator
+  private
+
+  def join_table
+    raise NotImplementedError
+  end
+
+  def join_condition
+    raise NotImplementedError
+  end
+
+  def join_table_alias
+    "#{self.class.key}_#{join_table}"
   end
 end
