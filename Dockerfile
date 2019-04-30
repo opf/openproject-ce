@@ -82,4 +82,3 @@ EXPOSE 80 5432
 VOLUME ["$PGDATA", "$APP_DATA_PATH"]
 ENTRYPOINT ["./docker/entrypoint.sh"]
 CMD ["./docker/supervisord"]
-
