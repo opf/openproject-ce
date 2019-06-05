@@ -1,20 +1,21 @@
-# OpenProject
-[<img src="https://travis-ci.org/opf/openproject.svg?branch=dev" alt="Build Status" />](https://travis-ci.org/opf/openproject)
-[![Code Climate](https://codeclimate.com/github/opf/openproject/badges/gpa.svg)](https://codeclimate.com/github/opf/openproject)
+# OpenProject Community Repository
 
-OpenProject is a web-based project management software. Its key features are:
+This is the OpenProject community archive that existed to build bundled OpenProject core and plugins for packaged installations. All new releases will be available at our main repository at https://github.com/opf/openproject .
 
-* [Project planning and scheduling](https://www.openproject.org/collaboration-software-features/#project-planning)
-* [Product roadmap and release planning](https://www.openproject.org/collaboration-software-features/#product-management)
-* [Task management and team collaboration](https://www.openproject.org/collaboration-software-features/#task-management)
-* [Agile and Scrum](https://www.openproject.org/collaboration-software-features/#agile-scrum)
-* [Time tracking, cost reporting and budgeting](https://www.openproject.org/collaboration-software-features/#time-tracking)
-* [Bug tracking](https://www.openproject.org/collaboration-software-features/#bug-tracking)
-* [Wikis](https://www.openproject.org/help/wiki/)
-* [Forums](https://www.openproject.org/help/user-guides/forum/)
-* [Meeting agendas and meeting minutes](https://www.openproject.org/help/meetings/)
 
-More information and screenshots can be found on our [website](https://www.openproject.org).
+## What is the difference between [opf/openproject-ce](https://github.com/opf/openproject-ce) and [opf/openproject](https://github.com/opf/openproject) ?
+
+The split between historic reasons. opf/openproject was only the core without community plugins such as costs, backlogs, etc.
+They were developed in separate Git repositories and then merged into opf/openproject-ce to build the full edition.
+
+Some months back, we decided to work on everything that openproject-ce is made of from within opf/openproject and merged the plugins there. This happend in this  PR: https://github.com/opf/openproject/pull/6826
+
+With 9.0., we're going to remove openproject-ce so it will only remain for legacy and previous installations. From 9.0. on, all packages will be released there.
+
+
+## Repository
+
+Please visit https://github.com/opf/openproject for the main repository
 
 ## Installation
 
